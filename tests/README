@@ -1,0 +1,8 @@
+
++ The main file is ...
+
+  ./xdvir.R
+
+
++ Various .tex files are for generating various .dvi files using 
+  various TeX engines.

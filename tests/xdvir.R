@@ -13,24 +13,38 @@ library(grid)
 
 ## Source source code
 src <- file.path("../R",
-                 c("dvi.R", "vf.R", "read.R", 
-                   "state.R", "convert.R", "font.R", "metric.R",
-                   "ttx.R", "font-api.R",
-                   "engine.R", "luatex.R", "uptex.R",
-                   "ops.R",
-                   "print.R",
-                   "adobe.R", "glyph.R", "grob.R",
-                   "grid.R"))
+                 c(
+                     ## Global state
+                     "state.R",
+                     ## System dependencies
+                     "tex.R", "ttx.R", "fontconfig.R",
+                     ## Read DVI 
+                     "dvi.R", "vf.R", "read.R",
+                     ## Converting TeX to mm
+                     "convert.R",
+                     ## Tracking bbox
+                     "metric.R",
+                     ## Fonts
+                     "adobe.R", "font.R", "font-api.R",
+                     ## TeX engines
+                     "engine.R", "luatex.R", "uptex.R",
+                     ## Processing DVI files
+                     "ops.R",
+                     "print.R",
+                     ## Generating grobs
+                     "glyph.R", "grob.R", "grid.R"))
+
 for (i in src) source(i)
 
+initTeX()
 initTTX()
-initUpTeX()
+initFC()
 
 ## LuaLaTeX
 ## (fontdef description more detailed)
 ## system("lualatex --output-format=dvi test.tex; mv test.dvi test-lualatex.dvi")
 luadvi <- readDVI("test-lualatex.dvi")
-luadvigrob <- dviGrob(luadvi)
+luadvigrob <- dviGrob(luadvi, engine=lualatexEngine)
 
 ## upTeX
 ## (op255)

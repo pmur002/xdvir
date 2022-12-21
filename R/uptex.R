@@ -1,14 +1,5 @@
 
 initUpTeX <- function() {
-    kpsewhich <- Sys.which("kpsewhich")
-    if (nchar(kpsewhich) == 0)
-        stop("Failed to find kpsewhich; please install TeX")
-    fcmatch <- Sys.which("fc-match")
-    if (nchar(fcmatch) == 0)
-        stop("Failed to find fc-match; please install fontconfig")
-    ## Set font mappings
-    set("pdftexMap", readLines(system("kpsewhich pdftex.map", intern=TRUE)))
-    set("kanjixMap", readLines(system("kpsewhich kanjix.map", intern=TRUE)))
 }
 
 ################################################################################
