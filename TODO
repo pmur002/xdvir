@@ -1,0 +1,50 @@
+
++ Work on font-api.R to make it independent of TTX implementation
+  (e.g., does 'systemfonts' refer to glyphs by name or by index?
+         what do other libraries do?)
+
+  This impacts on luatex.R and uptex.R - need to shift that conversion
+  of UNICODE to glyph names into TTX implementation
+
++ Implement 'set<i>' ops (not just set_char ops)
+  Implement 'put<i>' ops 
+  Implement 'rule' ops 
+
++ Allow for name length > 1 in ttxGlyphWidth() et al
+  (see ttx.R in "glyphs" branch of 'dvir')
+
++ Allow for different fontsize and cex in ttxGlyphWidth() et al ?
+
++ Bbox for DVI output
+
++ Add support for non-text (e.g. rules)
+  
+  In theory this should break text into multiple glyphGrobs()
+  (in order to preserve drawing order).
+  How does alignment/justification work then?  
+  Single bbox for all glyph grobs?
+  Apply same anchors to all glyphGrobs?
+
++ Metric information for glyph grobs.
+  NOTE that it is not necessarily true that the whole TeX input
+       produces a single glyph grob! 
+       (e.g., there may be hrules interspersed)
+
++ Add .pfb (Type 1) font support to upDefineFont() 
+  (will only work for pdf() device ?)
+
++ Add support for case where font mapping IS found in mapFontName() (uptex.R)
+
++ Add support for non-japanese characters in upGetGlyph()
+  (anything other than set2 japanese characters actually)
+
++ Add basic latexEngine (and Type 1 fonts generally)
+  Maybe fall back to textGrob() implementation in these cases?!
+
++ Virtual font handling should be able to handle case where virtual
+  font maps to MULTIPLE real fonts !!!
+
++ Add specials support
+  + colour
+  + preview
+  + tikz
