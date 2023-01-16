@@ -8,33 +8,35 @@ dviGlyphInfo <- function(x, engine) {
                     top=fromTeX(get("top")),
                     bottom=fromTeX(get("bottom")),
                     baseline=fromTeX(get("baseline")))
-    width <- abs(metrics$right - metrics$left)
-    height <- abs(metrics$top - metrics$bottom)
-    right <- convertX(unit(width, "mm"), "bigpts", valueOnly=TRUE)
-    top <- convertHeight(unit(height, "mm"), "bigpts", valueOnly=TRUE)
-    if (is.finite(metrics$baseline)) {
-        vAnchor <- glyphAnchor(c(0, top, top/2,
-                                 convertHeight(unit(metrics$baseline, "mm"),
+    left <- convertX(unit(fromTeX(get("left")), "mm"), "bigpts",
+                     valueOnly=TRUE)
+    right <- convertX(unit(fromTeX(get("right")), "mm"), "bigpts",
+                      valueOnly=TRUE)
+    bottom <- convertY(unit(fromTeX(get("bottom")), "mm"), "bigpts",
+                       valueOnly=TRUE)
+    top <- convertY(unit(fromTeX(get("top")), "mm"), "bigpts",
+                    valueOnly=TRUE)
+    if (is.finite(get("baseline"))) {
+        vAnchor <- glyphAnchor(c(bottom, top, (bottom + top)/2,
+                                 convertY(unit(fromTeX(get("baseline")), "mm"),
                                                "bigpts", valueOnly=TRUE)),
                                label=c("bottom", "top", "centre", "baseline"))
     } else {
-        vAnchor <- glyphAnchor(c(0, top, top/2),
+        vAnchor <- glyphAnchor(c(bottom, top, (bottom + top)/2),
                                label=c("bottom", "top", "centre"))
     }
     glyphInfo(glyphs$index,
               convertX(unit(glyphs$x, "mm"), "bigpts", valueOnly=TRUE),
-              convertY(unit(height - glyphs$y, "mm"), "bigpts", valueOnly=TRUE),
+              convertY(unit(glyphs$y, "mm"), "bigpts", valueOnly=TRUE),
               glyphs$family,
               glyphs$weight,
               glyphs$style,
               glyphs$size,
               glyphs$filename,
               glyphs$fontindex,
-              glyphWidth(convertWidth(unit(width, "mm"),
-                                      "bigpts", valueOnly=TRUE)),
-              glyphHeight(convertHeight(unit(height, "mm"),
-                                        "bigpts", valueOnly=TRUE)),
-              hAnchor=glyphAnchor(c(0, right, right/2),
+              glyphWidth(right - left),
+              glyphHeight(bottom - top),
+              hAnchor=glyphAnchor(c(left, right, (left + right)/2),
                                   label=c("left", "right", "centre")),
               vAnchor=vAnchor,
               glyphs$colour)

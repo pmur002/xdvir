@@ -30,18 +30,18 @@ setChar <- function(raw) {
     bbox <- engine$glyphMetrics(glyphInfo, font)
     if (dir == 0) {
         width <- engine$glyphWidth(glyphInfo, font)
-        set("h", get("h") + width[1])
         updateHoriz(h + width[2]) ## left
         updateHoriz(h + width[2] + (bbox[2] - bbox[1])) ## right
         updateVert(v - bbox[3]) ## bottom
         updateVert(v - bbox[4]) ## top
+        set("h", h + width[1])
     } else {
         height <- engine$glyphHeight(glyphInfo, font)
-        set("v", get("v") + height[1])
         updateHoriz(h - (bbox[2] - bbox[1])/2) ## left
         updateHoriz(h + (bbox[2] - bbox[1])/2) ## right
         updateVert(v - bbox[3]) ## bottom
         updateVert(v - bbox[4]) ## top
+        set("v", v + height[1])
     }
 }
 

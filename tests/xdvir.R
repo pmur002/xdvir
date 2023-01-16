@@ -50,9 +50,11 @@ luadvigrob <- dviGrob(luadvi, engine=lualatexEngine)
 ## (op255)
 ## system("uplatex uptest.tex; mv uptest.dvi uptest-uplatex.dvi")
 updvi <- readDVI("uptest-uplatex.dvi")
-updvigrob <- dviGrob(updvi, engine=uplatexEngine, y=0)
+updvigrob <- dviGrob(updvi, engine=uplatexEngine)
 
 grid.newpage()
+grid.segments(0, .5, 1, .5, gp=gpar(col="grey"))
+grid.segments(.5, 0, .5, 1, gp=gpar(col="grey"))
 grid.draw(luadvigrob)
 grid.draw(updvigrob)
 
