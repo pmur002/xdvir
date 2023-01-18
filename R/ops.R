@@ -21,9 +21,7 @@ setChar <- function(raw) {
     engine <- get("engine")
     ## Different engines specify glyphs in different ways
     glyphInfo <- engine$getGlyph(raw, font)
-    glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index,
-                   font$fontdef$family, font$fontdef$weight, font$fontdef$style,
-                   font$size, font$fontdef$file, font$fontdef$index)
+    glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size)
     addGlyph(glyph)
     ## Update bbox and location after glyph
     dir <- get("dir")

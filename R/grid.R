@@ -25,15 +25,19 @@ dviGlyphInfo <- function(x, engine) {
         vAnchor <- glyphAnchor(c(bottom, top, (bottom + top)/2),
                                label=c("bottom", "top", "centre"))
     }
+    fontMap <- unique(glyphs$fontindex)
+    fontList <- lapply(get("fonts")[fontMap],
+                       function(x) {
+                           def <- x$fontdef
+                           glyphFont(def$file, def$index,
+                                     def$family, def$weight, def$style)
+                       })
     glyphInfo(glyphs$index,
               convertX(unit(glyphs$x, "mm"), "bigpts", valueOnly=TRUE),
               convertY(unit(glyphs$y, "mm"), "bigpts", valueOnly=TRUE),
-              glyphs$family,
-              glyphs$weight,
-              glyphs$style,
+              match(glyphs$fontindex, fontMap), ## font
               glyphs$size,
-              glyphs$filename,
-              glyphs$fontindex,
+              do.call(glyphFontList, fontList),
               glyphWidth(right - left),
               glyphHeight(bottom - top),
               hAnchor=glyphAnchor(c(left, right, (left + right)/2),
