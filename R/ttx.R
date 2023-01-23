@@ -67,7 +67,8 @@ getTable <- function(table, fontfile, suffix, replace=table) {
     ttxfile <- gsub(paste0("[.]", suffix, "$"),
                     paste0("-", replace, ".ttx"), fontfile)
     if (!file.exists(ttxfile)) {
-        system(paste0("ttx -t ", table, " -o ", ttxfile, " ", fontfile))
+        ## -i for speed and size
+        system(paste0("ttx -i -t ", table, " -o ", ttxfile, " ", fontfile))
     }
     getTTX(ttxfile)
 }
