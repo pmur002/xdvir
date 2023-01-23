@@ -39,7 +39,7 @@ setChar <- function(raw) {
         updateHoriz(h + (bbox[2] - bbox[1])/2) ## right
         updateVert(v - bbox[3]) ## bottom
         updateVert(v - bbox[4]) ## top
-        set("v", v + height[1])
+        set("v", v - height[1])
     }
 }
 
