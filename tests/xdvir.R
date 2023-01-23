@@ -58,6 +58,12 @@ grid.segments(.5, 0, .5, 1, gp=gpar(col="grey"))
 grid.draw(luadvigrob)
 grid.draw(updvigrob)
 
+## DEBUG
+grid.rect(width=unit(luadvigrob$glyphInfo$width["width"], "bigpts"),
+          height=unit(luadvigrob$glyphInfo$height["height"], "bigpts"))
+grid.rect(width=unit(updvigrob$glyphInfo$width["width"], "bigpts"),
+          height=unit(updvigrob$glyphInfo$height["height"], "bigpts"))
+          
 ## XeTeX
 ## (op252, op253, op254 [and font def specifies font file])
 ## system("xelatex --no-pdf test.tex; mv test.xdv test-xelatex.xdv")
