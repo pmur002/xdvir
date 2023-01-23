@@ -53,16 +53,17 @@ updvi <- readDVI("uptest-uplatex.dvi")
 updvigrob <- dviGrob(updvi, engine=uplatexEngine)
 
 grid.newpage()
-grid.segments(0, .5, 1, .5, gp=gpar(col="grey"))
-grid.segments(.5, 0, .5, 1, gp=gpar(col="grey"))
-grid.draw(luadvigrob)
-grid.draw(updvigrob)
-
 ## DEBUG
 grid.rect(width=unit(luadvigrob$glyphInfo$width["width"], "bigpts"),
           height=unit(luadvigrob$glyphInfo$height["height"], "bigpts"))
 grid.rect(width=unit(updvigrob$glyphInfo$width["width"], "bigpts"),
           height=unit(updvigrob$glyphInfo$height["height"], "bigpts"))
+grid.segments(0, .5, 1, .5, gp=gpar(col="grey"))
+grid.segments(.5, 0, .5, 1, gp=gpar(col="grey"))
+## Text
+grid.draw(luadvigrob)
+grid.draw(updvigrob)
+
           
 ## XeTeX
 ## (op252, op253, op254 [and font def specifies font file])
