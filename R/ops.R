@@ -28,18 +28,20 @@ setChar <- function(raw) {
     bbox <- engine$glyphMetrics(glyphInfo, font)
     if (dir == 0) {
         width <- engine$glyphWidth(glyphInfo, font)
-        updateHoriz(h + width[2]) ## left
-        updateHoriz(h + width[2] + (bbox[2] - bbox[1])) ## right
-        updateVert(v - bbox[3]) ## bottom
-        updateVert(v - bbox[4]) ## top
+        updateBBoxHoriz(h + bbox[1]) ## left
+        updateBBoxHoriz(h + bbox[2]) ## right
+        updateBBoxVert(v - bbox[3]) ## bottom
+        updateBBoxVert(v - bbox[4]) ## top
         set("h", h + width[1])
+        updateTextRight(h + width[1])
     } else {
         height <- engine$glyphHeight(glyphInfo, font)
-        updateHoriz(h - (bbox[2] - bbox[1])/2) ## left
-        updateHoriz(h + (bbox[2] - bbox[1])/2) ## right
-        updateVert(v - bbox[3]) ## bottom
-        updateVert(v - bbox[4]) ## top
-        set("v", v - height[1])
+        updateBBoxHoriz(h + bbox[1]) ## left
+        updateBBoxHoriz(h + bbox[2]) ## right
+        updateBBoxVert(v - bbox[3]) ## bottom
+        updateBBoxVert(v - bbox[4]) ## top
+        set("v", v + height[1])
+        updateTextRight(h + bbox[2])
     }
 }
 
@@ -87,6 +89,8 @@ op_bop <- function(op) {
     set("x", 0)
     set("y", 0)
     set("z", 0)
+    ## Init text right
+    set("textright", -Inf)
     ## Init bbox
     set("top", Inf)
     set("bottom", -Inf)

@@ -1,5 +1,16 @@
 
-updateHoriz <- function(x) {
+## Maintain text left/right
+
+updateTextRight <- function(x) {
+    right <- get("textright")
+    if (!is.finite(right) || x > right) {
+        set("textright", x)
+    }
+}
+
+## Maintain "ink" bbox
+
+updateBBoxHoriz <- function(x) {
     right <- get("right")
     if (!is.finite(right) || x > right) {
         set("right", x)
@@ -10,7 +21,7 @@ updateHoriz <- function(x) {
     }
 }
 
-updateVert <- function(x) {
+updateBBoxVert <- function(x) {
     top <- get("top")
     if (!is.finite(top) || x < top) {
         set("top", x)

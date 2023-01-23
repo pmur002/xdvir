@@ -8,18 +8,24 @@ dviGlyphInfo <- function(x, engine) {
                     top=fromTeX(get("top")),
                     bottom=fromTeX(get("bottom")),
                     baseline=fromTeX(get("baseline")))
+    ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
+    gx <- convertX(unit(glyphs$x, "mm"), "bigpts", valueOnly=TRUE)
+    gy <- convertY(-unit(glyphs$y, "mm"), "bigpts", valueOnly=TRUE)
+    textleft <- min(gx)
+    textright <- convertX(unit(fromTeX(get("textright")), "mm"), "bigpts",
+                          valueOnly=TRUE)
     left <- convertX(unit(fromTeX(get("left")), "mm"), "bigpts",
                      valueOnly=TRUE)
     right <- convertX(unit(fromTeX(get("right")), "mm"), "bigpts",
                       valueOnly=TRUE)
-    bottom <- convertY(unit(fromTeX(get("bottom")), "mm"), "bigpts",
+    bottom <- convertY(unit(-fromTeX(get("bottom")), "mm"), "bigpts",
                        valueOnly=TRUE)
-    top <- convertY(unit(fromTeX(get("top")), "mm"), "bigpts",
+    top <- convertY(unit(-fromTeX(get("top")), "mm"), "bigpts",
                     valueOnly=TRUE)
     if (is.finite(get("baseline"))) {
         vAnchor <- glyphAnchor(c(bottom, top, (bottom + top)/2,
                                  convertY(unit(fromTeX(get("baseline")), "mm"),
-                                               "bigpts", valueOnly=TRUE)),
+                                          "bigpts", valueOnly=TRUE)),
                                label=c("bottom", "top", "centre", "baseline"))
     } else {
         vAnchor <- glyphAnchor(c(bottom, top, (bottom + top)/2),
@@ -32,16 +38,18 @@ dviGlyphInfo <- function(x, engine) {
                            glyphFont(def$file, def$index,
                                      def$family, def$weight, def$style)
                        })
-    glyphInfo(glyphs$index,
-              convertX(unit(glyphs$x, "mm"), "bigpts", valueOnly=TRUE),
-              convertY(unit(glyphs$y, "mm"), "bigpts", valueOnly=TRUE),
+    glyphInfo(glyphs$index, gx, gy,
               match(glyphs$fontindex, fontMap), ## font
               glyphs$size,
               do.call(glyphFontList, fontList),
               glyphWidth(right - left),
               glyphHeight(bottom - top),
-              hAnchor=glyphAnchor(c(left, right, (left + right)/2),
-                                  label=c("left", "right", "centre")),
+              hAnchor=glyphAnchor(c(textleft, textright,
+                                    (textleft + textright)/2,
+                                    left, right, (left + right)/2),
+                                  label=c("left", "right",
+                                          "centre",
+                                          "bbleft", "bbright", "bbcentre")),
               vAnchor=vAnchor,
               glyphs$colour)
 }
