@@ -34,16 +34,20 @@ getTTX <- function(ttxFile) {
 }
 
 ################################################################################
-## Take copy of font file and place it in tmp directory for taking apart
+## Take copy of font file and place it in cache directory for taking apart
 ## (and get font name and suffix)
 
+## User can set option for font directory that is "permanent"
+## or a temporary one will be created per R session.
 ttxFontDir <- function() {
-    fontDir <- "TTXfonts"
-    tmpFontDir <- file.path(tempdir(), fontDir)
-    if (!dir.exists(tmpFontDir)) {
-        dir.create(tmpFontDir)
-    }
-    tmpFontDir
+    fontDir <- getOption("xdvir.ttxCacheDir")
+    if (is.null(fontDir) || !dir.exists(fontDir)) {
+        fontDir <- file.path(tempdir(), "TTXfonts")
+        if (!dir.exists(fontDir)) {
+            dir.create(fontDir)
+        }
+    } 
+    fontDir
 }
 
 ttxFontFile <- function(fontpath) {

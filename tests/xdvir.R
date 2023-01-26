@@ -38,6 +38,7 @@ for (i in src) source(i)
 
 initTeX()
 initTTX()
+options(xdvir.ttxCacheDir="/scratch/TTXfonts/")
 initFC()
 
 ## LuaLaTeX
