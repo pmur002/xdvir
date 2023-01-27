@@ -163,29 +163,13 @@ luaGetGlyph <- function(raw, font) {
     list(name=glyphName, index=index, char=char)
 }
 
-luaGlyphWidth <- function(glyph, font) {
-    getGlyphWidth(glyph$name, font$fontdef$file)
-}
-
-luaGlyphHeight <- function(glyph, font) {
-    getGlyphHeight(glyph$name, font$fontdef$file)
-}
-
-luaGlyphMetrics <- function(glyph, font, dir) {
-    getGlyphMetrics(glyph$name, font$fontdef$file, dir)
-}
-
 ################################################################################
 ## User interface
 
 luatexEngine <- function(engine="lualatex", options="--output-format=dvi",
                          fontDef=luaDefineFont,
-                         getGlyph=luaGetGlyph,
-                         glyphWidth=luaGlyphWidth,
-                         glyphHeight=luaGlyphHeight,
-                         glyphMetrics=luaGlyphMetrics) {
-    TeXengine(engine, options, fontDef, getGlyph,
-              glyphWidth, glyphHeight, glyphMetrics)
+                         getGlyph=luaGetGlyph) {
+    TeXengine(engine, options, fontDef, getGlyph)
 }
 
 lualatexEngine <- luatexEngine()

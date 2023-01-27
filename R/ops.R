@@ -25,9 +25,9 @@ setChar <- function(raw) {
     addGlyph(glyph)
     ## Update bbox and location after glyph
     dir <- get("dir")
-    bbox <- engine$glyphMetrics(glyphInfo, font, dir)
+    bbox <- getGlyphMetrics(glyphInfo$name, font$fontdef$file, dir)
     if (dir == 0) {
-        width <- engine$glyphWidth(glyphInfo, font)
+        width <- getGlyphWidth(glyphInfo$name, font$fontdef$file)
         updateBBoxHoriz(h + bbox[1]) ## left
         updateBBoxHoriz(h + bbox[2]) ## right
         updateBBoxVert(v - bbox[3]) ## bottom
@@ -35,7 +35,7 @@ setChar <- function(raw) {
         set("h", h + width[1])
         updateTextRight(h + width[1])
     } else {
-        height <- engine$glyphHeight(glyphInfo, font)
+        height <- getGlyphHeight(glyphInfo$name, font$fontdef$file)
         updateBBoxHoriz(h + bbox[1]) ## left
         updateBBoxHoriz(h + bbox[2]) ## right
         updateBBoxVert(v - bbox[3]) ## bottom

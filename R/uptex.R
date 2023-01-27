@@ -133,29 +133,13 @@ upGetGlyph <- function(raw, font) {
     list(name=glyphName, index=index, char=char)
 }
 
-upGlyphWidth <- function(glyph, font) {
-    getGlyphWidth(glyph$name, font$fontdef$file)
-}
-
-upGlyphHeight <- function(glyph, font) {
-    getGlyphHeight(glyph$name, font$fontdef$file)
-}
-
-upGlyphMetrics <- function(glyph, font, dir) {
-    getGlyphMetrics(glyph$name, font$fontdef$file, dir)
-}
-
 ################################################################################
 ## User interface
 
 uptexEngine <- function(engine="uplatex", 
                         fontDef=upDefineFont,
-                        getGlyph=upGetGlyph,
-                        glyphWidth=upGlyphWidth,
-                        glyphHeight=upGlyphHeight,
-                        glyphMetrics=upGlyphMetrics) {
-    TeXengine(engine, options, fontDef, getGlyph,
-              glyphWidth, glyphHeight, glyphMetrics)
+                        getGlyph=upGetGlyph) {
+    TeXengine(engine, options, fontDef, getGlyph)
 }
 
 uplatexEngine <- uptexEngine()
