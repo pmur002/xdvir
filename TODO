@@ -6,6 +6,24 @@
   This impacts on luatex.R and uptex.R - need to shift that conversion
   of UNICODE to glyph names into TTX implementation
 
++ NOTE that systemfonts::match_font() basically does ...
+
+  fc-match :family=<family>,weight=<bold?700:400>,slant=<italic>
+
+  ... so it is NOT flexible enough (ditto C interface)
+  
+  => we still need to use 'fc-match' (and rely on 'fontconfig' install)
+     directly
+
+  => need a solution for Windows!!!
+
++ NOTE that systemfonts::glyph_info() is almost useful,
+  BUT it only allows 'glyphs' to be given as character values
+  NOT as integer glyph ids (ditto C interface)
+  (SO no use after all)
+
+  Could feed my needs into future development of 'systemfonts' ?
+
 + Implement 'set<i>' ops (not just set_char ops)
   Implement 'put<i>' ops 
   Implement 'rule' ops 
