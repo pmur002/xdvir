@@ -38,6 +38,6 @@ getGlyphHeight <- function(name, file) {
     ttxGlyphHeight(name, file)
 }
 
-getGlyphMetrics <- function(name, file) {
-    ttxGlyphMetrics(name, file)
+getGlyphMetrics <- function(name, file, dir) {
+    ttxGlyphMetrics(name, file, dir)
 }

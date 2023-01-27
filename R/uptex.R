@@ -141,8 +141,8 @@ upGlyphHeight <- function(glyph, font) {
     getGlyphHeight(glyph$name, font$fontdef$file)
 }
 
-upGlyphMetrics <- function(glyph, font) {
-    getGlyphMetrics(glyph$name, font$fontdef$file)
+upGlyphMetrics <- function(glyph, font, dir) {
+    getGlyphMetrics(glyph$name, font$fontdef$file, dir)
 }
 
 ################################################################################

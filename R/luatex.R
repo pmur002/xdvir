@@ -171,8 +171,8 @@ luaGlyphHeight <- function(glyph, font) {
     getGlyphHeight(glyph$name, font$fontdef$file)
 }
 
-luaGlyphMetrics <- function(glyph, font) {
-    getGlyphMetrics(glyph$name, font$fontdef$file)
+luaGlyphMetrics <- function(glyph, font, dir) {
+    getGlyphMetrics(glyph$name, font$fontdef$file, dir)
 }
 
 ################################################################################

@@ -178,7 +178,7 @@ ttxGlyphNameFromUNICODE <- function(code, file) {
     }   
 }
 
-ttxGlyphWidth <- function(name, file) {
+ttxGlyphWidth <- function(name, file, transform=TRUE) {
     font <- ttxFontFile(file)
     headTTX <- getHeadTable(font$file, font$suffix)
     unitsPerEm <- as.numeric(xml_text(xml_find_first(headTTX,
@@ -193,15 +193,20 @@ ttxGlyphWidth <- function(name, file) {
     }
     width <- as.numeric(c(xml_attr(glyph, "width"),
                           xml_attr(glyph, "lsb")))
-    ## round() to get whole number metrix (at 1000 scale)
-    ## floor() to match what PDF_StrWidthUTF8() does
-    fontsize <- 10
-    cex <- 1
-    widthPts <- floor(fontsize + .5)*cex*(round(width/(unitsPerEm/1000)))/1000
-    xtoTeX(unit(widthPts, "bigpts"))
+    if (transform) {
+        ## round() to get whole number metrix (at 1000 scale)
+        ## floor() to match what PDF_StrWidthUTF8() does
+        fontsize <- 10
+        cex <- 1
+        widthPts <- floor(fontsize + .5)*cex*
+            (round(width/(unitsPerEm/1000)))/1000
+        xtoTeX(unit(widthPts, "bigpts"))
+    } else {
+        width
+    }
 }
 
-ttxGlyphHeight <- function(name, file) {
+ttxGlyphHeight <- function(name, file, transform=TRUE) {
     font <- ttxFontFile(file)
     headTTX <- getHeadTable(font$file, font$suffix)
     unitsPerEm <- as.numeric(xml_text(xml_find_first(headTTX,
@@ -216,15 +221,20 @@ ttxGlyphHeight <- function(name, file) {
     }
     height <- as.numeric(c(xml_attr(glyph, "height"),
                            xml_attr(glyph, "tsb")))
-    ## round() to get whole number metrix (at 1000 scale)
-    ## floor() to match what PDF_StrWidthUTF8() does
-    fontsize <- 10
-    cex <- 1
-    heightPts <- floor(fontsize + .5)*cex*(round(height/(unitsPerEm/1000)))/1000
-    xtoTeX(unit(heightPts, "bigpts"))
+    if (transform) {
+        ## round() to get whole number metrix (at 1000 scale)
+        ## floor() to match what PDF_StrWidthUTF8() does
+        fontsize <- 10
+        cex <- 1
+        heightPts <- floor(fontsize + .5)*cex*
+            (round(height/(unitsPerEm/1000)))/1000
+        xtoTeX(unit(heightPts, "bigpts"))
+    } else {
+        height
+    }
 }
 
-ttxGlyphMetrics <- function(name, file) {
+ttxGlyphMetrics <- function(name, file, dir) {
     font <- ttxFontFile(file)
     head <- getHeadTable(font$file, font$suffix)
     unitsPerEm <- as.numeric(xml_text(xml_find_first(head,
@@ -232,19 +242,32 @@ ttxGlyphMetrics <- function(name, file) {
     glyf <- getGlyfTable(font$file, font$suffix)
     ## Try more than one name (if there are multiple options)
     glyph <- NULL
-    while (!length(glyph) && length(name)) {
-        glyphPath <- paste0("//TTGlyph[@name = '", name[1], "']")
+    tmpname <- name
+    while (!length(glyph) && length(tmpname)) {
+        glyphPath <- paste0("//TTGlyph[@name = '", tmpname[1], "']")
         glyph <- xml_find_first(glyf, glyphPath)
-        name <- name[-1]
+        tmpname <- tmpname[-1]
     }
     if (is.na(glyph)) {
         ## e.g., no 'glyf' table, e.g., CFF font
-        ## Just use font metrics
+        ## Use 'hmtx' for horizontal metrics if possible
+        ## Use 'vmtx' for vertical metrics if possible
+        ## Otherwise just use font metrics
+        if (dir == 0) {
+            width <- ttxGlyphWidth(name, file, transform=FALSE)
+            xmin <- width[2]
+            xmax <- width[1] - width[2]
+            ymin <- xml_attr(xml_find_first(head, "//yMin"), "value")
+            ymax <- xml_attr(xml_find_first(head, "//yMax"), "value")
+        } else {
+            xmin <- xml_attr(xml_find_first(head, "//xMin"), "value")
+            xmax <- xml_attr(xml_find_first(head, "//xMax"), "value")
+            height <- ttxGlyphHeight(name, file, transform=FALSE)
+            ymin <- height[2]
+            ymax <- height[1] - height[2]
+        }
         warning("Glyph metric info not available;  using font metric info")
-        bbox <- as.numeric(c(xml_attr(xml_find_first(head, "//xMin"), "value"),
-                             xml_attr(xml_find_first(head, "//xMax"), "value"),
-                             xml_attr(xml_find_first(head, "//yMin"), "value"),
-                             xml_attr(xml_find_first(head, "//yMax"), "value")))
+        bbox <- as.numeric(c(xmin, xmax, ymin, ymax))
     } else {
         bbox <- as.numeric(c(xml_attr(glyph, "xMin"),
                              xml_attr(glyph, "xMax"),

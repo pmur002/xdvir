@@ -25,7 +25,7 @@ setChar <- function(raw) {
     addGlyph(glyph)
     ## Update bbox and location after glyph
     dir <- get("dir")
-    bbox <- engine$glyphMetrics(glyphInfo, font)
+    bbox <- engine$glyphMetrics(glyphInfo, font, dir)
     if (dir == 0) {
         width <- engine$glyphWidth(glyphInfo, font)
         updateBBoxHoriz(h + bbox[1]) ## left
