@@ -17,10 +17,23 @@
 
   => need a solution for Windows!!!
 
+  Install fontconfig on windows ... ?
+
+  https://lists.freedesktop.org/archives/fontconfig/2007-October/002686.html
+
++ How about a user option to specify particular mappings like
+
+  "xdvir.uptex.ryumin-substitute"
+
+  Ryumin -> ipamp.ttf ?
+
 + NOTE that systemfonts::glyph_info() is almost useful,
   BUT it only allows 'glyphs' to be given as character values
   NOT as integer glyph ids (ditto C interface)
   (SO no use after all)
+
+  BUT maybe when an engine generates DVI with UNICODE chars, could use
+  'systemfonts' to loop up glyph metrics ?
 
   Could feed my needs into future development of 'systemfonts' ?
 
