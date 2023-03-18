@@ -18,7 +18,7 @@ set <- function(name, value) {
 
 ## Default state
 set("scale", 1)
-set("fonts", vector("list", 255))
+## Extra slot for dummy font
+set("fonts", vector("list", 256))
 set("glyphs", list())
-set("glyphNum", 1)
 set("dir", 0)

@@ -28,6 +28,8 @@ src <- file.path("../R",
                      "adobe.R", "font.R", "font-api.R",
                      ## TeX engines
                      "engine.R", "luatex.R", "uptex.R",
+                     ## Generating objects from DVI ops
+                     "obj.R",
                      ## Processing DVI files
                      "ops.R",
                      "print.R",
@@ -40,6 +42,7 @@ initTeX()
 initTTX()
 options(xdvir.ttxCacheDir="/scratch/TTXfonts/")
 initFC()
+initDVIobjs()
 
 ## LuaLaTeX
 ## (fontdef description more detailed)

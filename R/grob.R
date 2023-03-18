@@ -1,4 +1,96 @@
 
+buildGrob <- function(obj, ...) {
+    UseMethod("buildGrob")
+}
+
+buildGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ...) {
+    metrics <- list(left=fromTeX(get("left")),
+                    right=fromTeX(get("right")),
+                    top=fromTeX(get("top")),
+                    bottom=fromTeX(get("bottom")),
+                    baseline=fromTeX(get("baseline")))
+    ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
+    gx <- convertX(unit(obj$x, "mm"), "bigpts", valueOnly=TRUE)
+    gy <- convertY(-unit(obj$y, "mm"), "bigpts", valueOnly=TRUE)
+    textleft <- convertX(unit(fromTeX(get("textleft")), "mm"), "bigpts",
+                         valueOnly=TRUE)
+    textright <- convertX(unit(fromTeX(get("textright")), "mm"), "bigpts",
+                          valueOnly=TRUE)
+    left <- convertX(unit(fromTeX(get("left")), "mm"), "bigpts",
+                     valueOnly=TRUE)
+    right <- convertX(unit(fromTeX(get("right")), "mm"), "bigpts",
+                      valueOnly=TRUE)
+    bottom <- convertY(unit(-fromTeX(get("bottom")), "mm"), "bigpts",
+                       valueOnly=TRUE)
+    top <- convertY(unit(-fromTeX(get("top")), "mm"), "bigpts",
+                    valueOnly=TRUE)
+    if (is.finite(get("baseline"))) {
+        vAnchor <- glyphAnchor(c(bottom, top, (bottom + top)/2,
+                                 convertY(unit(fromTeX(get("baseline")),
+                                               "mm"),
+                                          "bigpts", valueOnly=TRUE)),
+                               label=c("bottom", "top", "centre",
+                                       "baseline"))
+    } else {
+        vAnchor <- glyphAnchor(c(bottom, top, (bottom + top)/2),
+                               label=c("bottom", "top", "centre"))
+    }
+    hAnchor <- glyphAnchor(c(textleft, textright,
+                             (textleft + textright)/2,
+                             left, right, (left + right)/2),
+                           label=c("left", "right", "centre",
+                                   "bbleft", "bbright", "bbcentre"))
+    fontMap <- unique(obj$fontindex)
+    fontList <- lapply(get("fonts")[fontMap],
+                       function(x) {
+                           def <- x$fontdef
+                           glyphFont(def$file, def$index,
+                                     def$family, def$weight, def$style)
+                       })
+    info <- glyphInfo(obj$index, gx, gy,
+                      match(obj$fontindex, fontMap), ## font
+                      obj$size,
+                      do.call(glyphFontList, fontList),
+                      glyphWidth(right - left),
+                      glyphHeight(bottom - top),
+                      hAnchor=hAnchor,
+                      vAnchor=vAnchor,
+                      obj$colour)
+    glyphGrob(info, x, y, hjust=hjust, vjust=vjust)
+}
+
+buildGrob.XDVIRruleObj <- function(obj, xoffset, yoffset, ...) {
+    ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
+    x <- convertX(unit(fromTeX(obj$x), "mm"), "bigpts", valueOnly=TRUE) +
+        convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
+    y <- convertY(-unit(fromTeX(obj$y), "mm"), "bigpts", valueOnly=TRUE) +
+        convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
+    width <- convertWidth(unit(fromTeX(obj$w), "mm"), "bigpts", valueOnly=TRUE)
+    height <- convertHeight(unit(fromTeX(obj$h), "mm"), "bigpts",
+                            valueOnly=TRUE)
+    ## Below lwd=1, draw a line
+    if (width < 25.4/72) {
+        segmentsGrob(x + width/2,
+                     y,
+                     x + width/2,
+                     y - height,
+                     default.units="bigpts",
+                     gp=gpar(lwd=72*width/25.4, lineend="butt"))
+    } else if (height < 25.4/72) {
+        segmentsGrob(x,
+                     y + height/2,
+                     x + width,
+                     y - height/2,
+                     default.units="bigpts",
+                     gp=gpar(lwd=72*height/25.4, lineend="butt"))
+    } else {
+        rectGrob(x, y, width, -height, default.units="bigpts",
+                 just=c("left", "bottom"),
+                 gp=gpar(col=NA, fill="black"))
+    }
+}
+
+################################################################################
 ## Sweep through operations in DVI file and create grobs from operations
 
 ## Default is to do nothing
@@ -44,6 +136,7 @@ grob_op_139 <- op_bop
 
 ## 140
 ## eop
+grob_op_140 <- op_eop
 
 ## 141
 ## push

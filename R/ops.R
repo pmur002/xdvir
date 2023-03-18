@@ -33,6 +33,7 @@ setChar <- function(raw) {
         updateBBoxVert(v - bbox[3]) ## bottom
         updateBBoxVert(v - bbox[4]) ## top
         set("h", h + width[1])
+        updateTextLeft(h)
         updateTextRight(h + width[1])
     } else {
         height <- getGlyphHeight(glyphInfo$name, font$fontdef$file)
@@ -41,6 +42,7 @@ setChar <- function(raw) {
         updateBBoxVert(v - bbox[3]) ## bottom
         updateBBoxVert(v - bbox[4]) ## top
         set("v", v + height[1])
+        updateTextLeft(h)
         updateTextRight(h + bbox[2])
     }
 }
@@ -63,7 +65,11 @@ op_set <- function(op) {
 ## 132
 ## set_rule
 op_set_rule <- function(op) {
+    a <- blockValue(op$blocks$op.opparams.a)
     b <- blockValue(op$blocks$op.opparams.b)
+    ## Need to create glyph object if there have been any glyphs prior to this
+    addGlyphObj()
+    addRuleObj(a, b)
     set("h", get("h") + b)
 }
 
@@ -89,7 +95,8 @@ op_bop <- function(op) {
     set("x", 0)
     set("y", 0)
     set("z", 0)
-    ## Init text right
+    ## Init text left/right
+    set("textleft", Inf)
     set("textright", -Inf)
     ## Init bbox
     set("top", Inf)
@@ -100,7 +107,6 @@ op_bop <- function(op) {
     set("baseline", NA)
     ## Init cumulative structures
     set("glyphs", list())
-    set("glyphNum", 1)
     ## Stack for push/pop
     set("stack", list())
     set("i", 0)
@@ -112,6 +118,10 @@ op_bop <- function(op) {
 
 ## 140
 ## eop
+op_eop <- function(op) {
+    ## Need to create glyph object if there have been any glyphs prior to this
+    addGlyphObj()
+}
 
 ## 141
 ## push

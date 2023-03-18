@@ -1,6 +1,13 @@
 
 ## Maintain text left/right
 
+updateTextLeft <- function(x) {
+    left <- get("textleft")
+    if (!is.finite(left) || x < left) {
+        set("textleft", x)
+    }
+}
+
 updateTextRight <- function(x) {
     right <- get("textright")
     if (!is.finite(right) || x > right) {

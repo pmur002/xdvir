@@ -8,9 +8,7 @@ glyph <- function(x, y, char, index, fontindex, size, colour=NA) {
 
 addGlyph <- function(glyph) {
     glyphs <- get("glyphs")
-    glyphNum <- get("glyphNum")
-    glyphs[[glyphNum]] <- glyph
+    glyphs[[length(glyphs) + 1]] <- glyph
     set("glyphs", glyphs)
-    set("glyphNum", glyphNum + 1)
 }
 
