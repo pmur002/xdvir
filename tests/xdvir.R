@@ -47,6 +47,11 @@ initFC()
 luadvi <- readDVI("test-lualatex.dvi")
 luadvigrob <- dviGrob(luadvi, engine=lualatexEngine)
 
+## NOTE the \usepackage{unicode-maths} to force TrueType math font
+## system("lualatex --output-format=dvi eqn.tex; mv eqn.dvi eqn-lualatex.dvi")
+eqndvi <- readDVI("eqn-lualatex.dvi")
+eqndvigrob <- dviGrob(eqndvi, engine=lualatexEngine)
+
 ## upTeX
 ## (op255)
 ## system("uplatex uptest.tex; mv uptest.dvi uptest-uplatex.dvi")
