@@ -41,13 +41,20 @@ findMappedFile <- function(fontname) {
     ## If name includes suffix, e.g., .ttf, just search for that font
     ## with kpsewhich
     
-    ## Otherwise, try fc-match, which WILL find a match, even if it is terrible
+    ## Otherwise, try fontMap
     if (grep("^!", fontname)) {
         ## ! in front of name indicates that font will NOT be embedded
         ## Remove that before attempting match
         fontname <- gsub("^!", "", fontname)
     }
-    system(paste0("fc-match -f %{file} ", fontname), intern=TRUE)
+    map <- get("fontMap")
+    if (fontname %in% names(map)) {
+        mappedFont <- map[fontname]
+        match_font(mappedFont)$path
+    } else {
+        ## Give up (for now)
+        stop("Font not found")
+    }
 }
 
 upGlyphName <- function(raw, fontfile) {

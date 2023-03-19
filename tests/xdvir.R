@@ -17,7 +17,7 @@ src <- file.path("../R",
                      ## Global state
                      "state.R",
                      ## System dependencies
-                     "tex.R", "ttx.R", "fontconfig.R",
+                     "tex.R", "ttx.R", 
                      ## Read DVI 
                      "dvi.R", "vf.R", "read.R",
                      ## Converting TeX to mm
@@ -41,8 +41,9 @@ for (i in src) source(i)
 initTeX()
 initTTX()
 options(xdvir.ttxCacheDir="/scratch/TTXfonts/")
-initFC()
 initDVIobjs()
+
+fontMap("Ryumin-Light"="IPAMincho", "GothicBBB-Medium"="IPAGothic")
 
 ## LuaLaTeX
 ## (fontdef description more detailed)

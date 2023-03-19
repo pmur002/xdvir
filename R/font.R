@@ -26,3 +26,26 @@ fontDef <- function(file, index,
     class(def) <- "TeXfontDef"
     def
 }
+
+## Generic font map that can be used by any engine
+
+fontMap <- function(...) {
+    args <- list(...)
+    if (length(args)) {
+        fontsToMap <- names(args)
+        if (is.null(fontsToMap) || any(nchar(fontsToMap) == 0)) {
+            stop("All arguments must be named")
+        }
+        charArgs <- lapply(args, as.character)
+        if (any(sapply(charArgs, length)) != 1) {
+            stop("All arguments must be length-one character vectors")
+        }
+        mappedFonts <- unlist(charArgs)
+        map <- get("fontMap")
+        map[fontsToMap] <- mappedFonts
+        set("fontMap", map)
+    } else {
+        ## Just return current map
+        get("fontMap")
+    }
+}
