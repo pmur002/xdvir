@@ -38,7 +38,7 @@ mapFontName <- function(fontname) {
 }
 
 findMappedFile <- function(fontname) {
-    ## If name includes suffix, e.g., .pfb, just search for that font
+    ## If name includes suffix, e.g., .ttf, just search for that font
     ## with kpsewhich
     
     ## Otherwise, try fc-match, which WILL find a match, even if it is terrible
