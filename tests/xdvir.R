@@ -4,7 +4,6 @@
 ## ALSO DEPENDENT ON
 ## kpsewhich
 ## ttx
-## fc-match
 
 library(hexView)
 library(xml2)
