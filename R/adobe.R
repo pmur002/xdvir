@@ -1,5 +1,6 @@
 
-AdobeGlyphList <- read.table("glyphlist.txt",
+AdobeGlyphList <- read.table(system.file("adobe", "glyphlist.txt",
+                                         package="xdvir"),
                              sep=";", col.names=c("name", "code"),
                              stringsAsFactors=FALSE)
 
