@@ -1,0 +1,5 @@
+
+initTeX()
+initTTX()
+initDVIobjs()
+

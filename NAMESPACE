@@ -1,0 +1,44 @@
+
+import("grid")
+import("hexView")
+importFrom("systemfonts",
+           "match_font")
+importFrom("grDevices",
+           "rgb")
+importFrom("xml2",
+           "read_xml",
+           "write_xml",
+           "xml_add_child",
+           "xml_add_sibling",
+           "xml_attr",
+           "xml_attrs",
+           "xml_children",
+           "xml_comment",
+           "xml_dtd",
+           "xml_find_all",
+           "xml_find_first",
+           "xml_name",
+           "xml_new_root",
+           "xml_replace",
+           "xml_root",
+           "xml_set_attr",
+           "xml_set_text",
+           "xml_text")
+
+export("readDVI",
+
+       "grid.dvi", "dviGrob",
+
+       "fontMap",
+       
+       "TeXengine", 
+       "luatexEngine", "lualatexEngine",
+       "uptexEngine", "uplatexEngine")
+
+S3method("print", "DVI")
+
+S3method("dviGrob", "DVI")
+
+S3method("buildGrob", "XDVIRglyphObj")
+S3method("buildGrob", "XDVIRruleObj")
+
