@@ -5,44 +5,14 @@
 ## kpsewhich
 ## ttx
 
-library(hexView)
-library(xml2)
-library(systemfonts)
-library(grid)
+library(xdvir)
 
-## Source source code
-src <- file.path("../R",
-                 c(
-                     ## Global state
-                     "state.R",
-                     ## System dependencies
-                     "tex.R", "ttx.R", 
-                     ## Read DVI 
-                     "dvi.R", "vf.R", "read.R",
-                     ## Converting TeX to mm
-                     "convert.R",
-                     ## Tracking bbox
-                     "metric.R",
-                     ## Fonts
-                     "adobe.R", "font.R", "font-api.R",
-                     ## TeX engines
-                     "engine.R", "luatex.R", "uptex.R",
-                     ## Generating objects from DVI ops
-                     "obj.R",
-                     ## Processing DVI files
-                     "ops.R",
-                     "print.R",
-                     ## Generating grobs
-                     "glyph.R", "grob.R", "grid.R"))
+user <- Sys.getenv("USERNAME")
+if (user == "pmur002")
+    options(xdvir.ttxCacheDir="/scratch/TTXfonts/")
 
-for (i in src) source(i)
-
-initTeX()
-initTTX()
-options(xdvir.ttxCacheDir="/scratch/TTXfonts/")
-initDVIobjs()
-
-fontMap("Ryumin-Light"="IPAMincho", "GothicBBB-Medium"="IPAGothic")
+if (.Platform$OS.type == "unix")
+    fontMap("Ryumin-Light"="IPAMincho", "GothicBBB-Medium"="IPAGothic")
 
 ## LuaLaTeX
 ## (fontdef description more detailed)
@@ -63,10 +33,14 @@ updvigrob <- dviGrob(updvi, engine=uplatexEngine)
 
 grid.newpage()
 ## DEBUG
-grid.rect(width=unit(luadvigrob$glyphInfo$width["width"], "bigpts"),
-          height=unit(luadvigrob$glyphInfo$height["height"], "bigpts"))
-grid.rect(width=unit(updvigrob$glyphInfo$width["width"], "bigpts"),
-          height=unit(updvigrob$glyphInfo$height["height"], "bigpts"))
+grid.rect(width=unit(luadvigrob$children[[1]]$glyphInfo$width["width"],
+                     "bigpts"),
+          height=unit(luadvigrob$children[[1]]$glyphInfo$height["height"],
+                      "bigpts"))
+grid.rect(width=unit(updvigrob$children[[1]]$glyphInfo$width["width"],
+                     "bigpts"),
+          height=unit(updvigrob$children[[1]]$glyphInfo$height["height"],
+                      "bigpts"))
 grid.segments(0, .5, 1, .5, gp=gpar(col="grey"))
 grid.segments(.5, 0, .5, 1, gp=gpar(col="grey"))
 ## Text
