@@ -154,7 +154,12 @@ op_pop <- function(op) {
 op_right <- function(op) {
     ## Update location
     b <- blockValue(op$blocks$op.opparams)
-    set("h", get("h") + b)
+    dir <- get("dir")
+    if (dir == 0) {
+        set("h", get("h") + b)
+    } else {
+        set("v", get("v") + b)
+    }
 }
 
 ## 147..151
@@ -169,7 +174,12 @@ op_w <- function(op) {
     if (!is.null(b)) {
         set("w", blockValue(b))
     }
-    set("h", get("h") + get("w"))
+    dir <- get("dir")
+    if (dir == 0) {
+        set("h", get("h") + get("w"))
+    } else {
+        set("v", get("v") + get("w"))
+    }
 }
 
 ## 152..156
@@ -184,7 +194,12 @@ op_x <- function(op) {
     if (!is.null(b)) {
         set("x", blockValue(b))
     }
-    set("h", get("h") + get("x"))
+    dir <- get("dir")
+    if (dir == 0) {
+        set("h", get("h") + get("x"))
+    } else {
+        set("v", get("v") + get("x"))
+    }
 }
 
 ## 157..160
@@ -195,7 +210,12 @@ op_x <- function(op) {
 op_down <- function(op) {
     ## Update location
     a <- blockValue(op$blocks$op.opparams)
-    set("v", get("v") + a)
+    dir <- get("dir")
+    if (dir == 0) {
+        set("v", get("v") + a)
+    } else {
+        set("h", get("h") - a)
+    }
 }
 
 ## 161..165
@@ -210,7 +230,12 @@ op_y <- function(op) {
     if (!is.null(a)) {
         set("y", blockValue(a))
     }
-    set("v", get("v") + get("y"))
+    dir <- get("dir")
+    if (dir == 0) {
+        set("v", get("v") + get("y"))
+    } else {
+        set("h", get("h") - get("y"))
+    }
 }
 
 ## 166..170
@@ -225,7 +250,12 @@ op_z <- function(op) {
     if (!is.null(a)) {
         set("z", blockValue(a))
     }
-    set("v", get("v") + get("z"))
+    dir <- get("dir")
+    if (dir == 0) {
+        set("v", get("v") + get("z"))
+    } else {
+        set("h", get("h") - get("z"))
+    }
 }
 
 ## 171..234
