@@ -1,5 +1,4 @@
 
 initTeX()
 initTTX()
-initDVIobjs()
 

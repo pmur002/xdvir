@@ -107,6 +107,7 @@ op_bop <- function(op) {
     ## Init baseline
     set("baseline", NA)
     ## Init cumulative structures
+    initDVIobjs()
     set("glyphs", list())
     ## Stack for push/pop
     set("stack", list())
