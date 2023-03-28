@@ -178,7 +178,7 @@ ttxGlyphNameFromUNICODE <- function(code, file) {
     }   
 }
 
-ttxGlyphWidth <- function(name, file, transform=TRUE) {
+ttxGlyphWidth <- function(name, file, size, transform=TRUE) {
     font <- ttxFontFile(file)
     headTTX <- getHeadTable(font$file, font$suffix)
     unitsPerEm <- as.numeric(xml_text(xml_find_first(headTTX,
@@ -196,7 +196,7 @@ ttxGlyphWidth <- function(name, file, transform=TRUE) {
     if (transform) {
         ## round() to get whole number metrix (at 1000 scale)
         ## floor() to match what PDF_StrWidthUTF8() does
-        fontsize <- 10
+        fontsize <- size
         cex <- 1
         widthPts <- floor(fontsize + .5)*cex*
             (round(width/(unitsPerEm/1000)))/1000
@@ -206,7 +206,7 @@ ttxGlyphWidth <- function(name, file, transform=TRUE) {
     }
 }
 
-ttxGlyphHeight <- function(name, file, transform=TRUE) {
+ttxGlyphHeight <- function(name, file, size, transform=TRUE) {
     font <- ttxFontFile(file)
     headTTX <- getHeadTable(font$file, font$suffix)
     unitsPerEm <- as.numeric(xml_text(xml_find_first(headTTX,
@@ -224,7 +224,7 @@ ttxGlyphHeight <- function(name, file, transform=TRUE) {
     if (transform) {
         ## round() to get whole number metrix (at 1000 scale)
         ## floor() to match what PDF_StrWidthUTF8() does
-        fontsize <- 10
+        fontsize <- size
         cex <- 1
         heightPts <- floor(fontsize + .5)*cex*
             (round(height/(unitsPerEm/1000)))/1000
@@ -234,7 +234,7 @@ ttxGlyphHeight <- function(name, file, transform=TRUE) {
     }
 }
 
-ttxGlyphMetrics <- function(name, file, dir) {
+ttxGlyphMetrics <- function(name, file, size, dir) {
     font <- ttxFontFile(file)
     head <- getHeadTable(font$file, font$suffix)
     unitsPerEm <- as.numeric(xml_text(xml_find_first(head,
@@ -277,7 +277,7 @@ ttxGlyphMetrics <- function(name, file, dir) {
     }
     ## round() to get whole number metrix (at 1000 scale)
     ## floor() to match what PDF_StrWidthUTF8() does
-    fontsize <- 10
+    fontsize <- size
     cex <- 1
     bboxPts <- floor(fontsize + .5)*cex*(round(bbox/(unitsPerEm/1000)))/1000
     xtoTeX(unit(bboxPts, "bigpts"))
