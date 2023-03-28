@@ -245,7 +245,8 @@ ttxGlyphMetrics <- function(name, file, dir) {
     tmpname <- name
     while (!length(glyph) && length(tmpname)) {
         glyphPath <- paste0("//TTGlyph[@name = '", tmpname[1], "']")
-        glyph <- xml_find_first(glyf, glyphPath)
+        ## ns=NULL to avoid repeated calls to xml2::xml_ns(glyf)
+        glyph <- xml_find_first(glyf, glyphPath, ns=NULL)
         tmpname <- tmpname[-1]
     }
     if (is.na(glyph)) {
