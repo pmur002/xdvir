@@ -162,7 +162,7 @@ ttxGlyphIndex <- function(name, file) {
 }
 
 ## Convert 4-digit hex code to glyph name via font Unicode mapping
-ttxGlyphNameFromUNICODE <- function(code, file) {
+ttxGlyphNameFromUNICODE <- function(code, file, dir) {
     font <- ttxFontFile(file)
     cmap <- getCMapTable(font$file, font$suffix)
     ## cmap table with platformID="0" is UNICODE mapping
@@ -172,7 +172,12 @@ ttxGlyphNameFromUNICODE <- function(code, file) {
                          code, "']")
     name <- xml_attr(xml_find_first(cmap, unicodeMap), "name")
     if (length(name)) {
-        name
+        if (dir == 1) {
+            ## Prefer .vert variation if it exists
+            c(paste0(name, ".vert"), name)
+        } else {
+            name
+        }
     } else {
         NULL
     }   

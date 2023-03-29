@@ -11,24 +11,23 @@ setChar <- function(raw) {
     ## (may be overridden by, e.g., 'preview')
     if (is.na(get("baseline")))
         set("baseline", v)
-    ## Location before glyph
-    x <- fromTeX(h)
-    y <- fromTeX(v)
     ## Current font
     fonts <- get("fonts")
     f <- get("f")
     font <- fonts[[f]]
     engine <- get("engine")
-    ## Different engines specify glyphs in different ways
-    glyphInfo <- engine$getGlyph(raw, font)
-    glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size)
-    addGlyph(glyph)
-    ## Update bbox and location after glyph
+    ## Lost of things depend on text direction
     dir <- get("dir")
+    ## Different engines specify glyphs in different ways
+    glyphInfo <- engine$getGlyph(raw, font, dir)
     bbox <- getGlyphMetrics(glyphInfo$name, font$fontdef$file,
                             font$size, dir)
     if (dir == 0) {
         width <- getGlyphWidth(glyphInfo$name, font$fontdef$file, font$size)
+        ## Position glyph then move
+        x <- fromTeX(h)
+        y <- fromTeX(v)
+        glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size)
         updateBBoxHoriz(h + bbox[1]) ## left
         updateBBoxHoriz(h + bbox[2]) ## right
         updateBBoxVert(v - bbox[3]) ## bottom
@@ -38,6 +37,11 @@ setChar <- function(raw) {
         updateTextRight(h + width[1])
     } else {
         height <- getGlyphHeight(glyphInfo$name, font$fontdef$file, font$size)
+        ## Position glyph then move
+        x <- fromTeX(h)
+        ## y origin is v + bbox[4] (ymax) + height[2] (tsb)
+        y <- fromTeX(get("v") + bbox[4] + height[2])
+        glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size)
         updateBBoxHoriz(h + bbox[1]) ## left
         updateBBoxHoriz(h + bbox[2]) ## right
         updateBBoxVert(v - bbox[3]) ## bottom
@@ -46,6 +50,7 @@ setChar <- function(raw) {
         updateTextLeft(h)
         updateTextRight(h + bbox[2])
     }
+    addGlyph(glyph)
 }
 
 ## 0..127

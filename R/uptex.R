@@ -57,7 +57,7 @@ findMappedFile <- function(fontname) {
     }
 }
 
-upGlyphName <- function(raw, fontfile) {
+upGlyphName <- function(raw, fontfile, dir) {
     nbytes <- length(raw)
     code <- switch(nbytes,
                    ## Single byte is either set_char_i or set1 op
@@ -71,15 +71,15 @@ upGlyphName <- function(raw, fontfile) {
     ## May generate more than one option
     switch(nbytes,
            c(AdobeName(code),
-             getGlyphNameFromUNICODE(cmapCode, fontfile)),
+             getGlyphNameFromUNICODE(cmapCode, fontfile, dir)),
            c(AdobeName(code),
              paste0("uni", code),
-             getGlyphNameFromUNICODE(cmapCode, fontfile)),
+             getGlyphNameFromUNICODE(cmapCode, fontfile, dir)),
            ## Find non-UNICODE glyph name
            c(AdobeName(code),
              paste0("uni", code),
              paste0("u", gsub("^0", "", code)),
-             getGlyphNameFromUNICODE(cmapCode, fontfile)),
+             getGlyphNameFromUNICODE(cmapCode, fontfile, dir)),
            stop("set4 not yet supported"))
 }
 
@@ -132,9 +132,9 @@ upDefineFont <- function(fontname) {
 }
 
 ## Get glyph info from raw bytes (and current font)
-upGetGlyph <- function(raw, font) {
+upGetGlyph <- function(raw, font, dir) {
     ## Assume only Japanese set2 ops for now
-    glyphName <- upGlyphName(raw, font$fontdef$file)
+    glyphName <- upGlyphName(raw, font$fontdef$file, dir)
     index <- getGlyphIndex(glyphName, font$fontdef$file)
     char <- upGlyphChar(raw)
     list(name=glyphName, index=index, char=char)

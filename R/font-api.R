@@ -26,8 +26,8 @@ getGlyphIndex <- function(name, file) {
     ttxGlyphIndex(name, file)
 }
 
-getGlyphNameFromUNICODE <- function(code, file) {
-    ttxGlyphNameFromUNICODE(code, file)
+getGlyphNameFromUNICODE <- function(code, file, dir) {
+    ttxGlyphNameFromUNICODE(code, file, dir)
 }
 
 getGlyphWidth <- function(name, file, size) {
