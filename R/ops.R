@@ -20,10 +20,10 @@ setChar <- function(raw) {
     dir <- get("dir")
     ## Different engines specify glyphs in different ways
     glyphInfo <- engine$getGlyph(raw, font, dir)
-    bbox <- getGlyphMetrics(glyphInfo$name, font$fontdef$file,
+    bbox <- getGlyphMetrics(glyphInfo$index, font$fontdef$file,
                             font$size, dir)
     if (dir == 0) {
-        width <- getGlyphWidth(glyphInfo$name, font$fontdef$file, font$size)
+        width <- getGlyphWidth(glyphInfo$index, font$fontdef$file, font$size)
         ## Position glyph then move
         x <- fromTeX(h)
         y <- fromTeX(v)
@@ -36,7 +36,7 @@ setChar <- function(raw) {
         updateTextLeft(h)
         updateTextRight(h + width[1])
     } else {
-        height <- getGlyphHeight(glyphInfo$name, font$fontdef$file, font$size)
+        height <- getGlyphHeight(glyphInfo$index, font$fontdef$file, font$size)
         ## Position glyph then move
         x <- fromTeX(h)
         ## y origin is v + bbox[4] (ymax) + height[2] (tsb)

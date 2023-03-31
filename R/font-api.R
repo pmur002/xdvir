@@ -30,14 +30,14 @@ getGlyphNameFromUNICODE <- function(code, file, dir) {
     ttxGlyphNameFromUNICODE(code, file, dir)
 }
 
-getGlyphWidth <- function(name, file, size) {
-    ttxGlyphWidth(name, file, size)
+getGlyphWidth <- function(index, file, size) {
+    ttxGlyphWidth(index, file, size)
 }
 
-getGlyphHeight <- function(name, file, size) {
-    ttxGlyphHeight(name, file, size)
+getGlyphHeight <- function(index, file, size) {
+    ttxGlyphHeight(index, file, size)
 }
 
-getGlyphMetrics <- function(name, file, size, dir) {
-    ttxGlyphMetrics(name, file, size, dir)
+getGlyphMetrics <- function(index, file, size, dir) {
+    ttxGlyphMetrics(index, file, size, dir)
 }

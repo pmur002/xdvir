@@ -34,6 +34,95 @@ getTTX <- function(ttxFile) {
 }
 
 ################################################################################
+## Generate RDS files (from TTX files)
+
+## Vector of glyph indices with names = glyph names
+## (track nGlyph to allow for gaps in glyph indices)
+generateGlyphOrder <- function(ttx, rdsFile) {
+    message(paste0("Generating ", rdsFile, " ..."))
+    glyphs <- xml_find_all(ttx, "//GlyphID")
+    name <- xml_attr(glyphs, "name")
+    id <- as.numeric(xml_attr(glyphs, "id"))
+    names(id) <- name
+    ## '+ 1' because glyph ids are zero-based in XML
+    ## BUT I want to use them to index a (one-based) R vector or matrix
+    attr(id, "nGlyph") <- max(id) + 1
+    saveRDS(id, rdsFile)
+}
+
+## Matrix of width and left side bearing *in glyph index order*
+generateHMTX <- function(ttx, fontfile, suffix, rdsFile) {
+    message(paste0("Generating ", rdsFile, " ..."))
+    glyphOrder <- getGlyphOrderTable(fontfile, suffix)
+    nGlyph <- attr(glyphOrder, "nGlyph")
+    metrics <- xml_find_all(ttx, "//mtx")
+    name <- xml_attr(metrics, "name")
+    width <- numeric(nGlyph)
+    ## '+ 1' because glyph ids are zero-based in XML
+    ## BUT I want to use them to index a (one-based) R vector or matrix
+    width[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "width"))
+    lsb <- numeric(nGlyph)
+    lsb[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "lsb"))
+    hmtx <- cbind(width, lsb)
+    saveRDS(htmx, rdsFile)
+}
+
+## Matrix of height and top side bearing *in glyph index order*
+generateVMTX <- function(ttx, fontfile, suffix, rdsFile) {
+    message(paste0("Generating ", rdsFile, " ..."))
+    glyphOrder <- getGlyphOrderTable(fontfile, suffix)
+    nGlyph <- attr(glyphOrder, "nGlyph")
+    metrics <- xml_find_all(ttx, "//mtx")
+    name <- xml_attr(metrics, "name")
+    height <- numeric(nGlyph)
+    height[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "height"))
+    tsb <- numeric(nGlyph)
+    tsb[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "tsb"))
+    vmtx <- cbind(height, tsb)
+    saveRDS(vmtx, rdsFile)
+}
+
+## Matrix of xmin, xmax, ymin, ymax *in glyph index order*
+generateGLYF <- function(ttx, fontfile, suffix, rdsFile) {
+    message(paste0("Generating ", rdsFile, " ..."))
+    glyphOrder <- getGlyphOrderTable(fontfile, suffix)
+    nGlyph <- attr(glyphOrder, "nGlyph")
+    metrics <- xml_find_all(ttx, "//TTGlyph")
+    name <- xml_attr(metrics, "name")
+    xmin <- numeric(nGlyph)
+    xmin[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "xMin"))
+    xmax <- numeric(nGlyph)
+    xmax[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "xMax"))
+    ymin <- numeric(nGlyph)
+    ymin[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "yMin"))
+    ymax <- numeric(nGlyph)
+    ymax[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "yMax"))
+    glyf <- cbind(xmin, xmax, ymin, ymax)
+    saveRDS(glyf, rdsFile)
+}
+
+generateRDS <- function(table, fontfile, suffix, ttx, rdsFile) {
+    switch(table,
+           GlyphOrder=generateGlyphOrder(ttx, rdsFile),
+           hmtx=generateHMTX(ttx, fontfile, suffix, rdsFile),
+           vmtx=generateVMTX(ttx, fontfile, suffix, rdsFile),
+           glyf=generateGLYF(ttx, fontfile, suffix, rdsFile))
+}
+
+## Cache RDS instead of TTX
+getRDS <- function(rdsFile) {
+    cache <- getTTXcache()
+    if (is.null(cache) ||
+        is.null(cache[[rdsFile]])) {
+        rds <- readRDS(rdsFile)
+        cacheTTX(rdsFile, rds)
+    } else {
+        rds <- cache[[rdsFile]]
+    }
+    rds 
+}
+
+################################################################################
 ## Take copy of font file and place it in cache directory for taking apart
 ## (and get font name and suffix)
 
@@ -71,10 +160,20 @@ getTable <- function(table, fontfile, suffix, replace=table) {
     ttxfile <- gsub(paste0("[.]", suffix, "$"),
                     paste0("-", replace, ".ttx"), fontfile)
     if (!file.exists(ttxfile)) {
+        message(paste0("Generating ", ttxFile, " ..."))
         ## -i for speed and size
         system(paste0("ttx -i -t ", table, " -o ", ttxfile, " ", fontfile))
     }
-    getTTX(ttxfile)
+    if (table %in% c("GlyphOrder", "htmx", "vmtx", "glyf")) {
+        rdsFile <- gsub(paste0("[.]", suffix, "$"),
+                        paste0("-", replace, ".rds"), fontfile)
+        if (!file.exists(rdsFile)) {
+            generateRDS(table, fontfile, suffix, getTTX(ttxfile), rdsFile)
+        }
+        getRDS(rdsFile)
+    } else {
+        getTTX(ttxfile)
+    }
 }
 
 getHeadTable <- function(fontfile, suffix) {
@@ -150,15 +249,14 @@ ttxFontStyle <- function(file) {
 ttxGlyphIndex <- function(name, file) {
     font <- ttxFontFile(file)
     ## Find glyph index
-    glyphs <- getGlyphOrderTable(font$file, font$suffix)
+    indices <- getGlyphOrderTable(font$file, font$suffix)
     ## Try more than one name (if there are multiple options)
-    glyph <- NULL
-    while (!length(glyph) && length(name)) {
-        glyphPath <- paste0("//GlyphID[@name = '", name, "']")
-        glyph <- xml_find_first(glyphs, glyphPath)
+    glyph <- NA
+    while (is.na(glyph) && length(name)) {
+        glyph <- indices[name[1]]
         name <- name[-1]
     }
-    xml_attr(glyph, "id")
+    glyph
 }
 
 ## Convert 4-digit hex code to glyph name via font Unicode mapping
@@ -183,21 +281,15 @@ ttxGlyphNameFromUNICODE <- function(code, file, dir) {
     }   
 }
 
-ttxGlyphWidth <- function(name, file, size, transform=TRUE) {
+ttxGlyphWidth <- function(index, file, size, transform=TRUE) {
     font <- ttxFontFile(file)
     headTTX <- getHeadTable(font$file, font$suffix)
     unitsPerEm <- as.numeric(xml_text(xml_find_first(headTTX,
                                                      "//unitsPerEm/@value")))
     hmtx <- getHmtxTable(font$file, font$suffix)
-    ## Try more than one name (if there are multiple options)
-    glyph <- NULL
-    while (!length(glyph) && length(name)) {
-        glyphPath <- paste0("//mtx[@name = '", name[1], "']")
-        glyph <- xml_find_first(hmtx, glyphPath)
-        name <- name[-1]
-    }
-    width <- as.numeric(c(xml_attr(glyph, "width"),
-                          xml_attr(glyph, "lsb")))
+    ## '+ 1' because glyph ids are zero-based in XML
+    ## BUT I want to use them to index a (one-based) R vector or matrix
+    width <- hmtx[index + 1, ]
     if (transform) {
         ## round() to get whole number metrix (at 1000 scale)
         ## floor() to match what PDF_StrWidthUTF8() does
@@ -211,21 +303,15 @@ ttxGlyphWidth <- function(name, file, size, transform=TRUE) {
     }
 }
 
-ttxGlyphHeight <- function(name, file, size, transform=TRUE) {
+ttxGlyphHeight <- function(index, file, size, transform=TRUE) {
     font <- ttxFontFile(file)
     headTTX <- getHeadTable(font$file, font$suffix)
     unitsPerEm <- as.numeric(xml_text(xml_find_first(headTTX,
                                                      "//unitsPerEm/@value")))
     vmtx <- getVmtxTable(font$file, font$suffix)
-    ## Try more than one name (if there are multiple options)
-    glyph <- NULL
-    while (!length(glyph) && length(name)) {
-        glyphPath <- paste0("//mtx[@name = '", name[1], "']")
-        glyph <- xml_find_first(vmtx, glyphPath)
-        name <- name[-1]
-    }
-    height <- as.numeric(c(xml_attr(glyph, "height"),
-                           xml_attr(glyph, "tsb")))
+    ## '+ 1' because glyph ids are zero-based in XML
+    ## BUT I want to use them to index a (one-based) R vector or matrix
+    height <- vmtx[index + 1, ]
     if (transform) {
         ## round() to get whole number metrix (at 1000 scale)
         ## floor() to match what PDF_StrWidthUTF8() does
@@ -239,22 +325,13 @@ ttxGlyphHeight <- function(name, file, size, transform=TRUE) {
     }
 }
 
-ttxGlyphMetrics <- function(name, file, size, dir) {
+ttxGlyphMetrics <- function(index, file, size, dir) {
     font <- ttxFontFile(file)
     head <- getHeadTable(font$file, font$suffix)
     unitsPerEm <- as.numeric(xml_text(xml_find_first(head,
                                                      "//unitsPerEm/@value")))
     glyf <- getGlyfTable(font$file, font$suffix)
-    ## Try more than one name (if there are multiple options)
-    glyph <- NULL
-    tmpname <- name
-    while (!length(glyph) && length(tmpname)) {
-        glyphPath <- paste0("//TTGlyph[@name = '", tmpname[1], "']")
-        ## ns=NULL to avoid repeated calls to xml2::xml_ns(glyf)
-        glyph <- xml_find_first(glyf, glyphPath, ns=NULL)
-        tmpname <- tmpname[-1]
-    }
-    if (is.na(glyph)) {
+    if (FALSE) {
         ## e.g., no 'glyf' table, e.g., CFF font
         ## Use 'hmtx' for horizontal metrics if possible
         ## Use 'vmtx' for vertical metrics if possible
@@ -275,10 +352,9 @@ ttxGlyphMetrics <- function(name, file, size, dir) {
         warning("Glyph metric info not available;  using font metric info")
         bbox <- as.numeric(c(xmin, xmax, ymin, ymax))
     } else {
-        bbox <- as.numeric(c(xml_attr(glyph, "xMin"),
-                             xml_attr(glyph, "xMax"),
-                             xml_attr(glyph, "yMin"),
-                             xml_attr(glyph, "yMax")))
+        ## '+ 1' because glyph ids are zero-based in XML
+        ## BUT I want to use them to index a (one-based) R vector or matrix
+        bbox <- glyf[index + 1, ]
     }
     ## round() to get whole number metrix (at 1000 scale)
     ## floor() to match what PDF_StrWidthUTF8() does
