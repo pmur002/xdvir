@@ -200,10 +200,6 @@ getOS2Table <- function(fontfile, suffix) {
     getTable("OS/2", fontfile, suffix, "OS2")
 }
 
-getHHeaTable <- function(fontfile, suffix) {
-    getTable("hhea", fontfile, suffix)
-}
-
 getGlyfTable <- function(fontfile, suffix) {
     getTable("glyf", fontfile, suffix)
 }
