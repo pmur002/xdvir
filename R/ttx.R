@@ -160,7 +160,7 @@ getTable <- function(table, fontfile, suffix, replace=table) {
     ttxfile <- gsub(paste0("[.]", suffix, "$"),
                     paste0("-", replace, ".ttx"), fontfile)
     if (!file.exists(ttxfile)) {
-        message(paste0("Generating ", ttxFile, " ..."))
+        message(paste0("Generating ", ttxfile, " ..."))
         ## -i for speed and size
         system(paste0("ttx -i -t ", table, " -o ", ttxfile, " ", fontfile))
     }
