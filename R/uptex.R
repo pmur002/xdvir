@@ -128,7 +128,8 @@ upDefineFont <- function(fontname) {
             index=0,
             getFontFamily(fontfile),
             getFontWeight(fontfile),
-            getFontStyle(fontfile))
+            getFontStyle(fontfile),
+            fontSize(fontname))
 }
 
 ## Get glyph info from raw bytes (and current font)

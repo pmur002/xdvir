@@ -17,6 +17,16 @@ identical_font <- function(op1, op2) {
               blockValue(op2$blocks$op.opparams.fontname.name))
 }
 
+## This works off the anecdotal evidence that TeX font file names
+## contain a font size (e.g., cmr10 and lmroman10-regular)
+## Default to 10pt, which I have seen somewhere is the TeX default
+fontSize <- function(fontname) {
+    size <- as.numeric(gsub("[^0-9]+", "", fontname))
+    if (is.na(size))
+        size <- 10
+    size
+}
+
 fontDef <- function(file, index,
                     family, weight, style,
                     size=10) {
