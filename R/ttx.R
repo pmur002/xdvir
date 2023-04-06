@@ -64,7 +64,7 @@ generateHMTX <- function(ttx, fontfile, suffix, rdsFile) {
     lsb <- numeric(nGlyph)
     lsb[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "lsb"))
     hmtx <- cbind(width, lsb)
-    saveRDS(htmx, rdsFile)
+    saveRDS(hmtx, rdsFile)
 }
 
 ## Matrix of height and top side bearing *in glyph index order*
@@ -164,7 +164,7 @@ getTable <- function(table, fontfile, suffix, replace=table) {
         ## -i for speed and size
         system(paste0("ttx -i -t ", table, " -o ", ttxfile, " ", fontfile))
     }
-    if (table %in% c("GlyphOrder", "htmx", "vmtx", "glyf")) {
+    if (table %in% c("GlyphOrder", "hmtx", "vmtx", "glyf")) {
         rdsFile <- gsub(paste0("[.]", suffix, "$"),
                         paste0("-", replace, ".rds"), fontfile)
         if (!file.exists(rdsFile)) {

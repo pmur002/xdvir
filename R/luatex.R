@@ -72,7 +72,7 @@ luaFontName <- function(fontname) {
 }
 
 ## Glyph name from raw bytes
-luaGlyphName <- function(raw, fontfile) {
+luaGlyphName <- function(raw, fontfile, dir) {
     nbytes <- length(raw)
     code <- switch(nbytes,
                    ## Single byte is either set_char_i or set1 op
@@ -97,10 +97,10 @@ luaGlyphName <- function(raw, fontfile) {
     ## May generate more than one option
     switch(nbytes,
            c(AdobeName(code),
-             getGlyphNameFromUNICODE(cmapCode, fontfile)),
+             getGlyphNameFromUNICODE(cmapCode, fontfile, 0)),
            c(AdobeName(code),
              paste0("uni", code),
-             getGlyphNameFromUNICODE(cmapCode, fontfile)),
+             getGlyphNameFromUNICODE(cmapCode, fontfile, 0)),
            ## Find non-UNICODE glyph name
            if (as.numeric(raw[1]) >= 15) {
                getNonUnicodeGlyph(getGlyphs(fontfile), 
@@ -109,7 +109,7 @@ luaGlyphName <- function(raw, fontfile) {
                c(AdobeName(code),
                  paste0("uni", code),
                  paste0("u", gsub("^0", "", code)),
-                 getGlyphNameFromUNICODE(cmapCode, fontfile))
+                 getGlyphNameFromUNICODE(cmapCode, fontfile, 0))
            },
            stop("set4 not yet supported"))
 }
@@ -156,7 +156,7 @@ luaDefineFont <- function(fontname) {
 }
 
 ## Get glyph info from raw bytes (and current font)
-luaGetGlyph <- function(raw, font) {
+luaGetGlyph <- function(raw, font, dir) {
     glyphName <- luaGlyphName(raw, font$fontdef$file)
     index <- getGlyphIndex(glyphName, font$fontdef$file)
     char <- luaGlyphChar(raw)
