@@ -1,4 +1,29 @@
 
++ According to ...
+
+  https://tex.stackexchange.com/questions/582531/differences-between-dvi-files-created-via-lualatex-and-dvi-files-created-via-p
+
+  ... recent luatex will generate DVI that contains font **file paths** 
+  in fontdef ops and **glyph IDs** in set ops !!!!
+
+  (i.e., closer to XeTeX and MUCH easier to work with for 'xdvir')
+
+  Anecdotally, TeX Live on Ubuntu 22.04 produces exactly that sort
+  of output !!!
+
+  This is conditional on luaotfload version v3.15 ???
+
+  NOTE the quoted comment at the top of the SE post above about luatex
+  dvi output not being important, BUT the discussion suggests that
+  there are others besides me interested in playing with luatex's dvi
+  files (e.g., the dvi-decode [https://github.com/matjp/dvi-decode] guy)
+
+  Here is a link to a(n unofficial and already slightly out of date)
+  description of the luatex dvi font def format ...
+
+  https://tug.org/pipermail/dvipdfmx/2021-January/000168.html
+
+
 + Work on font-api.R to make it independent of TTX implementation
   (e.g., does 'systemfonts' refer to glyphs by name or by index?
          what do other libraries do?)
