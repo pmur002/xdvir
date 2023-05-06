@@ -11,7 +11,9 @@
   Anecdotally, TeX Live on Ubuntu 22.04 produces exactly that sort
   of output !!!
 
-  This is conditional on luaotfload version v3.15 ???
+  This is conditional on luaotfload version v3.15
+  [See page 4 of 
+   https://mirror.cse.unsw.edu.au/pub/CTAN/macros/luatex/generic/luaotfload/luaotfload-latex.pdf]
 
   NOTE the quoted comment at the top of the SE post above about luatex
   dvi output not being important, BUT the discussion suggests that
