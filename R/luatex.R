@@ -1,5 +1,8 @@
 
 initLuaTeX <- function() {
+    luatex <- Sys.which("luatex")
+    if (nchar(luatex) == 0)
+        stop("Failed to find luatex; please install TeX (e.g., TeX Live)")
     versText <- system("luatex --version", intern=TRUE)[1]
     version <- gsub(" .+", "", gsub("^[^0-9]+", "", versText))
     set("luaVersion", version)

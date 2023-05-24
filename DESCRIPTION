@@ -8,7 +8,7 @@ Maintainer: Paul Murrell <paul@stat.auckland.ac.nz>
 Description: Functions to read DVI files, as produced from TeX documents,
              and render them within R.
 Depends: R (>= 4.3.0), grid
-Collate: state.R convert.R dvi.R ops.R vf.R font.R font-api.R glyph.R metric.R engine.R tex.R luatex.R read.R print.R obj.R grob.R grid.R ttx.R uptex.R adobe.R zzz.R
+Collate: state.R convert.R dvi.R ops.R vf.R font.R font-api.R glyph.R metric.R engine.R tex.R luatex.R xetex.R uptex.R read.R print.R obj.R grob.R grid.R fontforge.R ttx.R adobe.R zzz.R
 SystemRequirements: A TeX distribution such as TeX Live, fonttools
 Imports: grDevices, hexView (>= 0.3-4), xml2, systemfonts (> 0.1.1)
 License: GPL-3

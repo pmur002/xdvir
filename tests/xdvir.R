@@ -51,7 +51,17 @@ grid.draw(updvigrob)
 ## XeTeX
 ## (op252, op253, op254 [and font def specifies font file])
 ## system("xelatex --no-pdf test.tex; mv test.xdv test-xelatex.xdv")
-readDVI("test-xelatex.xdv")
+library(xdvir)
+xdvi <- readDVI("test-xelatex.xdv")
+## debug(xdvir:::grob_op_253)
+## debug(xdvir:::getTable)
+## debug(xdvir:::generateGLYF)
+xdvigrob <- dviGrob(xdvi, engine=xelatexEngine)
+grid.rect(width=unit(xdvigrob$children[[1]]$glyphInfo$width["width"],
+                     "bigpts"),
+          height=unit(xdvigrob$children[[1]]$glyphInfo$height["height"],
+                      "bigpts"))
+grid.draw(xdvigrob)
 
 ## Plain LaTeX
 ## system("latex test.tex; mv test.dvi test-latex.dvi")

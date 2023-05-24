@@ -85,10 +85,22 @@ generateVMTX <- function(ttx, fontfile, suffix, rdsFile) {
 ## Matrix of xmin, xmax, ymin, ymax *in glyph index order*
 generateGLYF <- function(ttx, fontfile, suffix, rdsFile) {
     message(paste0("Generating ", rdsFile, " ..."))
-    glyphOrder <- getGlyphOrderTable(fontfile, suffix)
-    nGlyph <- attr(glyphOrder, "nGlyph")
     metrics <- xml_find_all(ttx, "//TTGlyph")
     name <- xml_attr(metrics, "name")
+    if (grepl("-FROM-OTF", fontfile)) {
+        ## Need to map metrics from .ttf to glyph order of original .otf
+        otfFile <- gsub("-FROM-OTF[.]ttf", ".otf", fontfile)
+        glyphOrder <- getGlyphOrderTable(otfFile, "otf")
+        ## converted .ttf may have glyphs not in original .otf (e.g., ".null")
+        subset <- name %in% names(glyphOrder)
+        name <- name[subset]
+        metrics <- metrics[subset]
+        glyphOrder <- glyphOrder[name]
+        attr(glyphOrder, "nGlyph") <- length(glyphOrder)
+    } else {
+        glyphOrder <- getGlyphOrderTable(fontfile, suffix)
+    }
+    nGlyph <- attr(glyphOrder, "nGlyph")
     xmin <- numeric(nGlyph)
     xmin[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "xMin"))
     xmax <- numeric(nGlyph)
@@ -156,10 +168,32 @@ ttxFontFile <- function(fontpath) {
 
 ################################################################################
 ## Get a single table
+tableList <- function(fontfile) {
+    gsub(" .+", "",
+         gsub("^ +", "",
+              system(paste0("ttx -l ", fontfile), intern=TRUE)[-(1:3)]))
+}
+
 getTable <- function(table, fontfile, suffix, replace=table) {
     ttxfile <- gsub(paste0("[.]", suffix, "$"),
                     paste0("-", replace, ".ttx"), fontfile)
     if (!file.exists(ttxfile)) {
+        ## For "glyf" table, check first whether it is available in the font
+        ## and, if not (and font is .otf), convert to .ttf and generate table
+        ## from that.
+        if (table == "glyf") {
+            tables <- tableList(fontfile)
+            if (!("glyf" %in% tables)) {
+                if (suffix == "otf") {
+                    ttfFile <- gsub("[.]otf$", "-FROM-OTF.ttf", fontfile)
+                    otf2ttf(fontfile, ttfFile)
+                    fontfile <- ttfFile
+                    suffix <- "ttf"
+                } else {
+                    warning("glyf table unavailable")
+                }
+            }
+        } 
         message(paste0("Generating ", ttxfile, " ..."))
         ## -i for speed and size
         system(paste0("ttx -i -t ", table, " -o ", ttxfile, " ", fontfile))
@@ -167,6 +201,8 @@ getTable <- function(table, fontfile, suffix, replace=table) {
     if (table %in% c("GlyphOrder", "hmtx", "vmtx", "glyf")) {
         rdsFile <- gsub(paste0("[.]", suffix, "$"),
                         paste0("-", replace, ".rds"), fontfile)
+        ## Remove potential artifact from 'rdsFile'
+        rdsFile <- gsub("-FROM-OTF", "", rdsFile)
         if (!file.exists(rdsFile)) {
             generateRDS(table, fontfile, suffix, getTTX(ttxfile), rdsFile)
         }

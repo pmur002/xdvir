@@ -337,13 +337,83 @@ op_pre <- function(op) {
 
 ## XeTeX
 ## 252
-## x_font_def
+## x_fnt_def
+op_x_font_def <- function(op) {
+    ## Create font definition and save it
+    fonts <- get("fonts")
+    fontnum <- blockValue(op$blocks$op.opparams.fontnum) + 1
+    ## Avoid redefining the same font 
+    if (is.null(fonts[[fontnum]]) ||
+        !(x_identical_font(op, fonts[[fontnum]]$op))) {
+        fontnameChars <-
+            blockValue(op$blocks$op.opparams.fontinfo.marker.fontname.block)
+        fontname <- paste(fontnameChars, collapse="")
+        fontindex <- blockValue(op$blocks$op.opparams.fontinfo.marker.fontindex)
+        fontsize <- 72.27*fromTeX(blockValue(op$block$op.opparams.ptsize))/25.4
+        ## Only XeTeX engine generates x_fnt_def
+        fontdef <- fontDef(file=fontname,
+                           index=fontindex,
+                           getFontFamily(fontname),
+                           getFontWeight(fontname),
+                           getFontStyle(fontname),
+                           fontSize(fontname))
+        mag <- get("mag")
+        fonts[[fontnum]] <- list(fontdef=fontdef,
+                                 size=fontsize*mag/1000,
+                                 op=op)
+        set("fonts", fonts)
+    }
+}
 
 ## 253
 ## x_glyph_array
+op_x_glyph <- function(op) {
+    h <- get("h")
+    v <- get("v")
+    ## Default baseline to first set char
+    ## (may be overridden by, e.g., 'preview')
+    if (is.na(get("baseline")))
+        set("baseline", v)
+    ## Current font
+    fonts <- get("fonts")
+    f <- get("f")
+    font <- fonts[[f]]
+    ## NOTE differences from setChar():
+    ##   Only a XeTeX engine will produce x_glyph_array
+    ##   No concept of text direction (in XDV)
+    ##   We have an ARRAY of glyphs
+    ##   Get glyph ids directly from op
+    nGlyphs <- blockValue(op$blocks$op.opparams.n)
+    glyphIds <- blockValue(op$blocks$op.opparams.glyphs.id)
+    glyphLocs <- paste0("op.opparams.glyphs.xy", 1:(2*nGlyphs))
+    for (i in 1:nGlyphs) {
+        ## NOTE that we really only need 'index' (?)
+        glyphInfo <- list(name="", index=glyphIds[i], char="")
+        bbox <- getGlyphMetrics(glyphInfo$index, font$fontdef$file,
+                                font$size, 0)
+        width <- getGlyphWidth(glyphInfo$index, font$fontdef$file, font$size)
+        ## Position glyph then move
+        x <- fromTeX(h)
+        y <- fromTeX(v)
+        glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size)
+        updateBBoxHoriz(h + bbox[1]) ## left
+        updateBBoxHoriz(h + bbox[2]) ## right
+        updateBBoxVert(v - bbox[3]) ## bottom
+        updateBBoxVert(v - bbox[4]) ## top
+        set("h", h + width[1])
+        updateTextLeft(h)
+        updateTextRight(h + width[1])
+        addGlyph(glyph)
+        ## For next iteration
+        h <- get("h")
+    }
+}
 
 ## 254
-## x_string_glyph_array
+## x_glyph_str
+op_x_glyph_str <- function(op) {
+    warning("op 254 not yet supported")
+}
 
 ## upTeX
 ## 255

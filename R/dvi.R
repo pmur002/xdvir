@@ -154,7 +154,8 @@ op249 <- mixedBlock(q=int4,
                     ## that for now
                     sig=vectorBlock(ASCIIchar, 4))
 
-## XFontDef 
+## XeTeX
+## x_fnt_def
 fontInfoMarker <- mixedBlock(flags=uint2,
                              fontname=lengthBlock(uint1, ASCIIchar),
                              fontindex=int4)
@@ -178,13 +179,12 @@ xeReadFontInfo <- function(marker) {
     }
 }
 
-
-## XeTeX
 op252 <- mixedBlock(fontnum=int4,
                     ptsize=int4,
                     fontinfo=markedBlock(fontInfoMarker, xeReadFontInfo))
 
-## XGlyphArray
+## XeTeX
+## x_glyph
 op253 <- mixedBlock(w=int4,
                     markedBlock(int2,
                                 function(marker) {
@@ -197,7 +197,8 @@ op253 <- mixedBlock(w=int4,
                                 markerLabel="n",
                                 blockLabel="glyphs"))
 
-## XStringGlyphArray
+## XeTeX
+## x_string
 op254 <- mixedBlock(markedBlock(int2,
                                 function(marker) {
                                     n <- blockValue(marker)
@@ -218,6 +219,7 @@ op254 <- mixedBlock(markedBlock(int2,
                                 blockLabel="glyphs"))
 
 ## upTeX
+## dir
 op255 <- int1
 
 opparams <- function(marker) {

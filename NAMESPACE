@@ -33,7 +33,8 @@ export("readDVI",
        
        "TeXengine", 
        "luatexEngine", "lualatexEngine",
-       "uptexEngine", "uplatexEngine")
+       "uptexEngine", "uplatexEngine",
+       "xetexEngine", "xelatexEngine")
 
 S3method("print", "DVI")
 

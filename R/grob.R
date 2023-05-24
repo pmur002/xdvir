@@ -236,6 +236,16 @@ grob_op_246 <- op_font_def
 ## pre
 grob_op_247 <- op_pre
 
+## XeTeX
+## 252
+grob_op_252 <- op_x_font_def
+
+## 253
+grob_op_253 <- op_x_glyph
+
+## 254
+grob_op_254 <- op_x_glyph_str
+
 ## upTeX
 ## 255
 ## dir
