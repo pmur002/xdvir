@@ -297,7 +297,7 @@ print_op_249 <- function(op) {
     cat("post_post\n")
 }
 
-## XFontDef 
+## XFontDef (XeTeX)
 print_op_252 <- function(op) {
     ## print(op)
     fontnum <- blockValue(op$blocks$op.opparams.fontnum)
@@ -313,7 +313,7 @@ print_op_252 <- function(op) {
     cat(str)
 }
 
-## XGlyphArray
+## XGlyphArray (XeTeX) 
 print_op_253 <- function(op) {
     ## print(op)
     n <- blockValue(op$blocks$op.opparams.n)
@@ -351,12 +351,15 @@ print_op_254 <- function(op) {
                                 name <- paste0("op.opparams.glyphs.xy", i)
                                 blockValue(op$blocks[[name]])
                             }))
-    str <- c(paste0("x_glyph_str  '",
-                    blockValue(op$blocks$op.opparams.text), "'\n"),
-             paste0("x_glyph      ",
-                    "id=", blockValue(op$blocks$op.opparams.glyphs.id), ", ",
-                    "x=", glyphX, ", y=", glyphY, 
-                    collapse="\n"))
+    str <- paste0(paste0("x_glyph_str  '",
+                         paste(blockValue(op$blocks$op.opparams.text),
+                               collapse=""),
+                         "'\n"),
+                  paste0("x_glyph      ",
+                         "id=", blockValue(op$blocks$op.opparams.glyphs.id),
+                         ", ", "x=", glyphX, ", y=", glyphY, 
+                         collapse="\n"),
+                  collapse="\n")
     cat(str, "\n")
 }
 

@@ -204,7 +204,7 @@ op254 <- mixedBlock(markedBlock(int2,
                                     n <- blockValue(marker)
                                     vectorBlock(ASCIIchar, 2*n)
                                 },
-                                markerLabel="n",
+                                markerLabel="nchar",
                                 blockLabel="text"),
                     w=int4,
                     markedBlock(int2,

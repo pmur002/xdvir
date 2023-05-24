@@ -367,7 +367,7 @@ op_x_font_def <- function(op) {
 
 ## 253
 ## x_glyph_array
-op_x_glyph <- function(op) {
+setGlyphs <- function(op) {
     h <- get("h")
     v <- get("v")
     ## Default baseline to first set char
@@ -409,10 +409,15 @@ op_x_glyph <- function(op) {
     }
 }
 
+op_x_glyph <- function(op) {
+    setGlyphs(op)
+}
+
 ## 254
 ## x_glyph_str
 op_x_glyph_str <- function(op) {
-    warning("op 254 not yet supported")
+    ## Just ignore string part of op
+    setGlyphs(op)
 }
 
 ## upTeX
