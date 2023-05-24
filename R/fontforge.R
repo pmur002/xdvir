@@ -4,7 +4,7 @@ initFontForge <- function() {
     if (nchar(fontforge) == 0)
         stop("Failed to find FontForge; please install it.")
     versText <- system("fontforge --version", intern=TRUE)
-    versLine <- grep("Version:", versText)
+    versLine <- grep("fontforge", versText)
     version <- gsub(".+ ", "", versText[versLine])
     set("ffVersion", version)
 }

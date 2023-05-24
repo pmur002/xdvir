@@ -3,6 +3,8 @@ initTTX <- function() {
     ttx <- Sys.which("ttx")
     if (nchar(ttx) == 0)
         stop("Failed to find ttx; please install fonttools")
+    version <- system("ttx --version", intern=TRUE)
+    set("ttxVersion", version)
 }
 
 ################################################################################
