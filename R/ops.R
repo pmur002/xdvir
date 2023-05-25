@@ -289,6 +289,11 @@ op_fnt_num <- function(op) {
 ## fnt2
 ## fnt3
 ## fnt4
+op_fnt <- function(op) {
+    k <- op$block$op.opparams
+    f <- blockValue(k)
+    set("f", f)
+}
 
 ## 239..242
 ## xxx1

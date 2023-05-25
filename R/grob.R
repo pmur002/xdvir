@@ -220,6 +220,9 @@ for (i in 171:234) {
 ## fnt2
 ## fnt3
 ## fnt4
+for (i in 235:238) {
+    assign(paste0("grob_op_", i), op_fnt)
+}
 
 ## 239..242
 ## xxx1

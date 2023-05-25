@@ -102,6 +102,12 @@ for (i in 171:234) {
     assign(paste0("op", i), NULL)
 }
 
+## fnt<i>
+op235 <- int1
+op236 <- int2
+op237 <- int3
+op238 <- int4
+    
 ## xxx<i> (specials)
 op239 <- lengthBlock(uint1, ASCIIchar, blockLabel="string")
 op240 <- lengthBlock(uint2, ASCIIchar, blockLabel="string")
