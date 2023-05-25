@@ -123,6 +123,10 @@ grob_op_132 <- op_set_rule
 ## put2
 ## put3
 ## put4
+grob_op_133 <- op_put
+grob_op_134 <- op_put
+grob_op_135 <- op_put
+grob_op_136 <- op_put
 
 ## 137
 ## put_rule

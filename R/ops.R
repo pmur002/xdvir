@@ -4,7 +4,8 @@
 op_ignore <- function(op) { }
 
 ## set_char_i and set_char are VERY similar
-setChar <- function(raw) {
+## (put_char_i is also VERY similar - just does not adjust (h, v)
+setChar <- function(raw, put=FALSE) {
     h <- get("h")
     v <- get("v")
     ## Default baseline to first set char
@@ -32,7 +33,8 @@ setChar <- function(raw) {
         updateBBoxHoriz(h + bbox[2]) ## right
         updateBBoxVert(v - bbox[3]) ## bottom
         updateBBoxVert(v - bbox[4]) ## top
-        set("h", h + width[1])
+        if (!put)
+            set("h", h + width[1])
         updateTextLeft(h)
         updateTextRight(h + width[1])
     } else {
@@ -46,7 +48,8 @@ setChar <- function(raw) {
         updateBBoxHoriz(h + bbox[2]) ## right
         updateBBoxVert(v - bbox[3]) ## bottom
         updateBBoxVert(v - bbox[4]) ## top
-        set("v", v + height[1])
+        if (!put) 
+            set("v", v + height[1])
         updateTextLeft(h)
         updateTextRight(h + bbox[2])
     }
@@ -84,6 +87,9 @@ op_set_rule <- function(op) {
 ## put2
 ## put3
 ## put4
+op_put <- function(op) {
+    setChar(op$blocks$op.opparams$fileRaw, TRUE)
+}
 
 ## 137
 ## put_rule
@@ -365,8 +371,6 @@ op_x_font_def <- function(op) {
     }
 }
 
-## 253
-## x_glyph_array
 setGlyphs <- function(op) {
     h <- get("h")
     v <- get("v")
@@ -409,6 +413,8 @@ setGlyphs <- function(op) {
     }
 }
 
+## 253
+## x_glyph_array
 op_x_glyph <- function(op) {
     setGlyphs(op)
 }

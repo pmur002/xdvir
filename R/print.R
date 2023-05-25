@@ -20,14 +20,27 @@ for (i in 0:127) {
     assign(paste0("print_op_", i), print_set_char)
 }
 
-print_set_longchar <- function(op) {
-    str <- paste0("set",
-                  blockValue(op$blocks$op.opcode) - 127,
+## set1
+## set2
+## set3
+## set4
+print_longchar_op <- function(op, put=FALSE) {
+    if (put) {
+        opname <- "put"
+        offset <- 132
+    } else {
+        opname <- "set"
+        offset <- 127
+    }
+    str <- paste0(opname,
+                  blockValue(op$blocks$op.opcode) - offset,
                   "         ",
                   paste(op$blocks$op.opparams$fileRaw, collapse=" "),
                   "\n")
     cat(str)
 }
+
+print_set_longchar <- function(op) print_longchar_op(op)
 
 for (i in 128:131) {
     assign(paste0("print_op_", i), print_set_longchar)
@@ -45,6 +58,16 @@ printRule <- function(op, opname) {
 
 print_op_132 <- function(op) {
     printRule(op, "set_rule")
+}
+
+## put1
+## put2
+## put3
+## put4
+print_put_longchar <- function(op) print_longchar_op(op, TRUE)
+
+for (i in 133:136) {
+    assign(paste0("print_op_", i), print_put_longchar)
 }
 
 ## put_rule

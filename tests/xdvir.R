@@ -4,6 +4,7 @@
 ## ALSO DEPENDENT ON
 ## kpsewhich
 ## ttx
+## fontforge
 
 library(xdvir)
 
