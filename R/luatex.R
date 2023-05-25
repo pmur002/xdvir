@@ -165,7 +165,7 @@ luaDefineFont <- function(fontname) {
             getFontFamily(fontfile),
             getFontWeight(fontfile),
             getFontStyle(fontfile),
-            fontSize(fontname))
+            fontSize(fontFullName))
 }
 
 ## Get glyph info from raw bytes (and current font)

@@ -71,16 +71,19 @@ op_set <- function(op) {
     setChar(op$blocks$op.opparams$fileRaw)
 }
 
-## 132
-## set_rule
-op_set_rule <- function(op) {
+setRule <- function(op, put=FALSE) {
     a <- blockValue(op$blocks$op.opparams.a)
     b <- blockValue(op$blocks$op.opparams.b)
     ## Need to create glyph object if there have been any glyphs prior to this
     addGlyphObj()
     addRuleObj(a, b)
-    set("h", get("h") + b)
+    if (!put)
+        set("h", get("h") + b)
 }
+
+## 132
+## set_rule
+op_set_rule <- function(op) setRule(op)
 
 ## 133..136
 ## put1
@@ -93,6 +96,7 @@ op_put <- function(op) {
 
 ## 137
 ## put_rule
+op_put_rule <- function(op) setRule(op, TRUE)
 
 ## 138
 ## nop

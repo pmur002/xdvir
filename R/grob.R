@@ -130,6 +130,7 @@ grob_op_136 <- op_put
 
 ## 137
 ## put_rule
+grob_op_137 <- op_put_rule
 
 ## 138
 ## nop
