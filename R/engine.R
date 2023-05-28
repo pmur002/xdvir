@@ -1,15 +1,19 @@
 
-TeXengine <- function(engine, options="",
-                      defineFont,
+TeXengine <- function(command,
+                      fontDef,
                       getGlyph,
+                      preamble="",
+                      prefix="",
+                      suffix="",
                       dviSuffix=".dvi") {
-    engine <- list(engine=engine, options=options,
-                   defineFont=defineFont,
+    engine <- list(command=command,
+                   preamble=preamble,
+                   prefix=prefix,
+                   suffix=suffix,
+                   fontDef=fontDef,
                    getGlyph=getGlyph,
                    dviSuffix=dviSuffix)
     class(engine) <- "TeXengine"
     engine
 }
-
-
 

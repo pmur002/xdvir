@@ -179,10 +179,10 @@ luaGetGlyph <- function(raw, font, dir) {
 ################################################################################
 ## User interface
 
-luatexEngine <- function(engine="lualatex", options="--output-format=dvi",
-                         fontDef=luaDefineFont,
-                         getGlyph=luaGetGlyph) {
-    TeXengine(engine, options, fontDef, getGlyph)
+luatexEngine <- function(packages=NULL) {
+    TeXengine(command="lualatex --output-format=dvi",
+              fontDef=luaDefineFont,
+              getGlyph=luaGetGlyph)
 }
 
 lualatexEngine <- luatexEngine()

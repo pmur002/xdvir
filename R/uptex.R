@@ -151,10 +151,10 @@ upGetGlyph <- function(raw, font, dir) {
 ################################################################################
 ## User interface
 
-uptexEngine <- function(engine="uplatex", 
-                        fontDef=upDefineFont,
-                        getGlyph=upGetGlyph) {
-    TeXengine(engine, options, fontDef, getGlyph)
+uptexEngine <- function(packages=NULL) {
+    TeXengine(command="uplatex",
+              fontDef=upDefineFont,
+              getGlyph=upGetGlyph)
 }
 
 uplatexEngine <- uptexEngine()

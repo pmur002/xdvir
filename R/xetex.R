@@ -29,12 +29,55 @@ xeGetGlyph <- function(raw, font, dir) {
 ################################################################################
 ## User interface
 
-xetexEngine <- function(engine="xelatex", options="--no-pdf",
-                        fontDef=xeDefineFont,
-                        getGlyph=xeGetGlyph) {
-    TeXengine(engine, options, fontDef, getGlyph)
+xelatexPreamble <- function(packages) {
+    preamble <- "\\usepackage{unicode-math}"
+    if (!is.null(packages)) {
+        preamble <- c(preamble, packagePreamble(packages))
+    }
+    preamble
+}
+
+xelatexPrefix <- function(packages) {
+    prefix <- NULL
+    if (!is.null(packages)) {
+        prefix <- c(prefix, packagePrefix(packages))
+    }
+    prefix
+}
+
+xelatexSuffix <- function(packages) {
+    suffix <- NULL
+    if (!is.null(packages)) {
+        suffix <- c(suffix, packageSuffix(packages))
+    }
+    suffix
+}
+
+xetexEngine <- function(packages=NULL) {
+    if (inherits(packages, "xdvirPackage"))
+        packages <- packageList(packages)
+    if (!is.null(packages) && !inherits(packages, "xdvirPackageList"))
+        stop("Invalid packages")
+    TeXengine(command="xelatex --no-pdf",
+              fontDef=xeDefineFont,
+              getGlyph=xeGetGlyph,
+              preamble=xelatexPreamble(packages),
+              prefix=xelatexPrefix(packages),
+              suffix=xelatexSuffix(packages),
+              dviSuffix=".xdv")
 }
 
 xelatexEngine <- xetexEngine()
 
+xelatexGrob <- function(tex) {
+    texDoc <- author(tex, engine=xelatexEngine)
+    dviFile <- typeset(texDoc, engine=xelatexEngine)
+    dvi <- readDVI(dviFile)
+    dviGrob(dvi, engine=xelatexEngine)
+}
 
+grid.xelatex <- function(...) {
+    grid.draw(xelatexGrob(...))
+}
+
+    

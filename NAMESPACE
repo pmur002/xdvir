@@ -29,6 +29,8 @@ export("readDVI",
 
        "grid.dvi", "dviGrob",
 
+       "grid.xelatex",
+       
        "fontMap",
        
        "TeXengine", 
