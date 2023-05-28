@@ -27,12 +27,15 @@ dviGrob.DVI <- function(dvi,
                         device=names(dev.cur()),
                         name=NULL,
                         gp=gpar(),
-                        engine=lualatexEngine, ...) {
+                        engine=lualatexEngine,
+                        packages=NULL,
+                        ...) {
     if (!is.unit(x))
         x <- unit(x, default.units)
     if (!is.unit(y))
         y <- unit(y, default.units)
     set("engine", engine)
+    pkgs <- resolvePackages(packages)
     ## Generate objects from DVI
     invisible(lapply(dvi, grobDVI))
     objList <- get("DVIobjList")

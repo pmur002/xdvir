@@ -42,11 +42,11 @@ xetexEngine <- function() {
 
 xelatexEngine <- xetexEngine()
 
-xelatexGrob <- function(tex) {
-    texDoc <- author(tex, engine=xelatexEngine)
+xelatexGrob <- function(tex, packages=NULL) {
+    texDoc <- author(tex, engine=xelatexEngine, packages=packages)
     dviFile <- typeset(texDoc, engine=xelatexEngine)
     dvi <- readDVI(dviFile)
-    dviGrob(dvi, engine=xelatexEngine)
+    dviGrob(dvi, engine=xelatexEngine, package=packages)
 }
 
 grid.xelatex <- function(...) {

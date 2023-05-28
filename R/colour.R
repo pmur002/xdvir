@@ -1,4 +1,6 @@
 
-colourPreamble <- "\\usepackage{xcolor}"
+xcolorPreamble <- "\\usepackage{xcolor}"
 
-colourPackage <- package(preamble=colourPreamble)
+xcolorPackage <- package(preamble=xcolorPreamble)
+
+registerPackage(xcolorPackage, "xcolor")

@@ -36,7 +36,9 @@ export("readDVI",
        "TeXengine", 
        "luatexEngine", "lualatexEngine",
        "uptexEngine", "uplatexEngine",
-       "xetexEngine", "xelatexEngine")
+       "xetexEngine", "xelatexEngine",
+
+       "xcolorPackage")
 
 S3method("print", "DVI")
 
@@ -45,3 +47,18 @@ S3method("dviGrob", "DVI")
 S3method("buildGrob", "XDVIRglyphObj")
 S3method("buildGrob", "XDVIRruleObj")
 
+S3method("packagePreamble", "NULL")
+S3method("packagePreamble", "xdvirPackage")
+S3method("packagePreamble", "list")
+S3method("packagePrefix", "NULL")
+S3method("packagePrefix", "xdvirPackage")
+S3method("packagePrefix", "list")
+S3method("packageSuffix", "NULL")
+S3method("packageSuffix", "xdvirPackage")
+S3method("packageSuffix", "list")
+S3method("resolvePackage", "character")
+S3method("resolvePackage", "xdvirPackage")
+S3method("resolvePackages", "NULL")
+S3method("resolvePackages", "character")
+S3method("resolvePackages", "xdvirPackage")
+S3method("resolvePackages", "list")

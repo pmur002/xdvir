@@ -5,13 +5,14 @@ author <- function(tex,
                    engine,
                    packages=NULL,
                    texFile=NULL) {
+    pkgs <- resolvePackages(packages)
     texDoc <- c("\\documentclass{standalone}",
                 engine$preamble,
-                packagePreamble(packages),
+                packagePreamble(pkgs),
                 "\\begin{document}",
-                packagePrefix(packages),
+                packagePrefix(pkgs),
                 tex,
-                packageSuffix(packages),
+                packageSuffix(pkgs),
                 "\\end{document}")
     class(texDoc) <- "TeXdocument"
     if (!is.null(texFile)) {
