@@ -3,13 +3,15 @@
 
 author <- function(tex,
                    engine,
+                   packages=NULL,
                    texFile=NULL) {
     texDoc <- c("\\documentclass{standalone}",
                 engine$preamble,
+                packagePreamble(packages),
                 "\\begin{document}",
-                engine$prefix,
+                packagePrefix(packages),
                 tex,
-                engine$suffix,
+                packageSuffix(packages),
                 "\\end{document}")
     class(texDoc) <- "TeXdocument"
     if (!is.null(texFile)) {

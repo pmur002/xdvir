@@ -29,41 +29,14 @@ xeGetGlyph <- function(raw, font, dir) {
 ################################################################################
 ## User interface
 
-xelatexPreamble <- function(packages) {
-    preamble <- "\\usepackage{unicode-math}"
-    if (!is.null(packages)) {
-        preamble <- c(preamble, packagePreamble(packages))
-    }
-    preamble
-}
+## Ensure non-Type1 math font
+xelatexPreamble <- "\\usepackage{unicode-math}"
 
-xelatexPrefix <- function(packages) {
-    prefix <- NULL
-    if (!is.null(packages)) {
-        prefix <- c(prefix, packagePrefix(packages))
-    }
-    prefix
-}
-
-xelatexSuffix <- function(packages) {
-    suffix <- NULL
-    if (!is.null(packages)) {
-        suffix <- c(suffix, packageSuffix(packages))
-    }
-    suffix
-}
-
-xetexEngine <- function(packages=NULL) {
-    if (inherits(packages, "xdvirPackage"))
-        packages <- packageList(packages)
-    if (!is.null(packages) && !inherits(packages, "xdvirPackageList"))
-        stop("Invalid packages")
+xetexEngine <- function() {
     TeXengine(command="xelatex --no-pdf",
+              preamble=xelatexPreamble,
               fontDef=xeDefineFont,
               getGlyph=xeGetGlyph,
-              preamble=xelatexPreamble(packages),
-              prefix=xelatexPrefix(packages),
-              suffix=xelatexSuffix(packages),
               dviSuffix=".xdv")
 }
 
