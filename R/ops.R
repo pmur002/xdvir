@@ -318,7 +318,7 @@ op_font_def <- function(op) {
                           collapse="")
         ## Different engines specify fonts in different ways
         engine <- get("engine")
-        fontdef <- engine$defineFont(fontname)
+        fontdef <- engine$fontDef(fontname)
         scale <- blockValue(op$blocks$op.opparams.s)
         design <- blockValue(op$blocks$op.opparams.d)
         mag <- get("mag")
