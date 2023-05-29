@@ -29,7 +29,8 @@ export("readDVI",
 
        "grid.dvi", "dviGrob",
 
-       "grid.xelatex",
+       "grid.latex", "grid.lualatex", "grid.xelatex",
+       "latexGrob", "lualatexGrob", "xelatexGrob",
        
        "fontMap",
        

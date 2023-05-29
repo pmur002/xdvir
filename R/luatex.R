@@ -179,10 +179,27 @@ luaGetGlyph <- function(raw, font, dir) {
 ################################################################################
 ## User interface
 
+## Ensure non-Type1 math font
+lualatexPreamble <- "\\usepackage{unicode-math}"
+
 luatexEngine <- function(packages=NULL) {
     TeXengine(command="lualatex --output-format=dvi",
+              preamble=lualatexPreamble,
               fontDef=luaDefineFont,
               getGlyph=luaGetGlyph)
 }
 
 lualatexEngine <- luatexEngine()
+
+lualatexGrob <- function(tex, packages=NULL) {
+    texDoc <- author(tex, engine=lualatexEngine, packages=packages)
+    dviFile <- typeset(texDoc, engine=lualatexEngine)
+    dvi <- readDVI(dviFile)
+    dviGrob(dvi, engine=lualatexEngine, package=packages)
+}
+
+grid.lualatex <- function(...) {
+    grid.draw(lualatexGrob(...))
+}
+
+    
