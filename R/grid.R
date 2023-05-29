@@ -36,6 +36,7 @@ dviGrob.DVI <- function(dvi,
         y <- unit(y, default.units)
     set("engine", engine)
     pkgs <- resolvePackages(packages)
+    set("pkgs", pkgs)
     ## Generate objects from DVI
     invisible(lapply(dvi, grobDVI))
     objList <- get("DVIobjList")

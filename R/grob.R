@@ -229,6 +229,9 @@ for (i in 235:238) {
 ## xxx2
 ## xxx3
 ## xxx4
+for (i in 239:242) {
+    assign(paste0("grob_op_", i), op_special)
+}
 
 ## 243..246
 ## fnt_def_1

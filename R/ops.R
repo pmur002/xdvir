@@ -17,6 +17,7 @@ setChar <- function(raw, put=FALSE) {
     f <- get("f")
     font <- fonts[[f]]
     engine <- get("engine")
+    colour <- get("colour")
     ## Lost of things depend on text direction
     dir <- get("dir")
     ## Different engines specify glyphs in different ways
@@ -28,7 +29,8 @@ setChar <- function(raw, put=FALSE) {
         ## Position glyph then move
         x <- fromTeX(h)
         y <- fromTeX(v)
-        glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size)
+        glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size,
+                       colour=colour[1])
         updateBBoxHoriz(h + bbox[1]) ## left
         updateBBoxHoriz(h + bbox[2]) ## right
         updateBBoxVert(v - bbox[3]) ## bottom
@@ -43,7 +45,8 @@ setChar <- function(raw, put=FALSE) {
         x <- fromTeX(h)
         ## y origin is v + bbox[4] (ymax) + height[2] (tsb)
         y <- fromTeX(get("v") + bbox[4] + height[2])
-        glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size)
+        glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size,
+                       colour=colour[1])
         updateBBoxHoriz(h + bbox[1]) ## left
         updateBBoxHoriz(h + bbox[2]) ## right
         updateBBoxVert(v - bbox[3]) ## bottom
@@ -129,6 +132,8 @@ op_bop <- function(op) {
     set("i", 0)
     ## Font number
     set("f", NA)
+    ## Default colour
+    set("colour", NA)
     ## Default text direction
     set("dir", 0)
 }
@@ -300,6 +305,12 @@ op_fnt <- function(op) {
 ## xxx2
 ## xxx3
 ## xxx4
+op_special <- function(op) {
+    specialString <- paste(blockValue(op$blocks$op.opparams.string),
+                           collapse="")
+    pkgs <- get("pkgs")
+    packageSpecial(pkgs, specialString)
+}
 
 ## 243..246
 ## fnt_def_1
@@ -339,6 +350,8 @@ op_pre <- function(op) {
     set("num", num)
     set("den", den)
     set("mag", mag)
+    ## Initialise packages
+    initPackages(get("pkgs"))
 }
 
 ## 248
@@ -391,6 +404,7 @@ setGlyphs <- function(op) {
     fonts <- get("fonts")
     f <- get("f")
     font <- fonts[[f]]
+    colour <- get("colour")
     ## NOTE differences from setChar():
     ##   Only a XeTeX engine will produce x_glyph_array
     ##   No concept of text direction (in XDV)
@@ -408,7 +422,8 @@ setGlyphs <- function(op) {
         ## Position glyph then move
         x <- fromTeX(h)
         y <- fromTeX(v)
-        glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size)
+        glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size,
+                       colour=colour[1])
         updateBBoxHoriz(h + bbox[1]) ## left
         updateBBoxHoriz(h + bbox[2]) ## right
         updateBBoxVert(v - bbox[3]) ## bottom

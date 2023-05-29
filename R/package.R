@@ -4,7 +4,8 @@
 package <- function(preamble=NULL,
                     prefix=NULL,
                     suffix=NULL,
-                    special=NULL) {
+                    special=NULL,
+                    init=NULL) {
     pkg <- list(preamble=preamble,
                 prefix=prefix,
                 suffic=suffix,
@@ -59,6 +60,26 @@ packageSuffix.xdvirPackage <- function(x) {
 
 packageSuffix.list <- function(x) {
     unlist(lapply(x, packageSuffix))
+}
+
+################################################################################
+## Package initialisation
+initPackages <- function(pkgs) {
+    lapply(pkgs,
+           function(x) {
+               if (!is.null(x$init))
+                   x$init()
+           })
+}
+
+################################################################################
+## Call package specials
+packageSpecial <- function(pkgs, special) {
+    lapply(pkgs,
+           function(x) {
+               if (!is.null(x$special))
+                   x$special(special)
+           })
 }
 
 ################################################################################
