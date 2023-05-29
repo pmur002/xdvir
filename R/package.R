@@ -5,11 +5,13 @@ package <- function(preamble=NULL,
                     prefix=NULL,
                     suffix=NULL,
                     special=NULL,
-                    init=NULL) {
+                    init=NULL,
+                    final=NULL) {
     pkg <- list(preamble=preamble,
                 prefix=prefix,
-                suffic=suffix,
-                special=special)
+                suffix=suffix,
+                special=special,
+                final=final)
     class(pkg) <- "xdvirPackage"
     pkg
 }
@@ -64,7 +66,7 @@ packageSuffix.list <- function(x) {
 
 ################################################################################
 ## Package initialisation
-initPackages <- function(pkgs) {
+packageInit <- function(pkgs) {
     lapply(pkgs,
            function(x) {
                if (!is.null(x$init))
@@ -79,6 +81,16 @@ packageSpecial <- function(pkgs, special) {
            function(x) {
                if (!is.null(x$special))
                    x$special(special)
+           })
+}
+
+################################################################################
+## Call package finals
+packageFinal <- function(pkgs) {
+    lapply(pkgs,
+           function(x) {
+               if (!is.null(x$final))
+                   x$final()
            })
 }
 

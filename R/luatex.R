@@ -191,11 +191,17 @@ luatexEngine <- function(packages=NULL) {
 
 lualatexEngine <- luatexEngine()
 
-lualatexGrob <- function(tex, packages=NULL) {
+lualatexGrob <- function(tex,
+                         x=0.5, y=0.5, default.units="npc",
+                         hjust="centre", vjust="centre",
+                         packages=NULL) {
     texDoc <- author(tex, engine=lualatexEngine, packages=packages)
     dviFile <- typeset(texDoc, engine=lualatexEngine)
     dvi <- readDVI(dviFile)
-    dviGrob(dvi, engine=lualatexEngine, package=packages)
+    dviGrob(dvi, 
+            x=x, y=y, default.units=default.units,
+            hjust=hjust, vjust=vjust,
+            engine=lualatexEngine, package=packages)
 }
 
 grid.lualatex <- function(...) {

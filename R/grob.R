@@ -4,11 +4,6 @@ buildGrob <- function(obj, ...) {
 }
 
 buildGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ...) {
-    metrics <- list(left=fromTeX(get("left")),
-                    right=fromTeX(get("right")),
-                    top=fromTeX(get("top")),
-                    bottom=fromTeX(get("bottom")),
-                    baseline=fromTeX(get("baseline")))
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
     gx <- convertX(unit(obj$x, "mm"), "bigpts", valueOnly=TRUE)
     gy <- convertY(-unit(obj$y, "mm"), "bigpts", valueOnly=TRUE)
@@ -24,22 +19,32 @@ buildGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ...) {
                        valueOnly=TRUE)
     top <- convertY(unit(-fromTeX(get("top")), "mm"), "bigpts",
                     valueOnly=TRUE)
+    vAnchorValues <- c(bottom, top, (bottom + top)/2)
+    vAnchorLabels <- c("bottom", "top", "centre")
     if (is.finite(get("baseline"))) {
-        vAnchor <- glyphAnchor(c(bottom, top, (bottom + top)/2,
-                                 convertY(unit(fromTeX(get("baseline")),
-                                               "mm"),
-                                          "bigpts", valueOnly=TRUE)),
-                               label=c("bottom", "top", "centre",
-                                       "baseline"))
-    } else {
-        vAnchor <- glyphAnchor(c(bottom, top, (bottom + top)/2),
-                               label=c("bottom", "top", "centre"))
+        vAnchorValues <- c(vAnchorValues,
+                           convertY(unit(-fromTeX(get("baseline")),
+                                         "mm"),
+                                    "bigpts", valueOnly=TRUE))
+        vAnchorLabels <- c(vAnchorLabels, "baseline")
     }
-    hAnchor <- glyphAnchor(c(textleft, textright,
-                             (textleft + textright)/2,
-                             left, right, (left + right)/2),
-                           label=c("left", "right", "centre",
-                                   "bbleft", "bbright", "bbcentre"))
+    anchors <- get("vAnchors")
+    if (!is.null(anchors)) {
+        vAnchorValues <- c(vAnchorValues, anchors$value)
+        vAnchorLabels <- c(vAnchorLabels, anchors$label)
+    }
+    vAnchor <- glyphAnchor(vAnchorValues, vAnchorLabels)
+    hAnchorValues <- c(textleft, textright,
+                       (textleft + textright)/2,
+                       left, right, (left + right)/2)
+    hAnchorLabels <- c("left", "right", "centre",
+                       "bbleft", "bbright", "bbcentre")
+    anchors <- get("hAnchors")
+    if (!is.null(anchors)) {
+        hAnchorValues <- c(hAnchorValues, anchors$value)
+        hAnchorLabels <- c(hAnchorLabels, anchors$label)
+    }
+    hAnchor <- glyphAnchor(hAnchorValues, hAnchorLabels)
     fontMap <- unique(obj$fontindex)
     fontList <- lapply(get("fonts")[fontMap],
                        function(x) {
@@ -246,6 +251,10 @@ grob_op_246 <- op_font_def
 ## 247
 ## pre
 grob_op_247 <- op_pre
+
+## 248
+## post
+grob_op_248 <- op_post
 
 ## XeTeX
 ## 252

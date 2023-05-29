@@ -1,9 +1,15 @@
 
-latexGrob <- function(tex, engine=lualatexEngine, packages=NULL) {
+latexGrob <- function(tex,
+                      x=0.5, y=0.5, default.units="npc",
+                      hjust="centre", vjust="centre",
+                      engine=lualatexEngine, packages=NULL) {
     texDoc <- author(tex, engine=engine, packages=packages)
     dviFile <- typeset(texDoc, engine=engine)
     dvi <- readDVI(dviFile)
-    dviGrob(dvi, engine=engine, package=packages)
+    dviGrob(dvi,
+            x=x, y=y, default.units=default.units,
+            hjust=hjust, vjust=vjust,
+            engine=engine, package=packages)
 }
 
 grid.latex <- function(...) {
