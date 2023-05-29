@@ -29,8 +29,9 @@ export("readDVI",
 
        "grid.dvi", "dviGrob",
 
-       "grid.latex", "grid.lualatex", "grid.xelatex",
-       "latexGrob", "lualatexGrob", "xelatexGrob",
+       "grid.latex", "latexGrob",
+       "grid.lualatex", "lualatexGrob",
+       "grid.xelatex", "xelatexGrob",
        
        "fontMap",
        
@@ -39,7 +40,8 @@ export("readDVI",
        "uptexEngine", "uplatexEngine",
        "xetexEngine", "xelatexEngine",
 
-       "xcolorPackage")
+       "xcolorPackage",
+       "fontspecPackage")
 
 S3method("print", "DVI")
 
