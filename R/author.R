@@ -17,6 +17,7 @@ author <- function(tex,
     class(texDoc) <- "TeXdocument"
     if (!is.null(texFile)) {
         writeLines(texDoc, texFile)
+        class(texFile) <- "TeXfile"
         attr(texDoc, "texFile") <- texFile
     }
     invisible(texDoc)
