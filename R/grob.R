@@ -38,8 +38,11 @@ buildGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ...) {
         vAnchorLabels <- c(vAnchorLabels, anchors$label)
     }
     vAnchor <- glyphAnchor(vAnchorValues, vAnchorLabels)
-    hAnchorValues <- c(textleft, textright,
-                       (textleft + textright)/2,
+    ## NOTE that 'left' and 'right' can exceed 'textleft' and 'textright'
+    ## e.g., if there is non-character output beyond the character output
+    minX <- min(textleft, left)
+    maxX <- max(textright, right)
+    hAnchorValues <- c(minX, maxX, (minX + maxX)/2,
                        left, right, (left + right)/2)
     hAnchorLabels <- c("left", "right", "centre",
                        "bbleft", "bbright", "bbcentre")
@@ -60,7 +63,7 @@ buildGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ...) {
                       match(obj$fontindex, fontMap), ## font
                       obj$size,
                       do.call(glyphFontList, fontList),
-                      glyphWidth(right - left),
+                      glyphWidth(maxX - minX),
                       glyphHeight(bottom - top),
                       hAnchor=hAnchor,
                       vAnchor=vAnchor,
