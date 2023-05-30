@@ -25,7 +25,9 @@ importFrom("xml2",
            "xml_set_text",
            "xml_text")
 
-export("readDVI",
+export("author",
+       "typeset",
+       "readDVI",
 
        "grid.dvi", "dviGrob",
 
@@ -45,10 +47,18 @@ export("readDVI",
 
 S3method("print", "DVI")
 
+S3method("typeset", "TeXdocument")
+S3method("typeset", "TeXfile")
+S3method("typeset", "character")
+
 S3method("dviGrob", "DVI")
 
 S3method("buildGrob", "XDVIRglyphObj")
 S3method("buildGrob", "XDVIRruleObj")
+S3method("buildGrob", "XDVIRtikzObj")
+S3method("buildGrob", "XDVIRtikzParentObj")
+S3method("buildGrob", "XDVIRtikzPathObj")
+S3method("buildGrob", "XDVIRtikzPolylineObj")
 
 S3method("packagePreamble", "NULL")
 S3method("packagePreamble", "xdvirPackage")

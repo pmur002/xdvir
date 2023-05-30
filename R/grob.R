@@ -19,6 +19,10 @@ buildGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ...) {
                        valueOnly=TRUE)
     top <- convertY(unit(-fromTeX(get("top")), "mm"), "bigpts",
                     valueOnly=TRUE)
+    if (!is.finite(textleft))
+        textleft <- left
+    if (!is.finite(textright))
+        textright <- right
     vAnchorValues <- c(bottom, top, (bottom + top)/2)
     vAnchorLabels <- c("bottom", "top", "centre")
     if (is.finite(get("baseline"))) {

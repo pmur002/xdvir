@@ -40,17 +40,21 @@ dviGrob.DVI <- function(dvi,
     ## Generate objects from DVI
     invisible(lapply(dvi, grobDVI))
     objList <- get("DVIobjList")
-    ## Use dummy glyph to establish x/y offset for non-glyph grobs
-    setDummyFont()
-    dummy <- dummyGlyph(x, y, hjust, vjust)
-    coords <- grobCoords(dummy)
-    xoffset <- coords[[1]]$x[1]
-    yoffset <- coords[[1]]$y[1]
-    ## Generate grobs from object list
-    grobs <- lapply(objList, buildGrob,
-                    x=x, y=y, hjust=hjust, vjust=vjust,
-                    xoffset=xoffset, yoffset=yoffset)
-    gTree(children=do.call(gList, grobs))
+    if (length(objList)) {
+        ## Use dummy glyph to establish x/y offset for non-glyph grobs
+        setDummyFont()
+        dummy <- dummyGlyph(x, y, hjust, vjust)
+        coords <- grobCoords(dummy)
+        xoffset <- coords[[1]]$x[1]
+        yoffset <- coords[[1]]$y[1]
+        ## Generate grobs from object list
+        grobs <- lapply(objList, buildGrob,
+                        x=x, y=y, hjust=hjust, vjust=vjust,
+                        xoffset=xoffset, yoffset=yoffset)
+        gTree(children=do.call(gList, grobs))
+    } else {
+        gTree()
+    }
 }
 
 grid.dvi <- function(...) {
