@@ -15,6 +15,22 @@
   [See page 4 of 
    https://mirror.cse.unsw.edu.au/pub/CTAN/macros/luatex/generic/luaotfload/luaotfload-latex.pdf]
 
+  AND THIS is the commit ...
+
+  https://github.com/latex3/luaotfload/commit/7473c3013d955c86c4b82b06c876d464be503e81
+
+  ... which says this ...
+
+-- When writing DVI files, we can't assume that the DVI reader has access to our
+-- font dictionaries, so we need an independent representation for our glyphs. The
+-- approach we chose in coordination with the dvisvgm author is to create a DVI font
+-- name which indicates the font filename and some essential backend parameters
+-- (especially otential extend, shrink, embolden, etc. factors) and then use GIDs in
+-- the page stream.
+
+  ... which suggests that the change to font file names occurred at the same
+  time as the change to glyph IDs (!!!)
+
   NOTE the quoted comment at the top of the SE post above about luatex
   dvi output not being important, BUT the discussion suggests that
   there are others besides me interested in playing with luatex's dvi
