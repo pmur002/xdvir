@@ -43,7 +43,9 @@ export("author",
        "xetexEngine", "xelatexEngine",
 
        "xcolorPackage",
-       "fontspecPackage")
+       "fontspecPackage",
+       "tikzPackage",
+       "tikzPicture")
 
 S3method("print", "DVI")
 

@@ -490,16 +490,20 @@ tikzPrefix <- "\\begin{tikzpicture}"
 
 tikzSuffix <- "\\end{tikzpicture}"
 
-tikz <- package(preamble=tikzPreamble(),
-                special=tikzSpecial,
-                init=tikzInit)
+tikzPackage <- function(packages=NULL) {
+    package(preamble=tikzPreamble(packages),
+            special=tikzSpecial,
+            init=tikzInit)
+}
 
-tikzPicture <- package(preamble=tikzPreamble(),
-                       prefix=tikzPrefix,
-                       suffix=tikzSuffix,
-                       special=tikzSpecial,
-                       init=tikzInit)
+tikzPicture <- function(packages=NULL) {
+    package(preamble=tikzPreamble(packages),
+            prefix=tikzPrefix,
+            suffix=tikzSuffix,
+            special=tikzSpecial,
+            init=tikzInit)
+}
 
-registerPackage(tikz, "tikz")
-registerPackage(tikzPicture, "tikzPicture")
+registerPackage(tikzPackage(), "tikz")
+registerPackage(tikzPicture(), "tikzPicture")
 
