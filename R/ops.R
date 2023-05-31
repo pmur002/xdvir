@@ -44,13 +44,13 @@ setChar <- function(raw, put=FALSE) {
         ## Position glyph then move
         x <- fromTeX(h)
         ## y origin is v + bbox[4] (ymax) + height[2] (tsb)
-        y <- fromTeX(get("v") + bbox[4] + height[2])
+        y <- fromTeX(v + bbox[4] + height[2])
         glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size,
                        colour=colour[1])
         updateBBoxHoriz(h + bbox[1]) ## left
         updateBBoxHoriz(h + bbox[2]) ## right
-        updateBBoxVert(v - bbox[3]) ## bottom
-        updateBBoxVert(v - bbox[4]) ## top
+        updateBBoxVert(v + bbox[3]) ## bottom
+        updateBBoxVert(v + bbox[4] + height[2]) ## top
         if (!put) 
             set("v", v + height[1])
         updateTextLeft(h)
