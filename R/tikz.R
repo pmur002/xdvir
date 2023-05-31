@@ -10,7 +10,7 @@ buildGrob.XDVIRtikzPathObj <- function(obj, xoffset, yoffset, ...) {
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
     y <- convertY(unit(-obj$y, "pt"), "bigpts", valueOnly=TRUE) +
         convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
-    pathGrob(x, y, default.units="bigpts")
+    pathGrob(x, y, default.units="bigpts", gp=gpar(fill=NA))
 }
 
 buildGrob.XDVIRtikzPolylineObj <- function(obj, xoffset, yoffset, ...) {
@@ -20,6 +20,15 @@ buildGrob.XDVIRtikzPolylineObj <- function(obj, xoffset, yoffset, ...) {
     y <- convertY(unit(-obj$y, "pt"), "bigpts", valueOnly=TRUE) +
         convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
     polylineGrob(x, y, default.units="bigpts")
+}
+
+buildGrob.XDVIRtikzFillObj <- function(obj, xoffset, yoffset, ...) {
+    ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
+    x <- convertX(unit(obj$x, "pt"), "bigpts", valueOnly=TRUE) +
+        convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
+    y <- convertY(unit(-obj$y, "pt"), "bigpts", valueOnly=TRUE) +
+        convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
+    pathGrob(x, y, default.units="bigpts", gp=gpar(col=NA))
 }
 
 buildGrob.XDVIRtikzParentObj <- function(obj, xoffset, yoffset, ...) {
@@ -115,7 +124,7 @@ parseCurveTo <- function(x, i) {
     pathX[[sub]][[i]] <- convertX(unit(pts$x[-1], "in"), "pt", valueOnly=TRUE)
     pathY[[sub]][[i]] <- convertY(unit(pts$y[-1], "in"), "pt", valueOnly=TRUE)
     set("tikzPathX", pathX)
-    set("tizkPathY", pathY)
+    set("tikzPathY", pathY)
 }
 
 parseClose <- function(i) {
@@ -133,7 +142,7 @@ parseClose <- function(i) {
     pathY[[sub]][[i]] <- pathY[[sub - 1]][[1]]
     set("tikzPathX", pathX)
     set("tikzPathY", pathY)
-    set("tizkSubPath", sub)
+    set("tikzSubPath", sub)
 }
 
 recordPathElement <- function(x, i) {
@@ -198,8 +207,7 @@ recordStroke <- function() {
                        child <- list(x=unit(left, "mm") +
                                          unit(unlist(px), "pt"),
                                      y=unit(bottom, "mm") -
-                                         unit(unlist(py), "pt"),
-                                     gp=gpar(fill=NA))
+                                         unit(unlist(py), "pt"))
                        class(child) <- "XDVIRtikzPathObj"
                    } else {
                        child <- list(x=unit(left, "mm") +
@@ -213,6 +221,89 @@ recordStroke <- function() {
            },
            pathX, pathY, closed)
     reduceParent()
+}
+
+recordFill <- function() {
+    pathX <- get("tikzPathX")
+    pathY <- get("tikzPathY")
+    closed <- get("tikzPathClosed")
+    left <- get("pictureLeft")
+    bottom <- get("pictureBottom")
+    mapply(function(px, py) {
+               if (length(unlist(px)) > 1) {
+                   child <- list(x=unit(left, "mm") + unit(unlist(px), "pt"),
+                                 y=unit(bottom, "mm") - unit(unlist(py), "pt"))
+                   class(child) <- "XDVIRtikzFillObj"
+                   addChild(child)
+               }
+           },
+           pathX, pathY)
+    reduceParent()
+}
+
+recordFillStroke <- function() {
+    pathX <- get("tikzPathX")
+    pathY <- get("tikzPathY")
+    closed <- get("tikzPathClosed")
+    left <- get("pictureLeft")
+    bottom <- get("pictureBottom")
+    mapply(function(px, py) {
+               if (length(unlist(px)) > 1) {
+                   child <- list(x=unit(left, "mm") + unit(unlist(px), "pt"),
+                                 y=unit(bottom, "mm") - unit(unlist(py), "pt"))
+                   class(child) <- "XDVIRtikzFillObj"
+                   addChild(child)
+               }
+           },
+           pathX, pathY)
+    mapply(function(px, py, cl) {
+               if (length(unlist(px)) > 1) {
+                   if (cl) {
+                       child <- list(x=unit(left, "mm") +
+                                         unit(unlist(px), "pt"),
+                                     y=unit(bottom, "mm") -
+                                         unit(unlist(py), "pt"))
+                       class(child) <- "XDVIRtikzPathObj"
+                   } else {
+                       child <- list(x=unit(left, "mm") +
+                                         unit(unlist(px), "pt"),
+                                     y=unit(bottom, "mm") -
+                                         unit(unlist(py), "pt"))
+                       class(child) <- "XDVIRtikzPolylineObj"
+                   }
+                   addChild(child)
+               }
+           },
+           pathX, pathY, closed)
+    reduceParent()
+}
+
+recordTransform <- function(x) {
+    tokens <- as.numeric(strsplit(x, ",")[[1]])
+    tm <- rbind(c(tokens[1], tokens[3], tokens[5]),
+                c(tokens[2], tokens[4], tokens[6]),
+                c(0, 0, 1))
+    transform <- get("tikzTransform")
+    if (length(transform) == 0) {
+        set("tikzTransform", list(tm))
+    } else {
+        tm <- tm %*% transform[[1]]
+        set("tikzTransform", c(list(tm), transform))
+    }
+    td <- get("tikzTransformDepth")
+    td[1] <- td[1] + 1
+    set("tikzTransformDepth", td)
+    ## TEMPORARILY set h/v (within TikZ picture)
+    ## Transform is relative to picture bottom-left
+    left <- get("pictureLeft")
+    bottom <- get("pictureBottom")
+    ## Move to location of text
+    x <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
+    ## Negate y because TikZ is "up" while TeX is "down"
+    y <- convertY(unit(-bottom, "mm"), "pt", valueOnly=TRUE)
+    xy <- rbind(c(1,0,0), c(0,-1,0), c(0,0,1)) %*% tm %*% c(x, y, 1) 
+    set("h", xtoTeX(convertX(unit(xy[1], "pt"), "mm")))
+    set("v", ytoTeX(convertY(unit(xy[2], "pt"), "mm")))
 }
 
 parseValueWithUnit <- function(x) {
@@ -270,10 +361,18 @@ addTikzObj <- function(x) {
 }
 
 recordBeginScope <- function(x) {
+    td <- get("tikzTransformDepth")
+    set("tikzTransformDepth", c(0, td))
     addParent(x)
 }
 
 recordEndScope <- function(x) {
+    td <- get("tikzTransformDepth")
+    if (td[1] > 0) {
+        mt <- get("tikzTransform")
+        set("tikzTransform", mt[-(1:td[1])])
+    }
+    set("tikzTransformDepth", td[-1])
     reduceParent()
 }
 
@@ -339,7 +438,9 @@ tikzSpecial <- function(specialString) {
             set("pictureLeft", x)
             set("pictureBottom", y)
             set("inPicture", TRUE)
-            set("tizkParent", NULL)
+            set("tikzParent", NULL)
+            set("tikzTransform", NULL)
+            set("tikzTransformDepth", 0)
         } else if (grepl("^end-picture", special)) {
             recordBBox(special)
             set("h", get("savedH"))
