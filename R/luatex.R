@@ -83,6 +83,21 @@ luaFontName <- function(fontname) {
     name
 }
 
+## Glyph index from raw bytes
+luaGlyphIndex <- function(raw) {
+    nbytes <- length(raw)
+    switch(nbytes,
+           ## Single byte from set_char_i or set1
+           as.integer(raw),
+           ## Two bytes from set2
+           sum(as.integer(raw)*16^c(2, 0)),
+           ## Three bytes from set3
+           sum(as.integer(raw)*16^c(4, 2, 0)),
+           ## To be implemented
+           ## Have not yet witnessed set4 op
+           stop("set4 not yet supported"))
+}
+
 ## Glyph name from raw bytes
 luaGlyphName <- function(raw, fontfile, dir) {
     nbytes <- length(raw)
@@ -157,23 +172,40 @@ luaGlyphChar <- function(raw) {
 
 ## Create font definition from Lua DVI font def
 luaDefineFont <- function(fontname) {
-    ## Extract just font name from DVI fontname value
-    fontFullName <- luaFontName(fontname)
-    fontfile <- findFontFile(fontFullName)
-    fontDef(file=fontfile,
-            index=0,
-            getFontFamily(fontfile),
-            getFontWeight(fontfile),
-            getFontStyle(fontfile),
-            fontSize(fontFullName))
+    version <- get("luaOTFloadToolVersion")
+    if (as.numeric(version) >= 3.15) {
+        fontfile <- gsub("[[]|[]].*", "", fontname)
+        fontDef(file=fontfile,
+                index=0,
+                getFontFamily(fontfile),
+                getFontWeight(fontfile),
+                getFontStyle(fontfile),
+                fontSize(fontfile))
+    } else {
+        ## Extract just font name from DVI fontname value
+        fontFullName <- luaFontName(fontname)
+        fontfile <- findFontFile(fontFullName)
+        fontDef(file=fontfile,
+                index=0,
+                getFontFamily(fontfile),
+                getFontWeight(fontfile),
+                getFontStyle(fontfile),
+                fontSize(fontFullName))
+    }
 }
 
 ## Get glyph info from raw bytes (and current font)
 luaGetGlyph <- function(raw, font, dir) {
-    glyphName <- luaGlyphName(raw, font$fontdef$file)
-    index <- getGlyphIndex(glyphName, font$fontdef$file)
-    char <- luaGlyphChar(raw)
-    list(name=glyphName, index=index, char=char)
+    version <- get("luaOTFloadToolVersion")
+    if (as.numeric(version) >= 3.15) {
+        index <- luaGlyphIndex(raw)
+        list(name="", index=index, char="")
+    } else {
+        glyphName <- luaGlyphName(raw, font$fontdef$file)
+        index <- getGlyphIndex(glyphName, font$fontdef$file)
+        char <- luaGlyphChar(raw)
+        list(name=glyphName, index=index, char=char)
+    }
 }
 
 ################################################################################
