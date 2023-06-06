@@ -36,7 +36,7 @@ latex <- function(file, dir, engine, tinytex, sig=TRUE) {
                              engine_args=options),
             silent=TRUE)
     } else {
-        system(paste0(engine$command, options))
+        system(paste0(engine$command, " ", options, " ", file))
     }
 }
 
@@ -51,7 +51,7 @@ typeset.TeXdocument <- function(x,
     }
     texDir <- dirname(texFile)
     dviFile <- paste0(gsub("[.]tex", "", texFile), engine$dviSuffix)
-    writeLines(x, engine, texFile, texDir)
+    writeLines(x, texFile)
     latex(texFile, texDir, engine, tinytex)
     invisible(dviFile)    
 }

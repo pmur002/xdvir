@@ -1,11 +1,14 @@
 
-## Dependencies
-initTeX()
-initTTX()
-initFontForge()
-
-## Engines
-initLuaTeX()
-initXeTeX()
-initUpTeX()
+.onLoad <- function(libname, pkgname) {
+    ## Dependencies
+    initTeX()
+    initTTX()
+    initFontForge()
+    ## Suggestions
+    initTinyTeX()
+    ## Engines
+    initLuaTeX()
+    initXeTeX()
+    initUpTeX()
+}
 

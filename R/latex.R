@@ -2,9 +2,10 @@
 latexGrob <- function(tex,
                       x=0.5, y=0.5, default.units="npc",
                       hjust="centre", vjust="centre",
-                      engine=lualatexEngine, packages=NULL) {
+                      engine=lualatexEngine, packages=NULL,
+                      tinytex=getOption("xdvir.tinytex")) {
     texDoc <- author(tex, engine=engine, packages=packages)
-    dviFile <- typeset(texDoc, engine=engine)
+    dviFile <- typeset(texDoc, engine=engine, tinytex=tinytex)
     dvi <- readDVI(dviFile)
     dviGrob(dvi,
             x=x, y=y, default.units=default.units,

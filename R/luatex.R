@@ -230,9 +230,10 @@ lualatexEngine <- luatexEngine()
 lualatexGrob <- function(tex,
                          x=0.5, y=0.5, default.units="npc",
                          hjust="centre", vjust="centre",
-                         packages=NULL) {
+                         packages=NULL,
+                         tinytex=getOption("xdvir.tinytex")) {
     texDoc <- author(tex, engine=lualatexEngine, packages=packages)
-    dviFile <- typeset(texDoc, engine=lualatexEngine)
+    dviFile <- typeset(texDoc, engine=lualatexEngine, tinytex=tinytex)
     dvi <- readDVI(dviFile)
     dviGrob(dvi, 
             x=x, y=y, default.units=default.units,
