@@ -1,8 +1,11 @@
 
 initXeTeX <- function() {
     xetex <- Sys.which("xetex")
-    if (nchar(xetex) == 0)
-        stop("Failed to find xetex; please install TeX (e.g., TeX Live)")
+    if (nchar(xetex) == 0) {
+        warning(paste("Failed to find xetex;",
+                      "you will not be able to use the xelatexEngine"))
+        return()
+    } 
     versText <- system("xetex --version", intern=TRUE)
     versLine <- grep("^XeTeX", versText)
     version <- gsub("XeTeX | [(].+", "", versText[versLine])
@@ -33,7 +36,8 @@ xeGetGlyph <- function(raw, font, dir) {
 xelatexPreamble <- "\\usepackage{unicode-math}"
 
 xetexEngine <- function() {
-    TeXengine(command="xelatex --no-pdf",
+    TeXengine(command="xelatex",
+              options="--no-pdf",
               preamble=xelatexPreamble,
               fontDef=xeDefineFont,
               getGlyph=xeGetGlyph,

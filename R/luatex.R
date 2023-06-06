@@ -1,8 +1,11 @@
 
 initLuaTeX <- function() {
     luatex <- Sys.which("luatex")
-    if (nchar(luatex) == 0)
-        stop("Failed to find luatex; please install TeX (e.g., TeX Live)")
+    if (nchar(luatex) == 0) {
+        warning(paste("Failed to find luatex;",
+                      "you will not be able to use the lualatexEngine"))
+        return()
+    }
     versText <- system("luatex --version", intern=TRUE)[1]
     version <- gsub(" .+", "", gsub("^[^0-9]+", "", versText))
     set("luaVersion", version)
@@ -215,7 +218,8 @@ luaGetGlyph <- function(raw, font, dir) {
 lualatexPreamble <- "\\usepackage{unicode-math}"
 
 luatexEngine <- function(packages=NULL) {
-    TeXengine(command="lualatex --output-format=dvi",
+    TeXengine(command="lualatex",
+              options="--output-format=dvi",
               preamble=lualatexPreamble,
               fontDef=luaDefineFont,
               getGlyph=luaGetGlyph)

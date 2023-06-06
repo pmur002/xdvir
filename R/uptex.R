@@ -1,8 +1,11 @@
 
 initUpTeX <- function() {
     uptex <- Sys.which("uptex")
-    if (nchar(uptex) == 0)
-        stop("Failed to find uptex; please install TeX (e.g., TeX Live)")
+    if (nchar(uptex) == 0) {
+        warning(paste("Failed to find uptex;",
+                      "you will not be able to use the uplatexEngine"))
+        return()
+    } 
     versText <- system("uptex --version", intern=TRUE)[1]
     versLine <- grep("^upTeX", versText)
     version <- gsub("upTeX | [(].+", "", versText[versLine])
