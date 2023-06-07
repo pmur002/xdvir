@@ -81,22 +81,22 @@ buildGrob.XDVIRruleObj <- function(obj, xoffset, yoffset, ...) {
     height <- convertHeight(unit(fromTeX(obj$h), "mm"), "bigpts",
                             valueOnly=TRUE)
     ## Below lwd=1, draw a line
-    if (width < 25.4/72) {
+    if (width < .75) { ## 1/96 / (1/72)  [ lwd=1 => 1/96 inch ]
         segmentsGrob(x + width/2,
                      y,
                      x + width/2,
-                     y - height,
+                     y + height,
                      default.units="bigpts",
-                     gp=gpar(lwd=72*width/25.4, lineend="butt"))
-    } else if (height < 25.4/72) {
+                     gp=gpar(lwd=72*width/96, lineend="butt"))
+    } else if (height < .75) {
         segmentsGrob(x,
                      y + height/2,
                      x + width,
-                     y - height/2,
+                     y + height/2,
                      default.units="bigpts",
-                     gp=gpar(lwd=72*height/25.4, lineend="butt"))
+                     gp=gpar(lwd=72*height/96, lineend="butt"))
     } else {
-        rectGrob(x, y, width, -height, default.units="bigpts",
+        rectGrob(x, y, width, height, default.units="bigpts",
                  just=c("left", "bottom"),
                  gp=gpar(col=NA, fill="black"))
     }
