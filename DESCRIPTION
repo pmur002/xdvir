@@ -11,6 +11,6 @@ Depends: R (>= 4.3.0), grid
 Suggests: tinytex
 Collate: state.R author.R typeset.R package.R convert.R dvi.R ops.R vf.R font.R font-api.R glyph.R metric.R engine.R anchor.R tex.R latex.R luatex.R xetex.R uptex.R read.R print.R obj.R grob.R grid.R fontforge.R ttx.R tinytex.R adobe.R colour.R fontspec.R preview.R tikz.R zzz.R
 SystemRequirements: A TeX distribution such as TeX Live, fonttools, fontforge
-Imports: grDevices, hexView (>= 0.3-4), xml2, systemfonts (> 0.1.1)
+Imports: grDevices, hexView (>= 0.3-4), xml2, systemfonts (> 0.1.1), gridBezier
 License: GPL-3
 StagedInstall: no
