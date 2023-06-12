@@ -118,9 +118,9 @@ parseCurveTo <- function(x, i) {
     pathY <- get("tikzPathY")
     startY <- pathY[[sub]][[i - 1]][length(pathY[[sub]][[i - 1]])]    
     ## Convert Bezier to polyline
-    bg <- BezierGrob(x=unit(c(startX, xy[c(1, 3, 5)]), units="pt"),
+    bg <- gridBezier::BezierGrob(x=unit(c(startX, xy[c(1, 3, 5)]), units="pt"),
                                  y=unit(c(startY, xy[c(2, 4, 6)]), units="pt"))
-    pts <- BezierPoints(bg)
+    pts <- gridBezier::BezierPoints(bg)
     pathX[[sub]][[i]] <- convertX(unit(pts$x[-1], "in"), "pt", valueOnly=TRUE)
     pathY[[sub]][[i]] <- convertY(unit(pts$y[-1], "in"), "pt", valueOnly=TRUE)
     set("tikzPathX", pathX)

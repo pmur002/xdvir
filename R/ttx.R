@@ -2,7 +2,7 @@
 initTTX <- function() {
     ttx <- Sys.which("ttx")
     if (nchar(ttx) == 0)
-        stop("Failed to find ttx; please install fonttools")
+        stop("Failed to find ttx; please install fontTools")
     version <- system("ttx --version", intern=TRUE)
     set("ttxVersion", version)
 }
@@ -397,3 +397,16 @@ ttxGlyphMetrics <- function(index, file, size, dir) {
     bboxPts <- floor(fontsize + .5)*cex*(round(bbox/(unitsPerEm/1000)))/1000
     xtoTeX(unit(bboxPts, "bigpts"))
 }
+
+################################################################################
+## Define font library
+
+ttxFontLibrary <- fontLibrary(ttxFontFamily,
+                              ttxFontWeight,
+                              ttxFontStyle,
+                              ttxGlyphIndex,
+                              ttxGlyphNameFromUNICODE,
+                              ttxGlyphWidth,
+                              ttxGlyphHeight,
+                              ttxGlyphMetrics,
+                              init=function() { initTTX(); initFontForge() })

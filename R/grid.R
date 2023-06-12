@@ -29,6 +29,7 @@ dviGrob.DVI <- function(dvi,
                         gp=gpar(),
                         engine=lualatexEngine,
                         packages=NULL,
+                        fontLib=getOption("xdvir.fontLibrary"),
                         ...) {
     if (!is.unit(x))
         x <- unit(x, default.units)
@@ -37,6 +38,7 @@ dviGrob.DVI <- function(dvi,
     set("engine", engine)
     pkgs <- resolvePackages(packages)
     set("pkgs", pkgs)
+    set("fontLib", fontLib)
     ## Generate objects from DVI
     invisible(lapply(dvi, grobDVI))
     objList <- get("DVIobjList")

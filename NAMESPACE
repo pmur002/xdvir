@@ -33,9 +33,6 @@ importFrom("xml2",
            "xml_set_attr",
            "xml_set_text",
            "xml_text")
-importFrom("gridBezier",
-           "BezierGrob",
-           "BezierPoints")
 
 export("author",
        "typeset",

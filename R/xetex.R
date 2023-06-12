@@ -50,14 +50,16 @@ xelatexGrob <- function(tex,
                         x=0.5, y=0.5, default.units="npc",
                         hjust="centre", vjust="centre",
                         packages=NULL,
-                        tinytex=getOption("xdvir.tinytex")) {
+                        tinytex=getOption("xdvir.tinytex"),
+                        fontLib=getOption("xdvir.fontLibrary")) {
     texDoc <- author(tex, engine=xelatexEngine, packages=packages)
     dviFile <- typeset(texDoc, engine=xelatexEngine, tinytex=tinytex)
     dvi <- readDVI(dviFile)
     dviGrob(dvi,
             x=x, y=y, default.units=default.units,
             hjust=hjust, vjust=vjust,
-            engine=xelatexEngine, package=packages)
+            engine=xelatexEngine, package=packages,
+            fontLib=fontLib)
 }
 
 grid.xelatex <- function(...) {

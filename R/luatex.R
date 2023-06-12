@@ -102,7 +102,7 @@ luaGlyphIndex <- function(raw) {
 }
 
 ## Glyph name from raw bytes
-luaGlyphName <- function(raw, fontfile, dir) {
+luaGlyphName <- function(raw, fontfile, dir, fontLib) {
     nbytes <- length(raw)
     code <- switch(nbytes,
                    ## Single byte is either set_char_i or set1 op
@@ -127,10 +127,10 @@ luaGlyphName <- function(raw, fontfile, dir) {
     ## May generate more than one option
     switch(nbytes,
            c(AdobeName(code),
-             getGlyphNameFromUNICODE(cmapCode, fontfile, 0)),
+             fontLib$glyphName(cmapCode, fontfile, 0)),
            c(AdobeName(code),
              paste0("uni", code),
-             getGlyphNameFromUNICODE(cmapCode, fontfile, 0)),
+             fontLib$glyphName(cmapCode, fontfile, 0)),
            ## Find non-UNICODE glyph name
            if (as.numeric(raw[1]) >= 15) {
                getNonUnicodeGlyph(getGlyphs(fontfile), 
@@ -139,7 +139,7 @@ luaGlyphName <- function(raw, fontfile, dir) {
                c(AdobeName(code),
                  paste0("uni", code),
                  paste0("u", gsub("^0", "", code)),
-                 getGlyphNameFromUNICODE(cmapCode, fontfile, 0))
+                 fontLib$glyphName(cmapCode, fontfile, 0))
            },
            stop("set4 not yet supported"))
 }
@@ -174,15 +174,15 @@ luaGlyphChar <- function(raw) {
 ################################################################################
 
 ## Create font definition from Lua DVI font def
-luaDefineFont <- function(fontname) {
+luaDefineFont <- function(fontname, fontLib) {
     version <- get("luaOTFloadToolVersion")
     if (as.numeric(version) >= 3.15) {
         fontfile <- gsub("[[]|[]].*", "", fontname)
         fontDef(file=fontfile,
                 index=0,
-                getFontFamily(fontfile),
-                getFontWeight(fontfile),
-                getFontStyle(fontfile),
+                fontLib$fontFamily(fontfile),
+                fontLib$fontWeight(fontfile),
+                fontLib$fontStyle(fontfile),
                 fontSize(fontfile))
     } else {
         ## Extract just font name from DVI fontname value
@@ -190,22 +190,22 @@ luaDefineFont <- function(fontname) {
         fontfile <- findFontFile(fontFullName)
         fontDef(file=fontfile,
                 index=0,
-                getFontFamily(fontfile),
-                getFontWeight(fontfile),
-                getFontStyle(fontfile),
+                fontLib$fontFamily(fontfile),
+                fontLib$fontWeight(fontfile),
+                fontLib$fontStyle(fontfile),
                 fontSize(fontFullName))
     }
 }
 
 ## Get glyph info from raw bytes (and current font)
-luaGetGlyph <- function(raw, font, dir) {
+luaGetGlyph <- function(raw, font, dir, fontLib) {
     version <- get("luaOTFloadToolVersion")
     if (as.numeric(version) >= 3.15) {
         index <- luaGlyphIndex(raw)
         list(name="", index=index, char="")
     } else {
-        glyphName <- luaGlyphName(raw, font$fontdef$file)
-        index <- getGlyphIndex(glyphName, font$fontdef$file)
+        glyphName <- luaGlyphName(raw, font$fontdef$file, dir, fontLib)
+        index <- fontLib$glyphIndex(glyphName, font$fontdef$file)
         char <- luaGlyphChar(raw)
         list(name=glyphName, index=index, char=char)
     }
@@ -231,14 +231,16 @@ lualatexGrob <- function(tex,
                          x=0.5, y=0.5, default.units="npc",
                          hjust="centre", vjust="centre",
                          packages=NULL,
-                         tinytex=getOption("xdvir.tinytex")) {
+                         tinytex=getOption("xdvir.tinytex"),
+                         fontLib=getOption("xdvir.fontLibrary")) {
     texDoc <- author(tex, engine=lualatexEngine, packages=packages)
     dviFile <- typeset(texDoc, engine=lualatexEngine, tinytex=tinytex)
     dvi <- readDVI(dviFile)
     dviGrob(dvi, 
             x=x, y=y, default.units=default.units,
             hjust=hjust, vjust=vjust,
-            engine=lualatexEngine, package=packages)
+            engine=lualatexEngine, package=packages,
+            fontLib=fontLib)
 }
 
 grid.lualatex <- function(...) {

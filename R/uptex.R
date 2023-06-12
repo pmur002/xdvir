@@ -67,7 +67,7 @@ findMappedFile <- function(fontname) {
     }
 }
 
-upGlyphName <- function(raw, fontfile, dir) {
+upGlyphName <- function(raw, fontfile, dir, fontLib) {
     nbytes <- length(raw)
     code <- switch(nbytes,
                    ## Single byte is either set_char_i or set1 op
@@ -81,15 +81,15 @@ upGlyphName <- function(raw, fontfile, dir) {
     ## May generate more than one option
     switch(nbytes,
            c(AdobeName(code),
-             getGlyphNameFromUNICODE(cmapCode, fontfile, dir)),
+             fontLib$glyphName(cmapCode, fontfile, dir)),
            c(AdobeName(code),
              paste0("uni", code),
-             getGlyphNameFromUNICODE(cmapCode, fontfile, dir)),
+             fontLib$glyphName(cmapCode, fontfile, dir)),
            ## Find non-UNICODE glyph name
            c(AdobeName(code),
              paste0("uni", code),
              paste0("u", gsub("^0", "", code)),
-             getGlyphNameFromUNICODE(cmapCode, fontfile, dir)),
+             fontLib$glyphName(cmapCode, fontfile, dir)),
            stop("set4 not yet supported"))
 }
 
@@ -107,7 +107,7 @@ upGlyphChar <- function(raw) {
 ################################################################################
 
 ## Create font definition from upTeX DVI font def
-upDefineFont <- function(fontname) {
+upDefineFont <- function(fontname, fontLib) {
     mappedFont <- mapFontName(fontname)
     if (length(mappedFont)) {
         ## Work with mapped file
@@ -136,17 +136,17 @@ upDefineFont <- function(fontname) {
     }
     fontDef(file=fontfile,
             index=0,
-            getFontFamily(fontfile),
-            getFontWeight(fontfile),
-            getFontStyle(fontfile),
+            fontLib$fontFamily(fontfile),
+            fontLib$fontWeight(fontfile),
+            fontLib$fontStyle(fontfile),
             fontSize(fontname))
 }
 
 ## Get glyph info from raw bytes (and current font)
-upGetGlyph <- function(raw, font, dir) {
+upGetGlyph <- function(raw, font, dir, fontLib) {
     ## Assume only Japanese set2 ops for now
-    glyphName <- upGlyphName(raw, font$fontdef$file, dir)
-    index <- getGlyphIndex(glyphName, font$fontdef$file)
+    glyphName <- upGlyphName(raw, font$fontdef$file, dir, fontLib)
+    index <- fontLib$glyphIndex(glyphName, font$fontdef$file)
     char <- upGlyphChar(raw)
     list(name=glyphName, index=index, char=char)
 }

@@ -18,14 +18,16 @@ setChar <- function(raw, put=FALSE) {
     font <- fonts[[f]]
     engine <- get("engine")
     colour <- get("colour")
+    fontLib <- get("fontLib")
     ## Lost of things depend on text direction
     dir <- get("dir")
     ## Different engines specify glyphs in different ways
-    glyphInfo <- engine$getGlyph(raw, font, dir)
-    bbox <- getGlyphMetrics(glyphInfo$index, font$fontdef$file,
-                            font$size, dir)
+    glyphInfo <- engine$getGlyph(raw, font, dir, fontLib)
+    bbox <- fontLib$glyphBounds(glyphInfo$index, font$fontdef$file,
+                                font$size, dir)
     if (dir == 0) {
-        width <- getGlyphWidth(glyphInfo$index, font$fontdef$file, font$size)
+        width <- fontLib$glyphWidth(glyphInfo$index, font$fontdef$file,
+                                    font$size)
         ## Position glyph then move
         x <- fromTeX(h)
         y <- fromTeX(v)
@@ -40,7 +42,8 @@ setChar <- function(raw, put=FALSE) {
         updateTextLeft(h)
         updateTextRight(h + width[1])
     } else {
-        height <- getGlyphHeight(glyphInfo$index, font$fontdef$file, font$size)
+        height <- fontLib$glyphHeight(glyphInfo$index, font$fontdef$file,
+                                      font$size)
         ## Position glyph then move
         x <- fromTeX(h)
         ## y origin is v + bbox[4] (ymax) + height[2] (tsb)
@@ -328,7 +331,8 @@ op_font_def <- function(op) {
                           collapse="")
         ## Different engines specify fonts in different ways
         engine <- get("engine")
-        fontdef <- engine$fontDef(fontname)
+        fontLib <- get("fontLib")
+        fontdef <- engine$fontDef(fontname, fontLib)
         scale <- blockValue(op$blocks$op.opparams.s)
         design <- blockValue(op$blocks$op.opparams.d)
         mag <- get("mag")
@@ -373,6 +377,7 @@ op_post <- function(op) {
 ## 252
 ## x_fnt_def
 op_x_font_def <- function(op) {
+    fontLib <- get("fontLib")
     ## Create font definition and save it
     fonts <- get("fonts")
     fontnum <- blockValue(op$blocks$op.opparams.fontnum) + 1
@@ -387,9 +392,9 @@ op_x_font_def <- function(op) {
         ## Only XeTeX engine generates x_fnt_def
         fontdef <- fontDef(file=fontname,
                            index=fontindex,
-                           getFontFamily(fontname),
-                           getFontWeight(fontname),
-                           getFontStyle(fontname),
+                           fontLib$fontFamily(fontname),
+                           fontLib$fontWeight(fontname),
+                           fontLib$fontStyle(fontname),
                            fontSize(fontname))
         mag <- get("mag")
         fonts[[fontnum]] <- list(fontdef=fontdef,
@@ -411,6 +416,7 @@ setGlyphs <- function(op) {
     f <- get("f")
     font <- fonts[[f]]
     colour <- get("colour")
+    fontLib <- get("fontLib")
     ## NOTE differences from setChar():
     ##   Only a XeTeX engine will produce x_glyph_array
     ##   No concept of text direction (in XDV)
@@ -422,9 +428,10 @@ setGlyphs <- function(op) {
     for (i in 1:nGlyphs) {
         ## NOTE that we really only need 'index' (?)
         glyphInfo <- list(name="", index=glyphIds[i], char="")
-        bbox <- getGlyphMetrics(glyphInfo$index, font$fontdef$file,
-                                font$size, 0)
-        width <- getGlyphWidth(glyphInfo$index, font$fontdef$file, font$size)
+        bbox <- fontLib$glyphBounds(glyphInfo$index, font$fontdef$file,
+                                    font$size, 0)
+        width <- fontLib$glyphWidth(glyphInfo$index, font$fontdef$file,
+                                    font$size)
         ## Position glyph then move
         x <- fromTeX(h)
         y <- fromTeX(v)
