@@ -6,8 +6,8 @@
 
 initFontLib <- function() {
     if (is.null(getOption("xdvir.fontLibrary"))) {
-        if (nchar(system.file("fonttools"))) {
-            options("xdvir.fontLibrary"=fonttoolsFontLibrary)
+        if (nchar(system.file(package="fonttools"))) {
+            options("xdvir.fontLibrary"=ftFontLibrary)
         } else {
             options("xdvir.fontLibrary"=ttxFontLibrary)
         }

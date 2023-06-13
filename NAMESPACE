@@ -38,6 +38,8 @@ export("author",
        "typeset",
        "readDVI",
 
+       "ttxFontLibrary", "ftFontLibrary",
+       
        "grid.dvi", "dviGrob",
 
        "grid.latex", "latexGrob",

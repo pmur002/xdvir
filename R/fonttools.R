@@ -8,7 +8,7 @@ ftFontFamily <- function(file) {
 
 ftFontWeight <- function(file) {
     font <- fonttools::loadFont(file)
-    fonttools::fontWeight(font)
+    weight <- fonttools::fontWeight(font)
     if (is.null(weight))
         400
     else
@@ -22,18 +22,18 @@ ftFontStyle <- function(file) {
 
 ftGlyphIndex <- function(name, file) {
     font <- fonttools::loadFont(file)
-    fonttools::glyphIndex(font, name)
+    fonttools::fontGlyphIndex(font, name)
 }
 
 ftGlyphName <- function(code, file, dir) {
     font <- fonttools::loadFont(file)
-    fonttools::glyphName(font, code)
+    fonttools::fontGlyphName(font, code)
 }
 
 ftGlyphWidth <- function(index, file, size, transform=TRUE) {
     font <- fonttools::loadFont(file)
-    width <- fonttools::glyphWidth(font, index)
-    unitsPerEm <- fonttools::fontUnit(font)
+    width <- fonttools::fontGlyphWidth(font, index)
+    unitsPerEm <- fonttools::fontUnits(font)
     if (transform) {
         ## round() to get whole number metrix (at 1000 scale)
         ## floor() to match what PDF_StrWidthUTF8() does
@@ -49,8 +49,8 @@ ftGlyphWidth <- function(index, file, size, transform=TRUE) {
 
 ftGlyphHeight <- function(index, file, size, transform=TRUE) {
     font <- fonttools::loadFont(file)
-    height <- fonttools::glyphHeight(font, index)
-    unitsPerEm <- fonttools::fontUnit(font)
+    height <- fonttools:fontGlyphHeight(font, index)
+    unitsPerEm <- fonttools::fontUnits(font)
     if (transform) {
         ## round() to get whole number metrix (at 1000 scale)
         ## floor() to match what PDF_StrWidthUTF8() does
@@ -66,8 +66,9 @@ ftGlyphHeight <- function(index, file, size, transform=TRUE) {
 
 ftGlyphBounds <- function(index, file, size, dir) {
     font <- fonttools::loadFont(file)
-    bbox <- fonttools::glyphBounds(font, index)
-    unitsPerEm <- fonttools::fontUnit(font)
+    ## NOTE the different order 
+    bbox <- fonttools::fontGlyphBounds(font, index)[c(1, 3, 2, 4)]
+    unitsPerEm <- fonttools::fontUnits(font)
     ## round() to get whole number metrix (at 1000 scale)
     ## floor() to match what PDF_StrWidthUTF8() does
     fontsize <- size
