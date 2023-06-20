@@ -2,12 +2,12 @@
 initLuaTeX <- function() {
     luatex <- Sys.which("luatex")
     if (nchar(luatex) == 0) {
-        message("luatex:  not found")
+        message("   luatex:  not found")
     } else {
         versText <- system("luatex --version", intern=TRUE)[1]
         version <- gsub(" .+", "", gsub("^[^0-9]+", "", versText))
         set("luaVersion", version)
-        message(paste0("luatex:  ", version))
+        message(paste0("   luatex:  ", version))
         ## https://mirror.cse.unsw.edu.au/pub/CTAN/macros/luatex/generic/luaotfload/luaotfload-latex.pdf
         ## [page 4]
         ## "New in version 3.15"

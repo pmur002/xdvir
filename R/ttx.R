@@ -2,10 +2,10 @@
 initTTX <- function() {
     ttx <- Sys.which("ttx")
     if (nchar(ttx) == 0) {
-        message("ttx:  not found")
+        message("      ttx:  not found")
     } else {
         version <- system("ttx --version", intern=TRUE)
-        message(paste0("ttx:  ", version))
+        message(paste0("      ttx:  ", version))
         set("ttxVersion", version)
     }
 }

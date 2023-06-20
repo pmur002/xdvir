@@ -2,12 +2,12 @@
 initUpTeX <- function() {
     uptex <- Sys.which("uptex")
     if (nchar(uptex) == 0) {
-        message("uptex:  not found")
+        message("    uptex:  not found")
     } else {
         versText <- system("uptex --version", intern=TRUE)[1]
         versLine <- grep("^upTeX", versText)
         version <- gsub("upTeX | [(].+", "", versText[versLine])
-        message(paste0("uptex:  ", version))
+        message(paste0("    uptex:  ", version))
         set("upVersion", version)
     }
 }

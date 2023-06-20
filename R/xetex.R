@@ -2,12 +2,12 @@
 initXeTeX <- function() {
     xetex <- Sys.which("xetex")
     if (nchar(xetex) == 0) {
-        message("xetex:  not found")
+        message("    xetex:  not found")
     } else {
         versText <- system("xetex --version", intern=TRUE)
         versLine <- grep("^XeTeX", versText)
         version <- gsub("XeTeX | [(].+", "", versText[versLine])
-        message(paste0("xetex:  ", version))
+        message(paste0("    xetex:  ", version))
         set("xeVersion", version)
     }
 }

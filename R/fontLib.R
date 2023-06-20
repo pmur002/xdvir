@@ -5,16 +5,21 @@
 ## See ./ttx.R for example font library 
 
 initFontLib <- function() {
-    if (is.null(getOption("xdvir.fontLibrary"))) {
-        if (nchar(system.file(package="fonttools"))) {
-            message(paste0("fonttools:  ", packageVersion("fonttools")))
+    fontLib <- getOption("xdvir.fontLibrary")
+    haveFontTools <- nchar(system.file(package="fonttools"))
+    if (haveFontTools) {
+        message(paste0("fonttools:  ", packageVersion("fonttools")))
+    } else {
+        message("fonttools:  not installed")
+    }
+    if (is.null(fontLib)) {
+        if (haveFontTools) {
             options("xdvir.fontLibrary"=ftFontLibrary)
         } else {
-            message("fonttools:  not installed")
             options("xdvir.fontLibrary"=ttxFontLibrary)
         }
+        fontLib <- getOption("xdvir.fontLibrary")
     }
-    fontLib <- getOption("xdvir.fontLibrary")
     fontLib$init()
 }
 
