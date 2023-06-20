@@ -12,15 +12,12 @@ typeset <- function(x,
 
 latex <- function(file, dir, engine, tinytex, sig=TRUE) {
     if (sig) {
-        options <- paste0(engine$options,
-                          " --output-comment='",
-                          xdvirSignature, "'",
-                          " --output-directory=",
-                          dir)
+        options <- c(engine$options,
+                     paste0("--output-comment='", xdvirSignature, "'"),
+                     paste0("--output-directory=", dir))
     } else {
-        options <- paste0(engine$options,
-                          " --output-directory=",
-                          dir)
+        options <- c(engine$options,
+                     paste0("--output-directory=", dir))
     }
     if (tinytex) {
         ## Have to run TWICE, once to generate .pdf (that we do not need)
@@ -36,7 +33,8 @@ latex <- function(file, dir, engine, tinytex, sig=TRUE) {
                              engine_args=options),
             silent=TRUE)
     } else {
-        system(paste0(engine$command, " ", options, " ", file))
+        system(paste0(engine$command, " ",
+                      paste(options, collapse=" "), " ", file))
     }
 }
 
