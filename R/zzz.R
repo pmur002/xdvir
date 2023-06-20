@@ -1,13 +1,12 @@
 
 .onLoad <- function(libname, pkgname) {
-    ## Dependencies
-    initTeX()
-    ## Suggestions
+    ## Font libraries
     initFontLib()
-    initTinyTeX()
-    ## Engines
+    ## TeX
+    initTeX()
     initLuaTeX()
     initXeTeX()
     initUpTeX()
+    initTinyTeX()
 }
 

@@ -2,14 +2,14 @@
 initXeTeX <- function() {
     xetex <- Sys.which("xetex")
     if (nchar(xetex) == 0) {
-        warning(paste("Failed to find xetex;",
-                      "you will not be able to use the xelatexEngine"))
-        return()
-    } 
-    versText <- system("xetex --version", intern=TRUE)
-    versLine <- grep("^XeTeX", versText)
-    version <- gsub("XeTeX | [(].+", "", versText[versLine])
-    set("xeVersion", version)
+        message("xetex:  not found")
+    } else {
+        versText <- system("xetex --version", intern=TRUE)
+        versLine <- grep("^XeTeX", versText)
+        version <- gsub("XeTeX | [(].+", "", versText[versLine])
+        message(paste0("xetex:  ", version))
+        set("xeVersion", version)
+    }
 }
 
 

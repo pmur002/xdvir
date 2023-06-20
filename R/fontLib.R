@@ -7,8 +7,10 @@
 initFontLib <- function() {
     if (is.null(getOption("xdvir.fontLibrary"))) {
         if (nchar(system.file(package="fonttools"))) {
+            message(paste0("fonttools:  ", packageVersion("fonttools")))
             options("xdvir.fontLibrary"=ftFontLibrary)
         } else {
+            message("fonttools:  not installed")
             options("xdvir.fontLibrary"=ttxFontLibrary)
         }
     }
