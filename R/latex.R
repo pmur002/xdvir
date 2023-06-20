@@ -14,5 +14,5 @@ latexGrob <- function(tex,
 }
 
 grid.latex <- function(...) {
-    grid.draw(lualatexGrob(...))
+    grid.draw(latexGrob(...))
 }
