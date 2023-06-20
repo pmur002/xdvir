@@ -13,7 +13,7 @@ typeset <- function(x,
 latex <- function(file, dir, engine, tinytex, sig=TRUE) {
     if (sig) {
         options <- c(engine$options,
-                     paste0("--output-comment='", xdvirSignature, "'"),
+                     paste0('--output-comment="', xdvirSignature, '"'),
                      paste0("--output-directory=", dir))
     } else {
         options <- c(engine$options,
