@@ -78,8 +78,14 @@ op_set <- function(op) {
 }
 
 setRule <- function(op, put=FALSE) {
+    h <- get("h")
+    v <- get("v")
+    updateBBoxHoriz(h)
+    updateBBoxVert(v)
     a <- blockValue(op$blocks$op.opparams.a)
     b <- blockValue(op$blocks$op.opparams.b)
+    updateBBoxHoriz(h + b)
+    updateBBoxVert(v - a)
     ## Need to create glyph object if there have been any glyphs prior to this
     addGlyphObj()
     addRuleObj(a, b)
