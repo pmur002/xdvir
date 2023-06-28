@@ -20,9 +20,25 @@ ftFontStyle <- function(file) {
     fonttools::fontStyle(font)
 }
 
+ftGlyphNames <- function(file) {
+    font <- fonttools::loadFont(file)
+    fonttools::fontGlyphNames(font)
+}
+
 ftGlyphIndex <- function(name, file) {
     font <- fonttools::loadFont(file)
-    fonttools::fontGlyphIndex(font, name)
+    ## Try more than one name (if there are multiple options)
+    index <- NA
+    while (is.na(index) && length(name)) {
+        ## Allow for Python Key Error (Dictionary index not found)
+        index <- tryCatch(fonttools::fontGlyphIndex(font, name[1]),
+                          python.builtin.KeyError = function(e) {
+                              ## Silently consume
+                              NA
+                          })
+        name <- name[-1]
+    }
+    index
 }
 
 ftGlyphName <- function(code, file, dir) {
@@ -80,6 +96,7 @@ ftGlyphBounds <- function(index, file, size, dir) {
 ftFontLibrary <- fontLibrary(ftFontFamily,
                              ftFontWeight,
                              ftFontStyle,
+                             ftGlyphNames,
                              ftGlyphIndex,
                              ftGlyphName,
                              ftGlyphWidth,

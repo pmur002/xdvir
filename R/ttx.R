@@ -283,6 +283,11 @@ ttxFontStyle <- function(file) {
         "italic"
 }
 
+ttxGlyphNames <- function(file) {
+    font <- ttxFontFile(file)
+    names(getGlyphOrderTable(font$file, font$suffix))
+}
+
 ttxGlyphIndex <- function(name, file) {
     font <- ttxFontFile(file)
     ## Find glyph index
@@ -407,6 +412,7 @@ ttxGlyphMetrics <- function(index, file, size, dir) {
 ttxFontLibrary <- fontLibrary(ttxFontFamily,
                               ttxFontWeight,
                               ttxFontStyle,
+                              ttxGlyphNames,
                               ttxGlyphIndex,
                               ttxGlyphNameFromUNICODE,
                               ttxGlyphWidth,

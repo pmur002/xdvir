@@ -101,6 +101,27 @@ luaGlyphIndex <- function(raw) {
            stop("set4 not yet supported"))
 }
 
+## Get glyph name of ith non-UNICODE glyph
+getNonUnicodeGlyph <- function(code, fontfile, fontLib) {
+    index <- as.numeric(as.hexmode(code))
+    glyphNames <- fontLib$glyphNames(fontfile)
+    notUNICODE <- grep("^glyph", glyphNames)
+    ## Allow user to tweak magic offset if hard-coded tweak below is wrong
+    magic <- getOption("xdvir.luatexMagicOffset")
+    if (is.null(magic)) {
+        ## The adjustment to glyph numbering is because,
+        ## at some point, LuaTeX counted differently (by one)
+        ## Choosing this to be at version 1.0.0 for now;
+        ## May need refining ...
+        if (compareVersion(get("luaVersion"), "1.0.0") < 0) {
+            magic <- 1
+        } else {
+            magic <- 0
+        }
+    }
+    glyphNames[notUNICODE[index - magic]]
+}
+
 ## Glyph name from raw bytes
 luaGlyphName <- function(raw, fontfile, dir, fontLib) {
     nbytes <- length(raw)
@@ -133,8 +154,7 @@ luaGlyphName <- function(raw, fontfile, dir, fontLib) {
              fontLib$glyphName(cmapCode, fontfile, 0)),
            ## Find non-UNICODE glyph name
            if (as.numeric(raw[1]) >= 15) {
-               getNonUnicodeGlyph(getGlyphs(fontfile), 
-                                  as.numeric(as.hexmode(code)))$name
+               getNonUnicodeGlyph(code, fontfile, fontLib)
            } else {
                c(AdobeName(code),
                  paste0("uni", code),
