@@ -23,13 +23,6 @@ initLuaTeX <- function() {
 ################################################################################
 ## Internal functions
 
-## Find a font file from Lua DVI font def
-findFontFile <- function(fontname) {
-    result <- system(paste0("luaotfload-tool --find='", fontname, "'"),
-                     intern=TRUE)
-    gsub('[^"]+ "|"$', "", result[2])
-}
-
 ## Luaotf cache (to avoid calling luaotfload-tool over and over again)
 getLuaOTFcache <- function() {
     cache <- get("luaOTFcache")
@@ -47,43 +40,35 @@ cacheLuaOTF <- function(fontname, fontfile) {
 ## We just retain the font name and discard the extra font information
 ## about font options (for now) because R graphics does not make use
 ## of that extra information (for now)
-luaFontName <- function(fontname) {
-    ## Allow for ...
-    ##   filename="fontname:...;..."       = system font
-    ##   filename="file:fontname:...;..."  = TeX font
-    ##   filename="[fontname]:...;..."     = TeX font
-    ##   filename="[fontfile.ttf]:...;..." = local font
-    name <- gsub('^"(file:)?|:.+', "", fontname)
-    if (grepl("^[[]", name)) {
-        ## Check for a local font
-        ## We only support fonts in the current working directory so far
-        name <- gsub("^[[]|[]]$", "", name)
-        if (grepl("[.]", name)) {
-            fontfile <- list.files(pattern=name, ignore.case=TRUE)
+## Find a font file from Lua DVI font def
+luaFindFontFile <- function(fontname) {
+    version <- get("luaOTFloadToolVersion")
+    if (as.numeric(version) >= 3.15) {
+        fontfile <- gsub("[[]|[]].*", "", fontname)
+    } else {
+        ## Allow for ...
+        ##   filename="fontname:...;..."       = system font
+        ##   filename="file:fontname:...;..."  = TeX font
+        ##   filename="[fontname]:...;..."     = TeX font
+        ##   filename="[/path/to/fontfile.ttf]:...;..." = local font
+        ## Remove leading quotes or "file:" and any square brackets
+        ## and any trailing font options
+        name <- gsub('^"?(file:)?|[[]|[]]|:.+', "", fontname)
+        if (basename(name) != name) {
+            ## Assume that presence of path/to/ means a local font file
+            fontfile <- name
         } else {
-            fontfile <- list.files(pattern=paste0(name, "[.]"),
-                                   ignore.case=TRUE)
-        }
-        if (length(fontfile)) {
-            ## A local (rather than system) font has square brackets
-            ## and a suffix
-            suffix <- gsub(".+[.]", "", fontfile[1])
-            ## Generate appropriate format for luaotfload-tool call
-            ## This happens to work for different luaTeX versions
-            ## because in one, name has no suffix and adding suffix works,
-            ## while in other, name has suffix, but adding superfluous suffix
-            ## is necessary (!)
-            name <- paste0("file:", name, ".", suffix)
-            ## Keep information needed for FontConfig
-            attr(name, "dir") <- getwd()
-        } else {
-            ## Otherwise assume this is a TeX font
-            ## (that luaotfload-tool will find)
-            ## Remove square brackets and any file suffix
-            name <- gsub("[[]|[]]|[.]ttf$|[.]otf$", "", name)
+            ## Otherwise assume this is a TeX or system font
+            ## that luaotfload-tool will find.
+            result <- system(paste0("luaotfload-tool --find='", name, "'"),
+                             intern=TRUE)
+            if (any(grepl("Cannot find", result)))
+                stop(paste0("Failed to find font: ", name))
+            fileLine <- grep("Resolved file name", result)
+            fontfile <- gsub('[^"]+ "|"$', "", result[fileLine])
         }
     }
-    name
+    fontfile
 }
 
 ## Glyph index from raw bytes
@@ -195,26 +180,13 @@ luaGlyphChar <- function(raw) {
 
 ## Create font definition from Lua DVI font def
 luaDefineFont <- function(fontname, fontLib) {
-    version <- get("luaOTFloadToolVersion")
-    if (as.numeric(version) >= 3.15) {
-        fontfile <- gsub("[[]|[]].*", "", fontname)
-        fontDef(file=fontfile,
-                index=0,
-                fontLib$fontFamily(fontfile),
-                fontLib$fontWeight(fontfile),
-                fontLib$fontStyle(fontfile),
-                fontSize(fontfile))
-    } else {
-        ## Extract just font name from DVI fontname value
-        fontFullName <- luaFontName(fontname)
-        fontfile <- findFontFile(fontFullName)
-        fontDef(file=fontfile,
-                index=0,
-                fontLib$fontFamily(fontfile),
-                fontLib$fontWeight(fontfile),
-                fontLib$fontStyle(fontfile),
-                fontSize(fontFullName))
-    }
+    fontfile <- luaFindFontFile(fontname)
+    fontDef(file=fontfile,
+            index=0,
+            fontLib$fontFamily(fontfile),
+            fontLib$fontWeight(fontfile),
+            fontLib$fontStyle(fontfile),
+            fontSize(fontfile))
 }
 
 ## Get glyph info from raw bytes (and current font)
