@@ -6,27 +6,27 @@
 
 buildGrob.XDVIRtikzPathObj <- function(obj, xoffset, yoffset, ...) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    x <- convertX(unit(obj$x, "pt"), "bigpts", valueOnly=TRUE) +
+    x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
-    y <- convertY(unit(-obj$y, "pt"), "bigpts", valueOnly=TRUE) +
+    y <- convertY(-obj$y, "bigpts", valueOnly=TRUE) +
         convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
     pathGrob(x, y, default.units="bigpts", gp=gpar(fill=NA))
 }
 
 buildGrob.XDVIRtikzPolylineObj <- function(obj, xoffset, yoffset, ...) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    x <- convertX(unit(obj$x, "pt"), "bigpts", valueOnly=TRUE) +
+    x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
-    y <- convertY(unit(-obj$y, "pt"), "bigpts", valueOnly=TRUE) +
+    y <- convertY(-obj$y, "bigpts", valueOnly=TRUE) +
         convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
     polylineGrob(x, y, default.units="bigpts")
 }
 
 buildGrob.XDVIRtikzFillObj <- function(obj, xoffset, yoffset, ...) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    x <- convertX(unit(obj$x, "pt"), "bigpts", valueOnly=TRUE) +
+    x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
-    y <- convertY(unit(-obj$y, "pt"), "bigpts", valueOnly=TRUE) +
+    y <- convertY(-obj$y, "bigpts", valueOnly=TRUE) +
         convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
     pathGrob(x, y, default.units="bigpts", gp=gpar(col=NA))
 }
@@ -369,8 +369,8 @@ recordBeginScope <- function(x) {
 recordEndScope <- function(x) {
     td <- get("tikzTransformDepth")
     if (td[1] > 0) {
-        mt <- get("tikzTransform")
-        set("tikzTransform", mt[-(1:td[1])])
+        tm <- get("tikzTransform")
+        set("tikzTransform", tm[-(1:td[1])])
     }
     set("tikzTransformDepth", td[-1])
     reduceParent()
@@ -457,9 +457,6 @@ tikzSpecial <- function(specialString) {
         }
     }
 }
-
-################################################################################
-## VERY complex specials
 
 ################################################################################
 ## The basic preamble, etc
