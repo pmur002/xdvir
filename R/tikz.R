@@ -5,28 +5,25 @@
 ## Build grobs from objects
 
 buildGrob.XDVIRtikzPathObj <- function(obj, xoffset, yoffset, ...) {
-    ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
     x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
-    y <- convertY(-obj$y, "bigpts", valueOnly=TRUE) +
+    y <- convertY(obj$y, "bigpts", valueOnly=TRUE) +
         convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
     pathGrob(x, y, default.units="bigpts", gp=gpar(fill=NA))
 }
 
 buildGrob.XDVIRtikzPolylineObj <- function(obj, xoffset, yoffset, ...) {
-    ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
     x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
-    y <- convertY(-obj$y, "bigpts", valueOnly=TRUE) +
+    y <- convertY(obj$y, "bigpts", valueOnly=TRUE) +
         convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
     polylineGrob(x, y, default.units="bigpts")
 }
 
 buildGrob.XDVIRtikzFillObj <- function(obj, xoffset, yoffset, ...) {
-    ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
     x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
-    y <- convertY(-obj$y, "bigpts", valueOnly=TRUE) +
+    y <- convertY(obj$y, "bigpts", valueOnly=TRUE) +
         convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
     pathGrob(x, y, default.units="bigpts", gp=gpar(col=NA))
 }
@@ -195,49 +192,79 @@ recordNewPath <- function(x) {
     addParent(x)
 }
 
+strokePaths <- function(px, py, cl, lx, by, transform) {
+    x <- unlist(px)
+    y <- unlist(py)
+    ## Apply current transform (if any)
+    if (length(transform)) {
+        tm <- transform[[1]]
+        xy <- tm %*% rbind(x, y, 1)
+        x <- xy[1,]
+        y <- xy[2,]
+    }
+    x <- lx + x
+    ## Negate by because TikZ is "up" while TeX is "down"
+    y <- -by + y
+    if (length(unlist(px)) > 1) {
+        if (cl) {
+            child <- list(x=unit(x, "pt"),
+                          y=unit(y, "pt"))
+            class(child) <- "XDVIRtikzPathObj"
+        } else {
+            child <- list(x=unit(x, "pt"),
+                          y=unit(y, "pt"))
+            class(child) <- "XDVIRtikzPolylineObj"
+        }
+        addChild(child)
+    }
+}
+
 recordStroke <- function() {
     pathX <- get("tikzPathX")
     pathY <- get("tikzPathY")
     closed <- get("tikzPathClosed")
     left <- get("pictureLeft")
     bottom <- get("pictureBottom")
-    mapply(function(px, py, cl) {
-               if (length(unlist(px)) > 1) {
-                   if (cl) {
-                       child <- list(x=unit(left, "mm") +
-                                         unit(unlist(px), "pt"),
-                                     y=unit(bottom, "mm") -
-                                         unit(unlist(py), "pt"))
-                       class(child) <- "XDVIRtikzPathObj"
-                   } else {
-                       child <- list(x=unit(left, "mm") +
-                                         unit(unlist(px), "pt"),
-                                     y=unit(bottom, "mm") -
-                                         unit(unlist(py), "pt"))
-                       class(child) <- "XDVIRtikzPolylineObj"
-                   }
-                   addChild(child)
-               }
-           },
-           pathX, pathY, closed)
+    lx <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
+    by <- convertY(unit(bottom, "mm"), "pt", valueOnly=TRUE)
+    transform <- get("tikzTransform")
+    mapply(strokePaths, pathX, pathY, closed,
+           MoreArgs=list(lx, by, transform))
     reduceParent()
 }
+
+fillPaths <- function(px, py, lx, by, transform) {
+    x <- unlist(px)
+    y <- unlist(py)
+    ## Apply current transform (if any)
+    if (length(transform)) {
+        tm <- transform[[1]]
+        xy <- tm %*% rbind(x, y, 1)
+        x <- xy[1,]
+        y <- xy[2,]
+    }
+    x <- lx + x
+    ## Negate by because TikZ is "up" while TeX is "down"
+    y <- -by + y
+    if (length(unlist(px)) > 1) {
+        child <- list(x=unit(x, "pt"),
+                      y=unit(y, "pt"))
+        class(child) <- "XDVIRtikzFillObj"
+        addChild(child)
+    }
+}
+
 
 recordFill <- function() {
     pathX <- get("tikzPathX")
     pathY <- get("tikzPathY")
-    closed <- get("tikzPathClosed")
     left <- get("pictureLeft")
     bottom <- get("pictureBottom")
-    mapply(function(px, py) {
-               if (length(unlist(px)) > 1) {
-                   child <- list(x=unit(left, "mm") + unit(unlist(px), "pt"),
-                                 y=unit(bottom, "mm") - unit(unlist(py), "pt"))
-                   class(child) <- "XDVIRtikzFillObj"
-                   addChild(child)
-               }
-           },
-           pathX, pathY)
+    lx <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
+    by <- convertY(unit(bottom, "mm"), "pt", valueOnly=TRUE)
+    transform <- get("tikzTransform")
+    mapply(fillPaths, pathX, pathY,
+           MoreArgs=list(lx, by, transform))
     reduceParent()
 }
 
@@ -247,34 +274,13 @@ recordFillStroke <- function() {
     closed <- get("tikzPathClosed")
     left <- get("pictureLeft")
     bottom <- get("pictureBottom")
-    mapply(function(px, py) {
-               if (length(unlist(px)) > 1) {
-                   child <- list(x=unit(left, "mm") + unit(unlist(px), "pt"),
-                                 y=unit(bottom, "mm") - unit(unlist(py), "pt"))
-                   class(child) <- "XDVIRtikzFillObj"
-                   addChild(child)
-               }
-           },
-           pathX, pathY)
-    mapply(function(px, py, cl) {
-               if (length(unlist(px)) > 1) {
-                   if (cl) {
-                       child <- list(x=unit(left, "mm") +
-                                         unit(unlist(px), "pt"),
-                                     y=unit(bottom, "mm") -
-                                         unit(unlist(py), "pt"))
-                       class(child) <- "XDVIRtikzPathObj"
-                   } else {
-                       child <- list(x=unit(left, "mm") +
-                                         unit(unlist(px), "pt"),
-                                     y=unit(bottom, "mm") -
-                                         unit(unlist(py), "pt"))
-                       class(child) <- "XDVIRtikzPolylineObj"
-                   }
-                   addChild(child)
-               }
-           },
-           pathX, pathY, closed)
+    lx <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
+    by <- convertY(unit(bottom, "mm"), "pt", valueOnly=TRUE)
+    transform <- get("tikzTransform")
+    mapply(fillPaths, pathX, pathY,
+           MoreArgs=list(lx, by, transform))
+    mapply(strokePaths, pathX, pathY, closed,
+           MoreArgs=list(lx, by, transform))
     reduceParent()
 }
 
