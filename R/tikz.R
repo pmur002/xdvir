@@ -307,7 +307,11 @@ recordTransform <- function(x) {
     x <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
     ## Negate y because TikZ is "up" while TeX is "down"
     y <- convertY(unit(-bottom, "mm"), "pt", valueOnly=TRUE)
-    xy <- rbind(c(1,0,0), c(0,-1,0), c(0,0,1)) %*% tm %*% c(x, y, 1) 
+    xy <- rbind(c(1,0,0), c(0,-1,0), c(0,0,1)) %*%
+        rbind(c(1,0,x), c(0,1,y), c(0,0,1)) %*%
+        tm %*%
+        rbind(c(1,0,-x), c(0,1,-y), c(0,0,1)) %*%
+        c(x, y, 1) 
     set("h", xtoTeX(convertX(unit(xy[1], "pt"), "mm")))
     set("v", ytoTeX(convertY(unit(xy[2], "pt"), "mm")))
 }
