@@ -491,7 +491,20 @@ tikzPreamble <- function(packages=NULL) {
 
 tikzPrefix <- "\\begin{tikzpicture}"
 
-tikzSuffix <- "\\end{tikzpicture}"
+tikzSuffix <- function(bbox=NULL) {
+    suffix <- "\\end{tikzpicture}"
+    if (!is.null(bbox)) {
+        if (is.numeric(bbox) && length(bbox) == 4) {
+            suffix <- c(paste0("\\pgfresetboundingbox\\useasboundingbox (",
+                               bbox[1], ",", bbox[2], ") rectangle (",
+                               bbox[3], ",", bbox[4], ");"),
+                        suffix)
+        } else {
+            stop("Invalid bbox")
+        }
+    }
+    suffix
+}
 
 tikzPackage <- function(packages=NULL) {
     package(preamble=tikzPreamble(packages),
@@ -499,10 +512,10 @@ tikzPackage <- function(packages=NULL) {
             init=tikzInit)
 }
 
-tikzPicture <- function(packages=NULL) {
+tikzPicture <- function(packages=NULL, bbox=NULL) {
     package(preamble=tikzPreamble(packages),
             prefix=tikzPrefix,
-            suffix=tikzSuffix,
+            suffix=tikzSuffix(bbox),
             special=tikzSpecial,
             init=tikzInit)
 }
