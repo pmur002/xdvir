@@ -73,6 +73,7 @@ S3method("buildGrob", "XDVIRtikzParentObj")
 S3method("buildGrob", "XDVIRtikzPathObj")
 S3method("buildGrob", "XDVIRtikzPolylineObj")
 S3method("buildGrob", "XDVIRtikzFillObj")
+S3method("buildGrob", "XDVIRrotatedGlyphObj")
 
 S3method("packagePreamble", "NULL")
 S3method("packagePreamble", "xdvirPackage")

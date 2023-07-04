@@ -15,9 +15,24 @@ addDVIobj <- function(x) {
 addGlyphObj <- function() {
     glyphs <- get("glyphs")
     if (length(glyphs)) {
-        glyphObj <- do.call(rbind, glyphs)
-        class(glyphObj) <- "XDVIRglyphObj"
-        addDVIobj(glyphObj)
+        glyphObjs <- do.call(rbind, glyphs)
+        glyphList <- split(glyphObjs,
+                           glyphObjs[c("rotation", "scaleX", "scaleY",
+                                       "skewX", "skewY")])
+        lapply(glyphList,
+               function(x) {
+                   if (x$scaleX[1] == 1 && x$scaleY[1] == 1 &&
+                       x$skewX[1] == 0 && x$skewY[1] == 0) {
+                       if (x$rotation[1] == 0) {
+                           class(x) <- c("XDVIRglyphObj", class(x))
+                       } else {
+                           class(x) <- c("XDVIRrotatedGlyphObj", class(x))
+                       }
+                   } else {
+                       class(x) <- c("XDVIRtransformedGlyphObj", class(x))
+                   }
+                   addDVIobj(x)
+               })
     }
     ## Empty the "glyphs" list
     set("glyphs", list())

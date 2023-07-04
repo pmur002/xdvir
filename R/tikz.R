@@ -1,9 +1,74 @@
 
 ################################################################################
 ## Code to support specials:
-## Create objects
-## Build grobs from objects
 
+## ops
+## Called from setChar() if transform involves rotation or scale or skew
+tikzTransform <- function() {
+    transform <- get("transform")
+    !(is.null(transform) ||
+      (transform$rot == 0 &&
+       all(transform$sc == 1) &&
+       all(transform$sk == 0)))
+}
+
+setTransformedChar <- function(raw, put=FALSE) {
+    transform <- get("transform")
+    h <- get("h")
+    v <- get("v")
+    ## Current font
+    fonts <- get("fonts")
+    f <- get("f")
+    font <- fonts[[f]]
+    engine <- get("engine")
+    colour <- get("colour")
+    fontLib <- get("fontLib")
+    ## Different engines specify glyphs in different ways
+    glyphInfo <- engine$getGlyph(raw, font, dir, fontLib)
+    bbox <- fontLib$glyphBounds(glyphInfo$index, font$fontdef$file,
+                                font$size, dir)
+    width <- fontLib$glyphWidth(glyphInfo$index, font$fontdef$file,
+                                font$size)
+    x <- fromTeX(h)
+    y <- fromTeX(v)
+    glyph <- glyph(x, y, glyphInfo$char, glyphInfo$index, f, font$size,
+                   colour=colour[1],
+                   transform$rot, transform$sc[1], transform$sc[2],
+                   transform$sk[1], transform$sk[2])
+    ## Bounding box requires transformation
+    tm <- get("transformMatrix")
+    bboxLeft <- convertX(unit(fromTeX(h + bbox[1]), "mm"), "pt",
+                         valueOnly=TRUE)
+    bboxRight <- convertX(unit(fromTeX(h + bbox[2]), "mm"), "pt",
+                          valueOnly=TRUE)
+    bboxBottom <- convertY(unit(fromTeX(v - bbox[3]), "mm"), "pt",
+                           valueOnly=TRUE)
+    bboxTop <- convertY(unit(fromTeX(v - bbox[4]), "mm"), "pt",
+                        valueOnly=TRUE)
+    bboxCorners <- cbind(c(bboxLeft, bboxBottom, 1),
+                         c(bboxRight, bboxBottom, 1),
+                         c(bboxLeft, bboxTop, 1),
+                         c(bboxRight, bboxTop, 1))
+    transCorners <- tm %*% bboxCorners
+    bboxX <- xtoTeX(unit(transCorners[1,], "pt"))
+    bboxY <- ytoTeX(-unit(transCorners[2,], "pt"))
+    lapply(bboxX, updateBBoxHoriz)
+    lapply(bboxY, updateBBoxVert)
+    if (!put) {
+        HV <- matrix(c(convertX(unit(fromTeX(h + width[1]), "mm"), "pt",
+                                valueOnly=TRUE),
+                       convertY(unit(-y, "mm"), "pt", valueOnly=TRUE),
+                       1))
+        transHV <- tm %*% HV
+        set("h", xtoTeX(unit(transHV[1], "pt")))
+        set("v", ytoTeX(unit(-transHV[2], "pt")))
+    }
+    addGlyph(glyph)
+}
+
+## Create objects
+
+## Build grobs from objects
 buildGrob.XDVIRtikzPathObj <- function(obj, xoffset, yoffset, ...) {
     x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
@@ -30,12 +95,14 @@ buildGrob.XDVIRtikzFillObj <- function(obj, xoffset, yoffset, ...) {
 
 buildGrob.XDVIRtikzParentObj <- function(obj, xoffset, yoffset, ...) {
     children <- obj$children
-    parent <- gTree(gp=obj$gp)
-    if (!is.null(children))
+    parent <- NULL
+    if (!is.null(children)) {
+        parent <- gTree(gp=obj$gp)
         parent <- setChildren(parent,
                               do.call(gList,
                                       lapply(children, buildGrob,
                                              xoffset, yoffset)))
+    }
     parent
 }
 
@@ -44,15 +111,41 @@ buildGrob.XDVIRtikzObj <- function(obj, xoffset, yoffset, ...) {
                            lapply(obj$children, buildGrob, xoffset, yoffset)))
 }
 
+buildRotatedGlyph <- function(obj, xoffset, yoffset) {
+    ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
+    x <- unit(obj$x, "mm") + unit(xoffset, "in")
+    y <- unit(-obj$y, "mm") + unit(yoffset, "in")
+    vp <- viewport(x, y, just=c("left", "bottom"), angle=obj$rotation/pi*180)
+    font <- get("fonts")[[obj$fontindex]]
+    glyphFont <- glyphFont(font$fontdef$file, font$fontdef$index,
+                           font$fontdef$family, font$fontdef$weight,
+                           font$fontdef$style)
+    info <- glyphInfo(obj$index, 0, 0,
+                      1, 
+                      obj$size,
+                      glyphFontList(glyphFont),
+                      1, ## Does not matter because will be left-bottom aligned
+                      1, ## Does not matter because will be left-bottom aligned
+                      col=obj$colour)
+    glyphGrob(info, 0, 0, hjust="left", vjust="bottom", vp=vp)
+}
+
+buildGrob.XDVIRrotatedGlyphObj <- function(obj, xoffset, yoffset, ...) {
+    children <- lapply(1:nrow(obj),
+                       function(i)
+                           buildRotatedGlyph(obj[i,], xoffset, yoffset))
+    gTree(children=do.call(gList, children))
+}
+
 ## Based on
 ## https://math.stackexchange.com/questions/13150/extracting-rotation-scale-values-from-2d-transformation-matrix/13165#13165
 decompose <- function(m) {
     a <- m[1]
     b <- m[2]
-    c <- m[3]
-    d <- m[4]
-    e <- m[5]
-    f <- m[6]
+    c <- m[4]
+    d <- m[5]
+    e <- m[7]
+    f <- m[8]
     
     delta <- a*d - b*c
 
@@ -72,7 +165,10 @@ decompose <- function(m) {
         ## a <- b <- c <- d <- 0
         stop("Invalid transformation matrix")
     }
-    list(tr=translation, rot=rotation, sc=scale, sk=skew)
+    list(tr=translation,
+         rot=round(rotation, 3),
+         sc=round(scale, 3),
+         sk=round(skew, 3))
 }
 
 tikzNameGen <- function() {
@@ -307,13 +403,16 @@ recordTransform <- function(x) {
     x <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
     ## Negate y because TikZ is "up" while TeX is "down"
     y <- convertY(unit(-bottom, "mm"), "pt", valueOnly=TRUE)
-    xy <- rbind(c(1,0,0), c(0,-1,0), c(0,0,1)) %*%
+    textTM <- rbind(c(1,0,0), c(0,-1,0), c(0,0,1)) %*%
         rbind(c(1,0,x), c(0,1,y), c(0,0,1)) %*%
         tm %*%
-        rbind(c(1,0,-x), c(0,1,-y), c(0,0,1)) %*%
-        c(x, y, 1) 
+        rbind(c(1,0,-x), c(0,1,-y), c(0,0,1))
+    xy <-  textTM %*% c(x, y, 1) 
     set("h", xtoTeX(convertX(unit(xy[1], "pt"), "mm")))
     set("v", ytoTeX(convertY(unit(xy[2], "pt"), "mm")))
+    ## Set text transform
+    set("transformMatrix", textTM)
+    set("transform", decompose(tm))
 }
 
 parseValueWithUnit <- function(x) {
@@ -443,6 +542,8 @@ tikzSpecial <- function(specialString) {
             v <- get("v")
             set("savedH", h)
             set("savedV", v)
+            tm <- get("transform")
+            set("savedTransform", tm)
             x <- fromTeX(h)
             y <- fromTeX(v)
             set("pictureLeft", x)
@@ -453,6 +554,7 @@ tikzSpecial <- function(specialString) {
             set("tikzTransformDepth", 0)
         } else if (grepl("^end-picture", special)) {
             recordBBox(special)
+            set("transform", get("savedTransform"))
             set("h", get("savedH"))
             set("v", get("savedV"))        
             set("inPicture", FALSE)

@@ -6,6 +6,10 @@ op_ignore <- function(op) { }
 ## set_char_i and set_char are VERY similar
 ## (put_char_i is also VERY similar - just does not adjust (h, v)
 setChar <- function(raw, put=FALSE) {
+    if (tikzTransform()) {
+        setTransformedChar(raw, put=FALSE)
+        return()
+    }
     h <- get("h")
     v <- get("v")
     ## Default baseline to first set char
