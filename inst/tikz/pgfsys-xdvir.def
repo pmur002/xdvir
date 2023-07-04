@@ -470,7 +470,8 @@
 %%% 
 %%% %
 %%% 
-%%% \def\pgfutil@color{\pgfsetcolor}
+
+\def\pgfutil@color{\pgfsetcolor}
 
 \newif\ifpgf@sys@xdvir@inpicture
 
