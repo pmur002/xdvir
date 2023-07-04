@@ -25,7 +25,7 @@ dviGrob.DVI <- function(dvi,
                         default.units="npc",
                         hjust="centre", vjust="centre",
                         device=names(dev.cur()),
-                        name=NULL,
+                        name="XDVIRgrob",
                         gp=gpar(),
                         engine=lualatexEngine,
                         packages=NULL,
@@ -53,9 +53,9 @@ dviGrob.DVI <- function(dvi,
         grobs <- lapply(objList, buildGrob,
                         x=x, y=y, hjust=hjust, vjust=vjust,
                         xoffset=xoffset, yoffset=yoffset)
-        gTree(children=do.call(gList, grobs))
+        gTree(children=do.call(gList, grobs), name=name)
     } else {
-        gTree()
+        gTree(name=name)
     }
 }
 
