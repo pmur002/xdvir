@@ -289,6 +289,21 @@ recordPathElement <- function(x, i) {
            stop("unsupported path element"))
 }
 
+pushTextColour <- function(gp) {
+    fill <- "black"
+    if ("fill" %in% names(gp)) {
+        fill <- gp$fill
+    }
+    set("tikzTextColour", c(gp$fill, get("tikzTextColour")))
+    set("colour", fill)
+}
+
+popTextColour <- function() {
+    fill <- get("tikzTextColour")
+    set("tikzTextColour", fill[-1])
+    set("colour", fill[1])
+}
+
 addParent <- function(x) {
     if (length(x) == 0) {
         gp <- gpar()
@@ -302,6 +317,7 @@ addParent <- function(x) {
     parent <- list(children=NULL, gp=gp)
     class(parent) <- "XDVIRtikzParentObj"
     set("tikzParent", c(list(parent), get("tikzParent")))
+    pushTextColour(gp)
 }
 
 reduceParent <- function() {
@@ -312,6 +328,7 @@ reduceParent <- function() {
         parent[[2]]$children <- c(parent[[2]]$children, parent[1])
     }
     set("tikzParent", parent[-1])
+    popTextColour()
 }
 
 addChild <- function(x) {
@@ -606,6 +623,7 @@ tikzSpecial <- function(specialString) {
             set("tikzTransformDepth", 0)
             set("tikzTransformDecomp", NULL)
             set("tikzTransformText", diag(3))
+            set("tikzTextColour", "black")
         } else if (grepl("^end-picture", special)) {
             recordBBox(special)
             set("h", get("savedH"))
