@@ -3,17 +3,19 @@
 ## Code to support specials:
 
 ## ops
-## Called from setChar() if transform involves rotation or scale or skew
+## Called from setChar()
 tikzTransform <- function() {
-    transform <- get("transform")
-    !(is.null(transform) ||
-      (transform$rot == 0 &&
-       all(transform$sc == 1) &&
-       all(transform$sk == 0)))
+    transform <- get("tikzTransform")
+    transformDecomp <- get("tikzTransformDecomp")
+    length(transform) &&
+        !(is.null(transformDecomp) ||
+          (transformDecomp$rot == 0 &&
+           all(transformDecomp$sc == 1) &&
+           all(transformDecomp$sk == 0)))
 }
 
 setTransformedChar <- function(raw, put=FALSE) {
-    transform <- get("transform")
+    transform <- get("tikzTransformDecomp")
     h <- get("h")
     v <- get("v")
     ## Current font
@@ -36,7 +38,7 @@ setTransformedChar <- function(raw, put=FALSE) {
                    transform$rot, transform$sc[1], transform$sc[2],
                    transform$sk[1], transform$sk[2])
     ## Bounding box requires transformation
-    tm <- get("transformMatrix")
+    tm <- get("tikzTransformText")
     bboxLeft <- convertX(unit(fromTeX(h + bbox[1]), "mm"), "pt",
                          valueOnly=TRUE)
     bboxRight <- convertX(unit(fromTeX(h + bbox[2]), "mm"), "pt",
@@ -66,31 +68,65 @@ setTransformedChar <- function(raw, put=FALSE) {
     addGlyph(glyph)
 }
 
-## Create objects
-
 ## Build grobs from objects
-buildGrob.XDVIRtikzPathObj <- function(obj, xoffset, yoffset, ...) {
+buildTikZobj <- function(obj, xoffset, yoffset, grobFn, gp) {
     x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
     y <- convertY(obj$y, "bigpts", valueOnly=TRUE) +
         convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
-    pathGrob(x, y, default.units="bigpts", gp=gpar(fill=NA))
+    grobFn(x, y, default.units="bigpts", gp=gp)
+}
+
+buildGrob.XDVIRtikzPathObj <- function(obj, xoffset, yoffset, ...) {
+    buildTikZobj(obj, xoffset, yoffset, pathGrob, gpar(fill=NA))
 }
 
 buildGrob.XDVIRtikzPolylineObj <- function(obj, xoffset, yoffset, ...) {
-    x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
-        convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
-    y <- convertY(obj$y, "bigpts", valueOnly=TRUE) +
-        convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
-    polylineGrob(x, y, default.units="bigpts")
+    buildTikZobj(obj, xoffset, yoffset, polylineGrob, gpar())
 }
 
 buildGrob.XDVIRtikzFillObj <- function(obj, xoffset, yoffset, ...) {
-    x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
-        convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
-    y <- convertY(obj$y, "bigpts", valueOnly=TRUE) +
-        convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
-    pathGrob(x, y, default.units="bigpts", gp=gpar(col=NA))
+    buildTikZobj(obj, xoffset, yoffset, pathGrob, gpar(col=NA))
+}
+
+buildTikZstretchObj <- function(obj, xoffset, yoffset, grobFn, gp) {
+    scaleX <- obj$transform$sc[1]
+    scaleY <- obj$transform$sc[2]
+    skewX <- obj$transform$sk[1]
+    skewY <- obj$transform$sk[2]
+    defvp <- viewport(0, 0,
+                      just=c("left", "bottom"),
+                      width=1, height=1)
+    defgrob <- defineGrob(polylineGrob(obj$x, obj$y,
+                                       default.units="bigpts"),
+                          vp=defvp,
+                          name="xdvirPolylineDef")
+    usevp <- viewport(unit(obj$lx, "bigpts") + unit(xoffset, "in"),
+                      unit(obj$by, "bigpts") + unit(yoffset, "in"),
+                      just=c("left", "bottom"),
+                      width=scaleX,
+                      height=scaleY)
+    usegrob <- useGrob("xdvirPolylineDef",
+                       vp=usevp,
+                       transform=function(group, ...) {
+                           viewportTransform(group,
+                                             shear=groupShear(skewX, skewY),
+                                             flip=groupFlip(scaleX < 0,
+                                                            scaleY < 0))
+                       })
+    gTree(children=gList(defgrob, usegrob))
+}
+
+buildGrob.XDVIRtikzStretchPathObj <- function(obj, xoffset, yoffset, ...) {
+    buildTikZstretchObj(obj, xoffset, yoffset, pathGrob, gpar(fill=NA))
+}
+
+buildGrob.XDVIRtikzStretchPolylineObj <- function(obj, xoffset, yoffset, ...) {
+    buildTikZstretchObj(obj, xoffset, yoffset, polylineGrob, gpar())
+}
+
+buildGrob.XDVIRtikzStretchFillObj <- function(obj, xoffset, yoffset, ...) {
+    buildTikZstretchObj(obj, xoffset, yoffset, pathGrob, gpar(col=NA))
 }
 
 buildGrob.XDVIRtikzParentObj <- function(obj, xoffset, yoffset, ...) {
@@ -136,6 +172,8 @@ buildGrob.XDVIRrotatedGlyphObj <- function(obj, xoffset, yoffset, ...) {
                            buildRotatedGlyph(obj[i,], xoffset, yoffset))
     gTree(children=do.call(gList, children))
 }
+
+## Create objects
 
 ## Based on
 ## https://math.stackexchange.com/questions/13150/extracting-rotation-scale-values-from-2d-transformation-matrix/13165#13165
@@ -288,7 +326,41 @@ recordNewPath <- function(x) {
     addParent(x)
 }
 
-strokePaths <- function(px, py, cl, lx, by, transform) {
+tikzStretch <- function(transform, transformDecomp) {
+    length(transform) &&
+        !is.null(transformDecomp) &&
+        (any(transformDecomp$sc != 1) ||
+         any(transformDecomp$sk != 0))
+}
+
+stretchPaths <- function(px, py, cl, lx, by, transformDecomp) {
+}
+
+strokeStretchPaths <- function(px, py, cl, lx, by, transformDecomp) {
+    x <- unlist(px)
+    y <- unlist(py)
+    if (length(unlist(px)) > 1) {
+        if (cl) {
+            child <- list(lx=lx,
+                          by=-by,
+                          x=unit(x, "pt"),
+                          y=unit(y, "pt"),
+                          transform=transformDecomp)
+            class(child) <- "XDVIRtikzStretchPathObj"
+        } else {
+            child <- list(lx=lx,
+                          by=-by,
+                          x=unit(x, "pt"),
+                          y=unit(y, "pt"),
+                          transform=transformDecomp)
+            class(child) <- "XDVIRtikzStretchPolylineObj"
+        }
+        addChild(child)
+    }
+}
+
+drawPaths <- function(px, py, cl, lx, by, transform,
+                      closedClass, openClass) {
     x <- unlist(px)
     y <- unlist(py)
     ## Apply current transform (if any)
@@ -305,17 +377,27 @@ strokePaths <- function(px, py, cl, lx, by, transform) {
         if (cl) {
             child <- list(x=unit(x, "pt"),
                           y=unit(y, "pt"))
-            class(child) <- "XDVIRtikzPathObj"
+            class(child) <- closedClass
         } else {
             child <- list(x=unit(x, "pt"),
                           y=unit(y, "pt"))
-            class(child) <- "XDVIRtikzPolylineObj"
+            class(child) <- openClass
         }
         addChild(child)
     }
 }
 
-recordStroke <- function() {
+strokePaths <- function(px, py, cl, lx, by, transform) {
+    drawPaths(px, py, cl, lx, by, transform,
+              "XDVIRtikzPathObj", "XDVIRtikzPolylineObj")
+}
+
+fillPaths <- function(px, py, cl, lx, by, transform) {
+    drawPaths(px, py, cl, lx, by, transform,
+              "XDVIRtikzFillObj", NA)
+}
+
+recordDraw <- function(draw, drawStretch) {
     pathX <- get("tikzPathX")
     pathY <- get("tikzPathY")
     closed <- get("tikzPathClosed")
@@ -324,59 +406,32 @@ recordStroke <- function() {
     lx <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
     by <- convertY(unit(bottom, "mm"), "pt", valueOnly=TRUE)
     transform <- get("tikzTransform")
-    mapply(strokePaths, pathX, pathY, closed,
-           MoreArgs=list(lx, by, transform))
+    transformDecomp <- get("tikzTransformDecomp")
+    ## Handle scale and skew separately because only some graphics
+    ## devices can support (the R graphics implementation of) scale and skew
+    ## (this allows most graphics devices to handle simpler transformations)
+    if (tikzStretch(transform, transformDecomp)) { 
+        mapply(drawStretch, pathX, pathY, closed,
+               MoreArgs=list(lx, by, transformDecomp))
+    } else {
+        mapply(draw, pathX, pathY, closed,
+               MoreArgs=list(lx, by, transform))
+    }
+}
+
+recordStroke <- function() {
+    recordDraw(strokePaths, strokeStretchPaths)
     reduceParent()
 }
 
-fillPaths <- function(px, py, lx, by, transform) {
-    x <- unlist(px)
-    y <- unlist(py)
-    ## Apply current transform (if any)
-    if (length(transform)) {
-        tm <- transform[[1]]
-        xy <- tm %*% rbind(x, y, 1)
-        x <- xy[1,]
-        y <- xy[2,]
-    }
-    x <- lx + x
-    ## Negate by because TikZ is "up" while TeX is "down"
-    y <- -by + y
-    if (length(unlist(px)) > 1) {
-        child <- list(x=unit(x, "pt"),
-                      y=unit(y, "pt"))
-        class(child) <- "XDVIRtikzFillObj"
-        addChild(child)
-    }
-}
-
-
 recordFill <- function() {
-    pathX <- get("tikzPathX")
-    pathY <- get("tikzPathY")
-    left <- get("pictureLeft")
-    bottom <- get("pictureBottom")
-    lx <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
-    by <- convertY(unit(bottom, "mm"), "pt", valueOnly=TRUE)
-    transform <- get("tikzTransform")
-    mapply(fillPaths, pathX, pathY,
-           MoreArgs=list(lx, by, transform))
+    recordDraw(fillPaths, fillStretchPaths)
     reduceParent()
 }
 
 recordFillStroke <- function() {
-    pathX <- get("tikzPathX")
-    pathY <- get("tikzPathY")
-    closed <- get("tikzPathClosed")
-    left <- get("pictureLeft")
-    bottom <- get("pictureBottom")
-    lx <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
-    by <- convertY(unit(bottom, "mm"), "pt", valueOnly=TRUE)
-    transform <- get("tikzTransform")
-    mapply(fillPaths, pathX, pathY,
-           MoreArgs=list(lx, by, transform))
-    mapply(strokePaths, pathX, pathY, closed,
-           MoreArgs=list(lx, by, transform))
+    recordDraw(fillPaths, fillStretchPaths)
+    recordDraw(strokePaths, strokeStretchPaths)
     reduceParent()
 }
 
@@ -403,16 +458,15 @@ recordTransform <- function(x) {
     x <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
     ## Negate y because TikZ is "up" while TeX is "down"
     y <- convertY(unit(-bottom, "mm"), "pt", valueOnly=TRUE)
-    textTM <- rbind(c(1,0,0), c(0,-1,0), c(0,0,1)) %*%
+    tmText <- rbind(c(1,0,0), c(0,-1,0), c(0,0,1)) %*%
         rbind(c(1,0,x), c(0,1,y), c(0,0,1)) %*%
         tm %*%
         rbind(c(1,0,-x), c(0,1,-y), c(0,0,1))
-    xy <-  textTM %*% c(x, y, 1) 
+    xy <-  tmText %*% c(x, y, 1) 
     set("h", xtoTeX(convertX(unit(xy[1], "pt"), "mm")))
     set("v", ytoTeX(convertY(unit(xy[2], "pt"), "mm")))
-    ## Set text transform
-    set("transformMatrix", textTM)
-    set("transform", decompose(tm))
+    set("tikzTransformText", tmText)
+    set("tikzTransformDecomp", decompose(tm))
 }
 
 parseValueWithUnit <- function(x) {
@@ -542,8 +596,6 @@ tikzSpecial <- function(specialString) {
             v <- get("v")
             set("savedH", h)
             set("savedV", v)
-            tm <- get("transform")
-            set("savedTransform", tm)
             x <- fromTeX(h)
             y <- fromTeX(v)
             set("pictureLeft", x)
@@ -552,9 +604,10 @@ tikzSpecial <- function(specialString) {
             set("tikzParent", NULL)
             set("tikzTransform", NULL)
             set("tikzTransformDepth", 0)
+            set("tikzTransformDecomp", NULL)
+            set("tikzTransformText", diag(3))
         } else if (grepl("^end-picture", special)) {
             recordBBox(special)
-            set("transform", get("savedTransform"))
             set("h", get("savedH"))
             set("v", get("savedV"))        
             set("inPicture", FALSE)
