@@ -173,6 +173,57 @@ buildGrob.XDVIRrotatedGlyphObj <- function(obj, xoffset, yoffset, ...) {
     gTree(children=do.call(gList, children))
 }
 
+buildTransformedGlyph <- function(obj, xoffset, yoffset) {
+    scaleX <- obj$scaleX
+    scaleY <- obj$scaleY
+    skewX <- obj$skewX
+    skewY <- obj$skewY
+    angle <- obj$rotation/pi*180
+    
+    ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
+    x <- unit(obj$x, "mm") + unit(xoffset, "in")
+    y <- unit(-obj$y, "mm") + unit(yoffset, "in")
+    
+    font <- get("fonts")[[obj$fontindex]]
+    glyphFont <- glyphFont(font$fontdef$file, font$fontdef$index,
+                           font$fontdef$family, font$fontdef$weight,
+                           font$fontdef$style)
+    info <- glyphInfo(obj$index, 0, 0,
+                      1, 
+                      obj$size,
+                      glyphFontList(glyphFont),
+                      1, ## Does not matter because will be left-bottom aligned
+                      1, ## Does not matter because will be left-bottom aligned
+                      col=obj$colour)
+    
+    defvp <- viewport(0, 0, just=c("left", "bottom"),
+                      width=1, height=1)
+    defgrob <- defineGrob(glyphGrob(info, 0, 0, hjust="left", vjust="bottom"),
+                          vp=defvp,
+                          name="xdvirGlyphDef")
+    usevp <- viewport(x, y, just=c("left", "bottom"),
+                      angle=angle,
+                      width=scaleX,
+                      height=scaleY)
+    usegrob <- useGrob("xdvirGlyphDef",
+                       vp=usevp,
+                       transform=function(group, ...) {
+                           viewportTransform(group,
+                                             shear=groupShear(skewX, skewY),
+                                             flip=groupFlip(scaleX < 0,
+                                                            scaleY < 0))
+                       })
+    gTree(children=gList(defgrob, usegrob))
+}
+
+buildGrob.XDVIRtransformedGlyphObj <- function(obj, xoffset, yoffset, ...) {
+    children <- lapply(1:nrow(obj),
+                       function(i)
+                           buildTransformedGlyph(obj[i,], xoffset, yoffset))
+    gTree(children=do.call(gList, children))
+}
+
+
 ## Create objects
 
 ## Based on
@@ -290,7 +341,7 @@ recordPathElement <- function(x, i) {
 }
 
 pushTextColour <- function(gp) {
-    fill <- "black"
+    fill <- NA
     if ("fill" %in% names(gp)) {
         fill <- gp$fill
     }
@@ -461,7 +512,7 @@ recordTransform <- function(x) {
     if (length(transform) == 0) {
         set("tikzTransform", list(tm))
     } else {
-        tm <- tm %*% transform[[1]]
+        tm <- transform[[1]] %*% tm
         set("tikzTransform", c(list(tm), transform))
     }
     td <- get("tikzTransformDepth")
@@ -623,7 +674,7 @@ tikzSpecial <- function(specialString) {
             set("tikzTransformDepth", 0)
             set("tikzTransformDecomp", NULL)
             set("tikzTransformText", diag(3))
-            set("tikzTextColour", "black")
+            set("tikzTextColour", NA)
         } else if (grepl("^end-picture", special)) {
             recordBBox(special)
             set("h", get("savedH"))

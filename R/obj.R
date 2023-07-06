@@ -17,8 +17,9 @@ addGlyphObj <- function() {
     if (length(glyphs)) {
         glyphObjs <- do.call(rbind, glyphs)
         glyphList <- split(glyphObjs,
-                           glyphObjs[c("rotation", "scaleX", "scaleY",
-                                       "skewX", "skewY")])
+                           apply(glyphObjs[c("rotation", "scaleX", "scaleY",
+                                             "skewX", "skewY")],
+                                 1, paste, collapse=":"))
         lapply(glyphList,
                function(x) {
                    if (x$scaleX[1] == 1 && x$scaleY[1] == 1 &&

@@ -77,6 +77,7 @@ S3method("buildGrob", "XDVIRtikzStretchPathObj")
 S3method("buildGrob", "XDVIRtikzStretchPolylineObj")
 S3method("buildGrob", "XDVIRtikzStretchFillObj")
 S3method("buildGrob", "XDVIRrotatedGlyphObj")
+S3method("buildGrob", "XDVIRtransformedGlyphObj")
 
 S3method("packagePreamble", "NULL")
 S3method("packagePreamble", "xdvirPackage")
