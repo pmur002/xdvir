@@ -36,7 +36,9 @@ previewFinal <- function() {
     baseline <- get("preview-baseline")
     if (!is.na(baseline)) {
         bottom <- get("bottom")
-        addAnchor(bottom - baseline, "preview-baseline", type="v")
+        addAnchor(convertY(unit(-fromTeX(bottom - baseline), "mm"),
+                           "bigpts", valueOnly=TRUE),
+                  "preview-baseline", type="v")
     }
 }
 

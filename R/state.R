@@ -22,6 +22,4 @@ set("scale", 1)
 set("fonts", vector("list", 256))
 set("glyphs", list())
 set("dir", 0)
-set("vAnchors", NULL)
-set("hAnchors", NULL)
 

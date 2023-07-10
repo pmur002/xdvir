@@ -137,6 +137,9 @@ op_bop <- function(op) {
     set("right", -Inf)
     ## Init baseline
     set("baseline", NA)
+    ## Init anchors
+    set("hAnchors", NULL)
+    set("vAnchors", NULL)
     ## Init cumulative structures
     initDVIobjs()
     set("glyphs", list())
