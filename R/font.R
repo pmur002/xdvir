@@ -33,7 +33,7 @@ x_identical_font <- function(op1, op2) {
 ## contain a font size (e.g., cmr10 and lmroman10-regular)
 ## Default to 10pt, which I have seen somewhere is the TeX default
 fontSize <- function(fontname) {
-    size <- as.numeric(gsub("[^0-9]+", "", fontname))
+    size <- as.numeric(gsub("[^0-9]+", "", basename(fontname)))
     if (is.na(size))
         size <- 10
     size
