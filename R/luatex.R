@@ -159,10 +159,10 @@ luaGlyphChar <- function(raw) {
                ## Single byte is assumed to be UTF16BE 
                ## (first byte assumed 0) from set1 op
                iconv(list(c(as.raw(0), raw)),
-                     from="UTF16BE", to="UTF-8")
+                     from="UTF-16BE", to="UTF-8")
            },
            ## Two bytes is assumed to be UTF16BE from set2 op
-           iconv(list(raw), from="UTF16BE", to="UTF-8"),
+           iconv(list(raw), from="UTF-16BE", to="UTF-8"),
            ## Three bytes is assumed to be UTF32BE from set3 op
            if (as.numeric(raw[1]) >= 15) {
                ## UNLESS first byte is 0x0F, then ...
