@@ -170,7 +170,7 @@ luaGlyphChar <- function(raw) {
                ## Second two bytes are integer index into non-UNICODE glyphs
                NA
            } else {
-               iconv(list(c(as.raw(0), raw)), from="UTF32BE", to="UTF-8")
+               iconv(list(c(as.raw(0), raw)), from="UTF-32BE", to="UTF-8")
            },
            ## Have not yet witnessed set4 op
            stop("set4 not yet supported"))
