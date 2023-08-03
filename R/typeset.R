@@ -70,11 +70,13 @@ typeset.TeXfile <- function(x,
 typeset.character <- function(x,
                               engine,
                               tinytex=getOption("xdvir.tinytex"),
+                              ## Did R generate the TeX file? (assume no)
+                              xdvir=FALSE, 
                               ...) {
     texDir <- dirname(x)
     ## TeX file may not have .tex suffix
     dviFile <- paste0(gsub("[.]tex", "", x), engine$dviSuffix)
-    latex(x, texDir, engine, tinytex, sig=FALSE)
+    latex(x, texDir, engine, tinytex, sig=xdvir)
     invisible(dviFile)
 }
                     
