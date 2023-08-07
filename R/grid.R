@@ -16,6 +16,30 @@ setDummyFont <- function() {
 ################################################################################
 ## User API
 
+## Helper to extract glyphInfo (e.g., for use with embedGlyphs())
+dviGlyphInfo <- function(grob) {
+    if (!inherits(grob, "XDVIRgrob"))
+        stop("Can only extract glyph info from an XDVIRgrob")
+    if (length(grob$children)) {
+        info <- lapply(grob$children,
+                       function(x) {
+                           if (inherits(x, "glyphgrob")) {
+                               x$glyphInfo
+                           } else {
+                               NULL
+                           }
+                       })
+        info <- info[!sapply(info, is.null)]
+        if (length(info)) {
+            info
+        } else {
+            NULL
+        }
+    } else {
+        NULL
+    }
+}
+
 dviGrob <- function(dvi, ...) {
     UseMethod("dviGrob")
 }
@@ -53,9 +77,10 @@ dviGrob.DVI <- function(dvi,
         grobs <- lapply(objList, buildGrob,
                         x=x, y=y, hjust=hjust, vjust=vjust,
                         xoffset=xoffset, yoffset=yoffset)
-        gTree(children=do.call(gList, grobs), name=name)
+        gTree(children=do.call(gList, grobs), name=name,
+              cl="XDVIRgrob")
     } else {
-        gTree(name=name)
+        gTree(name=name, cl="XDVIRgrob")
     }
 }
 

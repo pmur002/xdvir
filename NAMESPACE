@@ -45,6 +45,8 @@ export("author",
        "grid.latex", "latexGrob",
        "grid.lualatex", "lualatexGrob",
        "grid.xelatex", "xelatexGrob",
+
+       "dviGlyphInfo",
        
        "fontMap",
        
