@@ -47,6 +47,14 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Install remotes
+        run: |
+          Rscript -e "install.packages('remotes', repos='https://cloud.r-project.org')"
+
+      - name: Install fonttools from Github
+        run: |
+          Rscript -e "remotes::install_github('pmur002/fonttools')"
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
