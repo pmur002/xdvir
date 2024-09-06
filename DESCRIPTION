@@ -14,3 +14,5 @@ SystemRequirements: A TeX distribution such as TeX Live, fonttools, fontforge
 Imports: grDevices, hexView (>= 0.3-4), xml2, systemfonts (> 0.1.1)
 License: GPL-3
 StagedInstall: no
+Remotes: 
+  pmur002/fonttools
