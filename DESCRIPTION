@@ -1,0 +1,15 @@
+Package: xdvir
+Type: Package
+Title: Render DVI Files
+Version: 0.1-0
+Authors@R: person("Paul", "Murrell", email = "paul@stat.auckland.ac.nz",
+                  role = c("aut", "cre"))
+Maintainer: Paul Murrell <paul@stat.auckland.ac.nz>
+Description: Functions to author TeX documents, typeset TeX documents, 
+             read the resulting DVI files, and render them within R.
+Depends: R (>= 4.3.0), grid
+SystemRequirements: freetype2
+Imports: grDevices, hexView (>= 0.3-4), xml2, tinytex
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+License: GPL-3

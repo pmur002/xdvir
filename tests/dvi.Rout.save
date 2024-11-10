@@ -1,0 +1,173 @@
+
+R version 4.4.1 (2024-06-14) -- "Race for Your Life"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> library(dvi)
+> 
+> readDVI(system.file("DVI", "test-pdftex.dvi", package="dvi"))
+pre          version=2, num=25400000, den=473628672, mag=1000,
+             comment= TeX output 2024.10.14:1225
+bop          counters=1 0 0 0 0 0 0 0 0 0, p=-1
+right3       b=-4736287
+down3        a=-4736287
+xxx1         k=30
+             x=papersize=16.16669pt,6.15079pt
+xxx1         k=49
+             x=ps::%%HiResBoundingBox: 0 0 16.16669pt 6.15079pt.
+xxx1         k=30
+             x=papersize=16.16669pt,6.15079pt
+y4           a=1073741823 
+push
+z4           a=-1073741823 
+y0 
+push
+z0 
+xxx1         k=26
+             x=header=l3backend-dvips.pro
+down3        a=403098
+push
+push
+push
+fnt_def_1    fontnum=7, checksum=1274110073, scale=655360, design=655360,
+             fontname=cmr10
+fnt_num_7
+set_char_116 't'
+set_char_101 'e'
+set_char_115 's'
+set_char_116 't'
+pop
+pop
+pop
+pop
+pop
+eop
+post
+fnt_def_1    fontnum=7, checksum=1274110073, scale=655360, design=655360,
+             fontname=cmr10
+post_post
+> 
+> readDVI(system.file("DVI", "test-luatex.dvi", package="dvi"))
+pre          version=2, num=25400000, den=473628672, mag=1000,
+             comment= LuaTeX output 2024.10.14:1225
+bop          counters=1 0 0 0 0 0 0 0 0 0, p=-1
+push
+push
+right3       b=-4736287
+down3        a=-4736287
+xxx1         k=26
+             x=header=l3backend-dvips.pro
+push
+push
+push
+down3        a=403046
+fnt_def_1    fontnum=24, checksum=0, scale=655360, design=655360,
+             fontname=[lmroman10-regular]:+tlig;
+fnt_num_24
+set_char_116 't'
+set_char_101 'e'
+set_char_115 's'
+set_char_116 't'
+pop
+pop
+pop
+pop
+pop
+eop
+post
+fnt_def_1    fontnum=24, checksum=0, scale=655360, design=655360,
+             fontname=[lmroman10-regular]:+tlig;
+post_post
+> 
+> readDVI(system.file("DVI", "test-xetex.xdv", package="dvi"))
+pre          version=7, num=25400000, den=473628672, mag=1000,
+             comment= XeTeX output 2024.10.14:1227
+bop          counters=1 0 0 0 0 0 0 0 0 0, p=-1
+xxx1         k=43
+             x=pdf:pagesize width 16.16pt height 6.25998pt
+down3        a=-4326033
+push
+down3        a=-410254
+down3        a=410254
+push
+push
+push
+push
+right3       b=-4736287
+down2        a=-7208
+x_fnt_def    fontnum=24, ptsize=655360
+             fontname=/usr/share/texmf/fonts/opentype/public/lm/lmroman10-regular.otf [0]
+fnt_num_24
+x_glyph      id=105, x=0, y=0
+x_glyph      id=50, x=254935, y=0
+x_glyph      id=98, x=545915, y=0
+x_glyph      id=105, x=804127, y=0 
+pop
+pop
+pop
+pop
+pop
+eop
+post
+x_fnt_def    fontnum=24, ptsize=655360
+             fontname=/usr/share/texmf/fonts/opentype/public/lm/lmroman10-regular.otf [0]
+post_post
+> 
+> readDVI(system.file("DVI", "test-uptex.dvi", package="dvi"))
+pre          version=2, num=25400000, den=473628672, mag=1000,
+             comment= TeX output 2024.10.14:1228
+bop          counters=1 0 0 0 0 0 0 0 0 0, p=-1
+right3       b=-4736287
+down3        a=-4736287
+xxx1         k=30
+             x=papersize=16.16669pt,6.15079pt
+xxx1         k=49
+             x=ps::%%HiResBoundingBox: 0 0 16.16669pt 6.15079pt.
+xxx1         k=30
+             x=papersize=16.16669pt,6.15079pt
+y4           a=1073741823 
+push
+z4           a=-1073741823 
+y0 
+push
+z0 
+xxx1         k=26
+             x=header=l3backend-dvips.pro
+down3        a=403098
+push
+push
+push
+fnt_def_1    fontnum=7, checksum=1274110073, scale=655360, design=655360,
+             fontname=cmr10
+fnt_num_7
+set_char_116 't'
+set_char_101 'e'
+set_char_115 's'
+set_char_116 't'
+pop
+pop
+pop
+pop
+pop
+eop
+post
+fnt_def_1    fontnum=7, checksum=1274110073, scale=655360, design=655360,
+             fontname=cmr10
+post_post
+> 
+> proc.time()
+   user  system elapsed 
+  0.147   0.010   0.162 
