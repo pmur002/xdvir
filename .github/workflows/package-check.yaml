@@ -1,0 +1,32 @@
+name: Package check
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  check:
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} R ${{ matrix.r-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos-13, macos-14, ubuntu-22.04, windows-2022 ]
+        r-version: [ release, devel ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install R
+        uses: s-u/R-actions/install@v2
+        with:
+          r-version: ${{ matrix.r-version }}
+          tools: base
+      - name: Add checkbashisms on Ubuntu
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt install devscripts
+      - name: Add checkbashisms on macOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install checkbashisms
+      - uses: s-u/R-actions/pkg-check@v2
+        with:
+          debian-deps: libfreetype-dev
+          macos-deps: freetype
+          # freetype part of Tomas' Rtools on Windows
+          check-flags: --as-cran
