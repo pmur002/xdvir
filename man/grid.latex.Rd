@@ -112,7 +112,10 @@ typeset(tex,
   \code{\link{LaTeXpackage}}.
 }
 \examples{
+\dontrun{
+% Requires TeX installation
 grid.latex("this is a test")
+}
 }
 \keyword{ dplot }
 
