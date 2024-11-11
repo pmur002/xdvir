@@ -1,0 +1,64 @@
+
+# Anticonf (tm) script based on Jeroen Ooms for {systemfonts}
+# This script will query 'pkg-config' for the required cflags and ldflags.
+# If pkg-config is unavailable or does not find the library, try setting
+# INCLUDE_DIR and LIB_DIR manually via e.g:
+# R CMD INSTALL --configure-vars='INCLUDE_DIR=/.../include LIB_DIR=/.../lib'
+
+PKG_CONFIG_NAME="freetype2"
+PKG_CFLAGS=""
+PKG_LIBS="-lfreetype"
+PKG_TEST_HEADER="<ft2build.h>"
+
+# Use pkg-config if available
+if [ "`command -v pkg-config`" ]; then
+  PKGCONFIG_CFLAGS=`pkg-config --cflags --silence-errors ${PKG_CONFIG_NAME}`
+  PKGCONFIG_LIBS=`pkg-config --libs ${PKG_CONFIG_NAME}`
+fi
+
+# Note that cflags may be empty in case of success
+if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
+  echo "Found INCLUDE_DIR and/or LIB_DIR!"
+  PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
+  PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
+elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
+  echo "Found pkg-config cflags and libs!"
+  PKG_CFLAGS=${PKGCONFIG_CFLAGS}
+  PKG_LIBS=${PKGCONFIG_LIBS}
+fi
+
+# For debugging
+echo "Using PKG_CFLAGS=$PKG_CFLAGS"
+echo "Using PKG_LIBS=$PKG_LIBS"
+
+# Find compiler
+CC=`${R_HOME}/bin/R CMD config CC`
+CFLAGS=`${R_HOME}/bin/R CMD config CFLAGS`
+CPPFLAGS=`${R_HOME}/bin/R CMD config CPPFLAGS`
+
+# Test configuration
+echo "#include $PKG_TEST_HEADER" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>configure.log
+
+if [ $? -ne 0 ]; then
+  echo "---------------------------------------------------"
+  echo "Configuration failed to find the freetype2 library."
+  echo "Try installing:"
+  echo ""
+  echo "* libfreetype-dev (on Debian and Ubuntu)"
+  echo "* freetype-devel (on Fedora, CentOS and RHEL)"
+  echo "* ftlib (via Homebrew on macOS)"
+  echo ""
+  echo "If you believe this library is installed on your"
+  echo "system but this script is simply unable to find it,"
+  echo "you can specify the include and lib paths manually:"
+  echo ""
+  echo "R CMD INSTALL ${PACKAGE_NAME} \\"
+  echo "  --configure-vars='LIBS=-L/path/to/libs CPPFLAGS=-I/path/to/headers'"
+  echo "---------------------------------------------------"
+fi
+
+# Write to Makevars
+sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
+
+# Success
+exit 0

@@ -1,4 +1,6 @@
 
+useDynLib(xdvir, .registration=TRUE, .fixes="C_")
+
 importFrom("utils",
            "packageVersion")
 importFrom("grDevices",

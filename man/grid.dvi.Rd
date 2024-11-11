@@ -15,9 +15,9 @@ dviGrob(dvi, \dots)
 \method{dviGrob}{DVI}(dvi, x = 0.5, y = 0.5,
         default.units = "npc",
         hjust="centre", vjust="centre",
-        engine=NULL,
-        fontLib=NULL,
         packages=NULL,
+        engine=getOption("xdvir.engine"),
+        fontLib=getOption("xdvir.fontLib"),
         \dots,
         name="DVIgrob",
         gp=gpar(),
@@ -67,10 +67,7 @@ grid.dvi(\dots)
 }
 \examples{
 dvi <- readDVI(system.file("DVI", "test-xetex.xdv", package="xdvir"))
-\dontrun{
-% Requires TeX installation
 grid.dvi(dvi)
-}
 }
 \keyword{ dplot }
 

@@ -81,20 +81,20 @@ TeXglyphBounds <- function(index, file, size, fontLib, pre) {
 ################################################################################
 ## Null Font Library
 
-nullWidth <- function(index, file) {
+nullGlyphWidth <- function(index, file) {
     ## Fixed advance width
     w <- 500
     attr(w, "unitsPerEm") <- 1000
     w
 }
 
-nullBounds <- function(index, file) {
+nullGlyphBounds <- function(index, file) {
     ## Fixed width and fixed height
     bbox <- c(0, 0, 400, 700)
     attr(bbox, "unitsPerEm") <- 1000
     bbox
 }
 
-nullFontLib <- FontLibrary(glyphWidth=nullWidth,
+nullFontLib <- FontLibrary(glyphWidth=nullGlyphWidth,
                            glyphHeight=NULL,
-                           glyphBounds=nullBounds)
+                           glyphBounds=nullGlyphBounds)

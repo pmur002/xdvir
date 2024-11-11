@@ -27,6 +27,8 @@ registerEngine(nullEngine)
     registerPackage(fontspecPackage())
     registerPackage(xcolorPackage())
     registerPackage(previewPackage())
+    ## Default Font Library
+    options(xdvir.fontLib=FTfontLibrary)
     options(xdvir.quiet=TRUE)
 }
 

@@ -1,0 +1,3 @@
+
+PKG_CPPFLAGS = $(shell pkg-config --cflags freetype2)
+PKG_LIBS = $(shell pkg-config --libs freetype2)
