@@ -14,7 +14,9 @@ importFrom("grDevices",
            "rgb")
 import("grid")
 import("hexView")
-
+importFrom("tinytex",
+           "latexmk",
+           "tinytex_root")
 
 export("readDVI",
 
