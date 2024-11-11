@@ -27,10 +27,10 @@ tools::assertWarning(typeset(tex, engine="xetex", texFile=texFile))
         
 ## Manual TeX (so author engine unknown)
 ## Typeset engine defaults
-tex <- readLines(system.file("TeX", "manual.tex", package="xdvir"))
+tex <- readLines(system.file("TeX", "test.tex", package="xdvir"))
 tools::assertWarning(typeset(tex, texFile=texFile))
 
 ## Manual TeX (so author engine unknown)
 ## AND explicit typeset engine 
-tex <- readLines(system.file("TeX", "manual.tex", package="xdvir"))
+tex <- readLines(system.file("TeX", "test.tex", package="xdvir"))
 tools::assertWarning(typeset(tex, engine="xetex", texFile=texFile))
