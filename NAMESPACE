@@ -15,6 +15,7 @@ importFrom("grDevices",
 import("grid")
 import("hexView")
 importFrom("tinytex",
+           "is_tinytex",
            "latexmk",
            "tinytex_root")
 

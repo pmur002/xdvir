@@ -32,31 +32,26 @@ registerEngine(nullEngine)
     options(xdvir.quiet=TRUE)
 }
 
-haveTeX <- function() {
-    ## Either TinyTeX or another TeX installation that {tinytex} should
-    ## be able to see, like TeX-Live
-    nchar(tinytex_root(error=FALSE)) ||
-        nchar(Sys.which("latex"))
-}
-
 .onAttach <- function(libname, pkgname) {
-    if (!(tinytexAvailable() && haveTeX())) {
-        packageStartupMessage(paste0("         :",
-                                     "  No TeX installation detected",
+    if (haveTeX()) {
+        packageStartupMessage(paste0("     TeX:  ", texVersion()))
+        if (xetexAvailable()) {
+            packageStartupMessage(paste0("    xetex:  ", xetexVersion()))
+        } else {
+            packageStartupMessage("    xetex:  not found")
+            packageStartupMessage(paste0("         :  ",
+                                         "The XeTeX engine is NOT available."))
+        }
+    } else {
+        packageStartupMessage("      TeX:  not found")
+        packageStartupMessage(paste0("         :  ",
+                                     "No TeX installation detected",
                                      " (see ?tinytex::install_tinytex)"))
     }
-    if (xetexAvailable()) {
-        packageStartupMessage(paste0("    xetex:  ", xetexVersion()))
-    } else {
-        packageStartupMessage("    xetex:  not found")
-        packageStartupMessage(paste0("         :",
-                                     "  The XeTeX engine is NOT available."))
-    }
-    if (!(tinytexAvailable() &&
-          haveTeX() &&
+    if (!(haveTeX() &&
           any(sapply(get("engines"), canTypeset)))) {
-        packageStartupMessage(paste0("         :",
-                                     "  Typesetting is NOT available."))
+        packageStartupMessage(paste0("         :  ",
+                                     "Typesetting is NOT available."))
     }
 }
 
