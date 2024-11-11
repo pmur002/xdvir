@@ -30,9 +30,9 @@ readDVI(file)
   Paul Murrell
 }
 \examples{
-readDVI(system.file("DVI", "test-pdftex.dvi", package="dvi"))
-readDVI(system.file("DVI", "test-luatex.dvi", package="dvi"))
-readDVI(system.file("DVI", "test-xetex.xdv", package="dvi"))
-readDVI(system.file("DVI", "test-uptex.dvi", package="dvi"))
+readDVI(system.file("DVI", "test-pdftex.dvi", package="xdvir"))
+readDVI(system.file("DVI", "test-luatex.dvi", package="xdvir"))
+readDVI(system.file("DVI", "test-xetex.xdv", package="xdvir"))
+readDVI(system.file("DVI", "test-uptex.dvi", package="xdvir"))
 }
 \keyword{ dplot }

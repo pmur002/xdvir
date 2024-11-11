@@ -1,7 +1,60 @@
 
+importFrom("utils",
+           "packageVersion")
+importFrom("grDevices",
+           "glyphAnchor",
+           "glyphFont",
+           "glyphFontList",
+           "glyphHeight",
+           "glyphInfo",
+           "glyphWidth",
+           "gray",
+           "rgb")
+import("grid")
 import("hexView")
 
-export("readDVI")
+
+export("readDVI",
+
+       "LaTeXpackage", "registerPackage",
+       "fontspecPackage", "xcolorPackage", "previewPackage",
+       
+       "grid.dvi", "dviGrob",
+
+       "grid.latex", "latexGrob", "author", "typeset",
+
+       "grid.xelatex", "xelatexGrob")
+
+
+S3method("packagePreamble", "NULL")
+S3method("packagePreamble", "LaTeXpackage")
+S3method("packagePreamble", "list")
+S3method("packagePrefix", "NULL")
+S3method("packagePrefix", "LaTeXpackage")
+S3method("packagePrefix", "list")
+S3method("packageSuffix", "NULL")
+S3method("packageSuffix", "LaTeXpackage")
+S3method("packageSuffix", "list")
+S3method("resolvePackage", "character")
+S3method("resolvePackage", "LaTeXpackage")
+S3method("resolvePackages", "character")
+S3method("resolvePackages", "LaTeXpackage")
+S3method("resolvePackages", "list")
+S3method("resolvePackages", NULL)
+
+S3method("typeset", "TeXdocument")
+S3method("typeset", "character")
+
+S3method("dviGrob", "DVI")
+S3method("dviGrob", "DVIfile")
+S3method("dviGrob", "character")
+
+S3method("makeContent", "DVIgrob")
+
+S3method("objToGrob", "LaTeXglyphObj")
+S3method("objToGrob", "LaTeXruleObj")
 
 S3method("print", "DVI")
+S3method("print", "TeXengine")
+S3method("print", "TeXdocument")
 

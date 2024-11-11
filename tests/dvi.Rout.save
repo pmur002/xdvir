@@ -1,5 +1,5 @@
 
-R version 4.4.1 (2024-06-14) -- "Race for Your Life"
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
 Copyright (C) 2024 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
@@ -18,7 +18,7 @@ Type 'q()' to quit R.
 > 
 > library(dvi)
 > 
-> readDVI(system.file("DVI", "test-pdftex.dvi", package="dvi"))
+> readDVI(system.file("DVI", "test-pdftex.dvi", package="xdvir"))
 pre          version=2, num=25400000, den=473628672, mag=1000,
              comment= TeX output 2024.10.14:1225
 bop          counters=1 0 0 0 0 0 0 0 0 0, p=-1
@@ -60,7 +60,7 @@ fnt_def_1    fontnum=7, checksum=1274110073, scale=655360, design=655360,
              fontname=cmr10
 post_post
 > 
-> readDVI(system.file("DVI", "test-luatex.dvi", package="dvi"))
+> readDVI(system.file("DVI", "test-luatex.dvi", package="xdvir"))
 pre          version=2, num=25400000, den=473628672, mag=1000,
              comment= LuaTeX output 2024.10.14:1225
 bop          counters=1 0 0 0 0 0 0 0 0 0, p=-1
@@ -92,7 +92,7 @@ fnt_def_1    fontnum=24, checksum=0, scale=655360, design=655360,
              fontname=[lmroman10-regular]:+tlig;
 post_post
 > 
-> readDVI(system.file("DVI", "test-xetex.xdv", package="dvi"))
+> readDVI(system.file("DVI", "test-xetex.xdv", package="xdvir"))
 pre          version=7, num=25400000, den=473628672, mag=1000,
              comment= XeTeX output 2024.10.14:1227
 bop          counters=1 0 0 0 0 0 0 0 0 0, p=-1
@@ -126,7 +126,7 @@ x_fnt_def    fontnum=24, ptsize=655360
              fontname=/usr/share/texmf/fonts/opentype/public/lm/lmroman10-regular.otf [0]
 post_post
 > 
-> readDVI(system.file("DVI", "test-uptex.dvi", package="dvi"))
+> readDVI(system.file("DVI", "test-uptex.dvi", package="xdvir"))
 pre          version=2, num=25400000, den=473628672, mag=1000,
              comment= TeX output 2024.10.14:1228
 bop          counters=1 0 0 0 0 0 0 0 0 0, p=-1
@@ -170,4 +170,4 @@ post_post
 > 
 > proc.time()
    user  system elapsed 
-  0.147   0.010   0.162 
+  0.141   0.015   0.156 
