@@ -16,7 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> library(dvi)
+> suppressPackageStartupMessages(library(xdvir))
 > 
 > readDVI(system.file("DVI", "test-pdftex.dvi", package="xdvir"))
 pre          version=2, num=25400000, den=473628672, mag=1000,
@@ -170,4 +170,4 @@ post_post
 > 
 > proc.time()
    user  system elapsed 
-  0.141   0.015   0.156 
+  0.169   0.028   0.203 

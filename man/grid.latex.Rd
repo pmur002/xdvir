@@ -109,8 +109,10 @@ typeset(tex,
   Paul Murrell
 }
 \seealso{
-  \code{\link[dvi]{readDVI}}, 
   \code{\link{LaTeXpackage}}.
+}
+\examples{
+grid.latex("this is a test")
 }
 \keyword{ dplot }
 

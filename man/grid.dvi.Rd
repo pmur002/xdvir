@@ -25,7 +25,7 @@ dviGrob(dvi, \dots)
 grid.dvi(\dots)
 }
 \arguments{
-  \item{dvi}{A \code{"DVI"} object, as produced by \code{\link[dvi]{readDVI}},
+  \item{dvi}{A \code{"DVI"} object, as produced by \code{\link{readDVI}},
     or the name of a DVI file.}
   \item{x, y}{Numeric values or units specifying where to draw the
     output.}
@@ -62,12 +62,8 @@ grid.dvi(\dots)
   Paul Murrell
 }
 \seealso{
-  \code{\link[dvi]{readDVI}}, 
+  \code{\link{readDVI}}, 
   \code{\link{LaTeXpackage}}.
-}
-\examples{
-dvi <- readDVI(system.file("DVI", "test-xetex.xdv", package="xdvir"))
-grid.dvi(dvi)
 }
 \keyword{ dplot }
 

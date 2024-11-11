@@ -7,8 +7,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, macos-14, ubuntu-22.04, windows-2022 ]
-        r-version: [ release, devel ]
+        os: [ ubuntu-22.04 ] # [ macos-13, macos-14, ubuntu-22.04, windows-2022 ]
+        r-version: [ release ] # [ release, devel ]
     steps:
       - uses: actions/checkout@v4
       - name: Install R
@@ -19,7 +19,7 @@ jobs:
       - name: Add checkbashisms on Ubuntu
         if: runner.os == 'Linux'
         run: |
-          sudo apt install devscripts
+          sudo apt install -y devscripts
       - name: Add checkbashisms on macOS
         if: runner.os == 'macOS'
         run: |

@@ -7,7 +7,7 @@ author("This is a test: $x - \\mu$")
 tools::assertError(author("test", engine=NULL))
 
 ## Explicit engine
-author("test", engine=latex:::nullEngine)
+author("test", engine=xdvir:::nullEngine)
 
 ## Engine by name
 author("test", engine="null")

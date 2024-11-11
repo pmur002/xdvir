@@ -1,5 +1,5 @@
 
-library(dvi)
+suppressPackageStartupMessages(library(xdvir))
 
 readDVI(system.file("DVI", "test-pdftex.dvi", package="xdvir"))
 
