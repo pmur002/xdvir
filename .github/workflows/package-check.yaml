@@ -16,14 +16,6 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
           tools: base
-      - name: Add checkbashisms on Ubuntu
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt install -y devscripts
-      - name: Add checkbashisms on macOS
-        if: runner.os == 'macOS'
-        run: |
-          brew install checkbashisms
       - uses: s-u/R-actions/pkg-check@v2
         with:
           debian-deps: libfreetype-dev
