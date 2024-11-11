@@ -21,23 +21,34 @@ latex <- function(file, dir, engine, packages, dviFile, sig=TRUE) {
         sig <- buildSignature(engine, packages)
         options <- c(engine$options,
                      paste0('--output-comment="', sig, '"'),
-                     paste0("--output-directory=", shQuote(dir)))
+                     shQuote(paste0("--output-directory=", dir)))
     } else {
         options <- c(engine$options,
-                     paste0("--output-directory=", shQuote(dir)))
+                     shQuote(paste0("--output-directory=", dir)))
     }
-    ## Have to run within try() because tinytex::latexmk() will only
-    ## produce .dvi without error if engine="latex" (hard coded)
-    ## (it will still generate .dvi with other engines, it will
-    ##  just error out because it cannot find .pdf file)
-    try(latexmk(file,
+    if (tinytexVersion() > "0.54") {
+        ## A bit of jumping through hoops to use output-directory successfully
+        ## 1.  Set options(tinytex.output) below
+        ## 2.  Use shQuote() in 'options' above to match internal call
+        ##     in latexmk()
+        options(tinytex.output_dir=dir)
+        latexmk(file,
                 engine=engine$command,
-                engine_args=options),
-        silent=TRUE)
-    ## Do my own check that LaTeX run worked
-    if (!file.exists(dviFile)) {
-        stop(paste0("Typesetting failed; check ", file,
-                    " and associated .log file"))
+                engine_args=options)
+    } else {
+        ## Have to run within try() because tinytex::latexmk() will only
+        ## produce .dvi without error if engine="latex" (hard coded)
+        ## (it will still generate .dvi with other engines, it will
+        ##  just error out because it cannot find .pdf file)
+        try(latexmk(file,
+                    engine=engine$command,
+                    engine_args=options),
+            silent=TRUE)
+        ## Do my own check that LaTeX run worked
+        if (!file.exists(dviFile)) {
+            stop(paste0("Typesetting failed; check ", file,
+                        " and associated .log file"))
+        }
     }
 }
 
