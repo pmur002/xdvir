@@ -3,6 +3,8 @@
 \alias{latexGrob}
 \alias{grid.xelatex}
 \alias{xelatexGrob}
+\alias{grid.lualatex}
+\alias{lualatexGrob}
 \alias{author}
 \alias{typeset}
 \alias{typeset.TeXdocument}
@@ -38,6 +40,18 @@ xelatexGrob(tex,
             gp=gpar(),
             vp=NULL) 
 grid.xelatex(\dots)
+
+lualatexGrob(tex,
+             x=0.5, y=0.5, default.units="npc",
+             hjust="centre", vjust="centre",
+             packages=NULL,
+             fontLib=getOption("xdvir.fontLib"),
+             texFile=NULL,
+             \dots,
+             name="LuaLaTeXgrob",
+             gp=gpar(),
+             vp=NULL) 
+grid.lualatex(\dots)
 
 author(tex,
        engine=getOption("xdvir.engine"),

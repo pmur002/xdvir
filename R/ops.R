@@ -111,7 +111,7 @@ op_set_rule <- function(op, state) setRule(op, FALSE, state)
 ## put2
 ## put3
 ## put4
-op_put <- function(op) {
+op_put <- function(op, state) {
     setChar(op$blocks$op.opparams$fileRaw, TRUE, state)
 }
 
