@@ -24,3 +24,17 @@ jobs:
           macos-deps: freetype
           # freetype part of Tomas' Rtools on Windows
           check-flags: --as-cran
+      - name: Artifact set up
+        run: |
+          if [ ${{ runner.os }} = Windows ] ; then
+            TDIR=`cygpath -m $GITHUB_WORKSPACE/..`
+          else
+            TDIR=$(cd $GITHUB_WORKSPACE/.. && pwd)
+          fi
+          echo "TOP_DIR=$TDIR" >> $GITHUB_ENV
+        shell: bash
+      - name: Upload check results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-r-${{ matrix.r-version }}-results
+          path: ${{ env.TOP_DIR }}/xdvir.Rcheck/
