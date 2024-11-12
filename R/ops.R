@@ -35,7 +35,6 @@ setChar <- function(raw, put=FALSE, state) {
     fontLib <- TeXget("fontLib", state)
     ## Lots of things depend on text direction
     dir <- TeXget("dir", state)
-    ## Different engines specify glyphs in different ways
     id <- glyphIndex(raw)
     bbox <- TeXglyphBounds(id, font$file, font$size, fontLib, state)
     if (dir == 0) {
@@ -330,16 +329,6 @@ op_special <- function(op, state) {
     specialString <- paste(blockValue(op$blocks$op.opparams.string),
                            collapse="")
     packageSpecial(TeXget("packages", state), specialString, state)
-}
-
-## This works off the anecdotal evidence that TeX font file names
-## contain a font size (e.g., cmr10 and lmroman10-regular)
-## Default to 10pt, which I have seen somewhere is the TeX default
-fontSize <- function(fontname) {
-    size <- as.numeric(gsub("[^0-9]+", "", basename(fontname)))
-    if (is.na(size))
-        size <- 10
-    size
 }
 
 ## 243..246

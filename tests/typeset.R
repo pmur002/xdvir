@@ -4,9 +4,9 @@ library(xdvir)
 ## Make debugging information available
 options(tinytex.verbose=TRUE, xdvir.quiet=FALSE)
 
-if (.Platform$OS.type == "windows") {
-    ## For testing on github Windows runners, avoid tmp dir
-    ## for files that a TeX engine will run on
+if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
+    ## For testing on github runners, create files within .Rcheck
+    ## directory so that we can easily return them as artifacts
     texFile <- "test-typeset.tex"
 } else {
     texFile <- NULL

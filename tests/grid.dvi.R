@@ -24,7 +24,7 @@ if (Sys.getenv("USER") == "pmur002") {
 
 ## Generate DVI
 
-if (.Platform$OS.type == "windows") {
+if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     ## For testing on github Windows runners, avoid tmp dir
     ## for files that a TeX engine will run on
     texFile <- "test-dvi.tex"
