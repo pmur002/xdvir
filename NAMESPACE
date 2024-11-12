@@ -28,6 +28,7 @@ export("readDVI",
 
        "grid.latex", "latexGrob", "author", "typeset",
 
+       "grid.lualatex", "lualatexGrob",
        "grid.xelatex", "xelatexGrob")
 
 

@@ -45,10 +45,10 @@ push
 fnt_def_1    fontnum=7, checksum=1274110073, scale=655360, design=655360,
              fontname=cmr10
 fnt_num_7
-set_char_116 't'
-set_char_101 'e'
-set_char_115 's'
-set_char_116 't'
+set_char_116 74
+set_char_101 65
+set_char_115 73
+set_char_116 74
 pop
 pop
 pop
@@ -77,10 +77,10 @@ down3        a=403046
 fnt_def_1    fontnum=24, checksum=0, scale=655360, design=655360,
              fontname=[lmroman10-regular]:+tlig;
 fnt_num_24
-set_char_116 't'
-set_char_101 'e'
-set_char_115 's'
-set_char_116 't'
+set_char_116 74
+set_char_101 65
+set_char_115 73
+set_char_116 74
 pop
 pop
 pop
@@ -153,10 +153,10 @@ push
 fnt_def_1    fontnum=7, checksum=1274110073, scale=655360, design=655360,
              fontname=cmr10
 fnt_num_7
-set_char_116 't'
-set_char_101 'e'
-set_char_115 's'
-set_char_116 't'
+set_char_116 74
+set_char_101 65
+set_char_115 73
+set_char_116 74
 pop
 pop
 pop
@@ -170,4 +170,4 @@ post_post
 > 
 > proc.time()
    user  system elapsed 
-  0.169   0.028   0.203 
+  0.309   0.016   0.328 

@@ -10,11 +10,10 @@ for (i in 0:255) {
 ## set_char_<i>
 print_set_char <- function(op, code, params) {
     int <- sprintf("%sd", code)
-    char <- rawToChar(op$blocks$op.opcode$fileRaw)
     str <- paste0("set_char_",
                   code,
                   paste(rep(" ", 5 - nchar(int)), collapse=""),
-                  "'", char, "'",
+                  op$blocks$op.opcode$fileRaw,
                   "\n")
     cat(str)
 }

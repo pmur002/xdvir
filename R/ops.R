@@ -3,16 +3,88 @@
 
 op_ignore <- function(op, state) { }
 
+## Glyph index from raw bytes
+glyphIndex <- function(raw) {
+    nbytes <- length(raw)
+    switch(nbytes,
+           ## Single byte from set_char_i or set1
+           as.integer(raw),
+           ## Two bytes from set2
+           sum(as.integer(raw)*16^c(2, 0)),
+           ## Three bytes from set3
+           sum(as.integer(raw)*16^c(4, 2, 0)),
+           ## To be implemented
+           ## Have not yet witnessed set4 op
+           stop("set4 not yet supported"))
+}
+
+## set_char_i and set_char are VERY similar
+## (put_char_i is also VERY similar - just does not adjust (h, v)
+setChar <- function(raw, put=FALSE, state) {
+    h <- TeXget("h", state)
+    v <- TeXget("v", state)
+    ## Default baseline to first set char
+    ## (may be overridden by, e.g., 'preview')
+    if (is.na(TeXget("baseline", state)))
+        TeXset("baseline", v, state)
+    ## Current font
+    fonts <- TeXget("fonts", state)
+    f <- TeXget("f", state)
+    font <- fonts[[f]]
+    colour <- TeXget("colour", state)
+    fontLib <- TeXget("fontLib", state)
+    ## Lots of things depend on text direction
+    dir <- TeXget("dir", state)
+    ## Different engines specify glyphs in different ways
+    id <- glyphIndex(raw)
+    bbox <- TeXglyphBounds(id, font$file, font$size, fontLib, state)
+    if (dir == 0) {
+        width <- TeXglyphWidth(id, font$file, font$size, fontLib, state)
+        ## Position glyph then move
+        x <- fromTeX(h, state)
+        y <- fromTeX(v, state)
+        glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
+        updateBBoxHoriz(h + bbox[1], state) ## left
+        updateBBoxHoriz(h + bbox[2], state) ## right
+        updateBBoxVert(v - bbox[3], state) ## bottom
+        updateBBoxVert(v - bbox[4], state) ## top
+        if (!put)
+            TeXset("h", h + width[1], state)
+        updateTextLeft(h, state)
+        updateTextRight(h + width[1], state)
+    } else {
+        height <- TeXglyphHeight(id, font$file, font$size, fontLib, state)
+        ## Position glyph then move
+        x <- fromTeX(h, state)
+        ## y origin is v + bbox[4] (ymax) + height[2] (tsb)
+        y <- fromTeX(v + bbox[4] + height[2], state)
+        glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
+        updateBBoxHoriz(h + bbox[1], state) ## left
+        updateBBoxHoriz(h + bbox[2], state) ## right
+        updateBBoxVert(v + bbox[3], state) ## bottom
+        updateBBoxVert(v + bbox[4] + height[2], state) ## top
+        if (!put) 
+            TeXset("v", v + height[1], state)
+        updateTextLeft(h, state)
+        updateTextRight(h + bbox[2], state)
+    }
+    addGlyph(glyph, state)
+}
+
 ## 0..127
 ## set_char_<i>
-op_set_char <- op_ignore
+op_set_char <- function(op, state) {
+    setChar(op$blocks$op.opcode$fileRaw, put=FALSE, state)
+}
 
 ## 128..131
 ## set1
 ## set2
 ## set3
 ## set4
-op_set <- op_ignore
+op_set <- function(op, state) {
+    setChar(op$blocks$op.opparams$fileRaw, put=FALSE, state)
+}
 
 setRule <- function(op, put=FALSE, state) {
     h <- TeXget("h", state)
@@ -39,7 +111,9 @@ op_set_rule <- function(op, state) setRule(op, FALSE, state)
 ## put2
 ## put3
 ## put4
-op_put <- op_ignore
+op_put <- function(op) {
+    setChar(op$blocks$op.opparams$fileRaw, TRUE, state)
+}
 
 ## 137
 ## put_rule
@@ -258,12 +332,46 @@ op_special <- function(op, state) {
     packageSpecial(TeXget("packages", state), specialString, state)
 }
 
+## This works off the anecdotal evidence that TeX font file names
+## contain a font size (e.g., cmr10 and lmroman10-regular)
+## Default to 10pt, which I have seen somewhere is the TeX default
+fontSize <- function(fontname) {
+    size <- as.numeric(gsub("[^0-9]+", "", basename(fontname)))
+    if (is.na(size))
+        size <- 10
+    size
+}
+
 ## 243..246
 ## fnt_def_1
 ## fnt_def_2
 ## fnt_def_3
 ## fnt_def_4
-op_font_def <- op_ignore
+op_font_def <- function(op, state) {
+    mag <- TeXget("mag", state)
+    engine <- TeXget("engine", state)
+    fontLib <- TeXget("fontLib", state)
+    ## Create font definition and save it
+    fonts <- TeXget("fonts", state)
+    fontnum <- blockValue(op$blocks$op.opparams.k) + 1
+    ## Avoid redefining the same font 
+    if (is.null(fonts[[fontnum]]) ||
+        !(identical_font(op, fonts[[fontnum]]$op))) {
+        ## Reduce vector of individual characters to single character value
+        fontname <- paste(blockValue(op$blocks$op.opparams.fontname.name),
+                          collapse="")
+        fontfile <- gsub("[[]|[]].*", "", fontname)
+        scale <- blockValue(op$blocks$op.opparams.s)
+        design <- blockValue(op$blocks$op.opparams.d)
+        mag <- TeXget("mag", state)
+        fonts[[fontnum]] <- list(file=fontfile,
+                                 index=0,
+                                 size=72.27*fromTeX(design, state)/25.4*
+                                     (scale/design)*(mag/1000),
+                                 op=op)
+        TeXset("fonts", fonts, state)
+    }
+}
 
 ## 247
 ## pre
