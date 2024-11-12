@@ -5,9 +5,9 @@ library(xdvir)
 ## Make debugging information available
 options(tinytex.verbose=TRUE, xdvir.quiet=FALSE)
 
-fontpath <- system.file("fonts", "Montserrat", "static", package="grDevices")
+fontpath <- system.file("Fonts", "Montserrat", package="xdvir")
 
-tex <- paste0("\\setmainfont{Montserrat-Medium.ttf}",
+tex <- paste0("\\setmainfont{Montserrat-Regular.ttf}",
               ## On Windows, the path may contain ~
               "[Path=", gsub("~", "\\\\string~", fontpath), "/]\n",
               "This is a test")
