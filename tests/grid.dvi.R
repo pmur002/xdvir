@@ -32,16 +32,20 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
-tex <- author("This is a test: $x - \\mu$")
-dviFile <- typeset(tex, texFile=texFile)
-dvi <- readDVI(dviFile)
-grid.newpage()
-grid.dvi(dvi)
+if (xdvir:::haveTeX()) {
 
-## Explicit render engine that does NOT match typeset() engine
-tex <- author("This is a test: $x - \\mu$", engine="xetex")
-dviFile <- typeset(tex, engine="xetex", texFile=texFile)
-dvi <- readDVI(dviFile)
-grid.newpage()
-tools::assertWarning(grid.dvi(dvi, engine="null"))
+    tex <- author("This is a test: $x - \\mu$")
+    dviFile <- typeset(tex, texFile=texFile)
+    dvi <- readDVI(dviFile)
+    grid.newpage()
+    grid.dvi(dvi)
+
+    ## Explicit render engine that does NOT match typeset() engine
+    tex <- author("This is a test: $x - \\mu$", engine="xetex")
+    dviFile <- typeset(tex, engine="xetex", texFile=texFile)
+    dvi <- readDVI(dviFile)
+    grid.newpage()
+    tools::assertWarning(grid.dvi(dvi, engine="null"))
+
+}
 

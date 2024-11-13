@@ -13,8 +13,12 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
-if (xdvir:::luatexAvailable() && xdvir:::luaOTFloadToolSufficient()) {
-    grid.newpage()
-    grid.lualatex("This is a test: $x - \\mu$", texFile=texFile)
+if (xdvir:::haveTeX()) {
+
+    if (xdvir:::luatexAvailable() && xdvir:::luaOTFloadToolSufficient()) {
+        grid.newpage()
+        grid.lualatex("This is a test: $x - \\mu$", texFile=texFile)
+    }
+
 }
 

@@ -20,7 +20,9 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
-grid.newpage()
-grid.latex(tex, packages=fontspecPackage(), texFile=texFile)
+if (xdvir:::haveTeX()) {
+    grid.newpage()
+    grid.latex(tex, packages=fontspecPackage(), texFile=texFile)
+}
 
         

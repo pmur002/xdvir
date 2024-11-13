@@ -12,8 +12,12 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
 } else {
     texFile <- NULL
 }
-    
-grid.newpage()
-grid.latex("This is a test: $x - \\mu$", texFile=texFile)
+
+if (xdvir:::haveTeX()) {
+
+    grid.newpage()
+    grid.latex("This is a test: $x - \\mu$", texFile=texFile)
+
+}
     
 

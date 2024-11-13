@@ -19,17 +19,20 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
 } else {
     texFile <- NULL
 }
-    
-## Package as LaTeXpackage object
-grid.newpage()
-grid.latex(tex, packages=fontspecPackage(), texFile=texFile)
 
-## Package as package alias
-grid.newpage()
-grid.latex(tex, packages="fontspec", texFile=texFile)
+if (xdvir:::haveTeX()) {
+
+    ## Package as LaTeXpackage object
+    grid.newpage()
+    grid.latex(tex, packages=fontspecPackage(), texFile=texFile)
+
+    ## Package as package alias
+    grid.newpage()
+    grid.latex(tex, packages="fontspec", texFile=texFile)
         
-## TODO:
-## Package in author, but not in render
-## Package in render, but not in author
-## ...
+    ## TODO:
+    ## Package in author, but not in render
+    ## Package in render, but not in author
+    ## ...
 
+}
