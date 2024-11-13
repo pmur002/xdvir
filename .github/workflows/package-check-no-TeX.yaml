@@ -1,4 +1,4 @@
-name: Package check
+name: Package check no TeX
 on: [push, pull_request, workflow_dispatch]
 jobs:
   check:
