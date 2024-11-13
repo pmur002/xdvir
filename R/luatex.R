@@ -8,7 +8,13 @@ initLuaTeX <- function() {
     }
     luaotfloadtool <- Sys.which("luaotfload-tool")
     if (nchar(luaotfloadtool) > 0) {
-        loadToolText <- system("luaotfload-tool --version", intern=TRUE)
+        if (nchar(Sys.getenv("TERM"))) {
+            TERM <- ""
+        } else {
+            TERM <- "TERM=dumb"
+        }
+        loadToolText <- system(paste(TERM, "luaotfload-tool --version"),
+                               intern=TRUE)
         loadToolVersLine <- grep("luaotfload-tool version", loadToolText)
         loadToolVers <- gsub('.+"', "",
                              gsub('"$', "", loadToolText[loadToolVersLine]))
@@ -39,7 +45,7 @@ luaOTFloadToolSufficient <- function() {
     ## "Write glyph ids instead of internal identifiers to DVI files."
     ## Released on Sep 3 2020
     ## https://github.com/latex3/luaotfload/commit/4c09fe264c1644792d95182280be259449e7da02
-    as.numeric(luaOTFloadToolVersion()) >= 3.15
+    luaOTFloadToolAvailable() && as.numeric(luaOTFloadToolVersion()) >= 3.15
 }
 
 ## Ensure non-Type1 math font

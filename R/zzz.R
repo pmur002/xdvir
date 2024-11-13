@@ -50,7 +50,7 @@ registerEngine(nullEngine)
         if (xetexAvailable()) {
             packageStartupMessage(paste0("          xetex:  ", xetexVersion()))
         } else {
-            packageStartupMessage("          xetex:  not found")
+            packageStartupMessage("          xetex:  Not found.")
             packageStartupMessage(paste0("               :  ",
                                          "The XeTeX engine is NOT available."))
         }
@@ -61,27 +61,27 @@ registerEngine(nullEngine)
                                              luaOTFloadToolVersion()))
                 if (!luaOTFloadToolSufficient()) {
                     packageStartupMessage(paste0("               :  ",
-                                                 "luaotfload-tool version ",
-                                                 "is too low (< 3.15)")) 
+                                                 "The luaotfload-tool version ",
+                                                 "is too low (< 3.15).")) 
                     packageStartupMessage(paste0("               :  ",
                                                  "The LuaTeX engine is ",
                                                  "NOT available."))
                 }
             } 
         } else {
-            packageStartupMessage("         luatex:  not found")
+            packageStartupMessage("         luatex:  Not found.")
             packageStartupMessage(paste0("               :  ",
                                          "The LuaTeX engine is NOT available."))
         }
     } else {
-        packageStartupMessage("            TeX:  not found")
+        packageStartupMessage("            TeX:  Not found.")
         packageStartupMessage(paste0("               :  ",
                                      "No TeX installation detected",
-                                     " (see ?tinytex::install_tinytex)"))
+                                     " (see ?tinytex::install_tinytex)."))
     }
     if (!(haveTeX() &&
           any(sapply(get("engines"), canTypeset)))) {
-        packageStartupMessage(paste0("         :  ",
+        packageStartupMessage(paste0("               :  ",
                                      "Typesetting is NOT available."))
     }
 }
