@@ -31,7 +31,7 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
 } else {
     texFile <- NULL
 }
-    
+
 tex <- author("This is a test: $x - \\mu$")
 dviFile <- typeset(tex, texFile=texFile)
 dvi <- readDVI(dviFile)

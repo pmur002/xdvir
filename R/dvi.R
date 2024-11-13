@@ -11,7 +11,6 @@ int4 <- atomicBlock("int", size=4, endian="big")
 
 uint1 <- atomicBlock("int", size=1, signed=FALSE)
 uint2 <- atomicBlock("int", size=2, endian="big", signed=FALSE)
-uint4 <- atomicBlock("int", size=4, endian="big", signed=FALSE)
 
 ################################################################################
 ## operation parameters
@@ -22,8 +21,8 @@ for (i in 0:127) {
 }
 
 ## set<i>
-op128 <- int1
-op129 <- int2
+op128 <- uint1
+op129 <- uint2
 op130 <- int3
 op131 <- int4
     
@@ -32,8 +31,8 @@ op132 <- mixedBlock(a=int4,
                     b=int4)
 
 ## put<i>
-op133 <- int1
-op134 <- int2
+op133 <- uint1
+op134 <- uint2
 op135 <- int3
 op136 <- int4
 
@@ -103,8 +102,8 @@ for (i in 171:234) {
 }
 
 ## fnt<i>
-op235 <- int1
-op236 <- int2
+op235 <- uint1
+op236 <- uint2
 op237 <- int3
 op238 <- int4
     
@@ -121,7 +120,7 @@ font_def <- function(i) {
                c=int4,
                s=int4,
                d=int4,
-               fontname=markedBlock(mixedBlock(a=int1, l=int1),
+               fontname=markedBlock(mixedBlock(a=uint1, l=uint1),
                                     function(marker) {
                                         vectorBlock(ASCIIchar,
                                                     blockValue(marker$a) +
@@ -136,11 +135,11 @@ op245 <- font_def(3)
 op246 <- font_def(4)
 
 ## pre
-op247 <- mixedBlock(i=int1,
+op247 <- mixedBlock(i=uint1,
                     num=int4,
                     den=int4,
                     mag=int4,
-                    comment=lengthBlock(int1, ASCIIchar, blockLabel="string"))
+                    comment=lengthBlock(uint1, ASCIIchar, blockLabel="string"))
 
 ## post
 op248 <- mixedBlock(p=int4,
@@ -149,12 +148,12 @@ op248 <- mixedBlock(p=int4,
                     mag=int4,
                     l=int4,
                     u=int4,
-                    s=int2,
-                    t=int2)
+                    s=uint2,
+                    t=uint2)
 
 ## post_post
 op249 <- mixedBlock(q=int4,
-                    i=int1,
+                    i=uint1,
                     ## There could be up to 7 of these to pad the file
                     ## to a multiple of four bytes, but I will ignore
                     ## that for now
@@ -192,20 +191,20 @@ op252 <- mixedBlock(fontnum=int4,
 ## XeTeX
 ## x_glyph
 op253 <- mixedBlock(w=int4,
-                    markedBlock(int2,
+                    markedBlock(uint2,
                                 function(marker) {
                                     n <- blockValue(marker)
                                     mixedBlock(xy=vectorBlock(mixedBlock(int4,
                                                                          int4),
                                                               n),
-                                               id=vectorBlock(int2, n))
+                                               id=vectorBlock(uint2, n))
                                 },
                                 markerLabel="n",
                                 blockLabel="glyphs"))
 
 ## XeTeX
 ## x_string
-op254 <- mixedBlock(markedBlock(int2,
+op254 <- mixedBlock(markedBlock(uint2,
                                 function(marker) {
                                     n <- blockValue(marker)
                                     vectorBlock(ASCIIchar, 2*n)
@@ -213,20 +212,20 @@ op254 <- mixedBlock(markedBlock(int2,
                                 markerLabel="nchar",
                                 blockLabel="text"),
                     w=int4,
-                    markedBlock(int2,
+                    markedBlock(uint2,
                                 function(marker) {
                                     n <- blockValue(marker)
                                     mixedBlock(xy=vectorBlock(mixedBlock(int4,
                                                                          int4),
                                                               n),
-                                               id=vectorBlock(int2, n))
+                                               id=vectorBlock(uint2, n))
                                 },
                                 markerLabel="n",
                                 blockLabel="glyphs"))
 
 ## upTeX
 ## dir
-op255 <- int1
+op255 <- uint1
 
 opparams <- function(marker) {
     opcode <- blockValue(marker)

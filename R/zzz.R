@@ -62,7 +62,7 @@ registerEngine(nullEngine)
                 if (!luaOTFloadToolSufficient()) {
                     packageStartupMessage(paste0("               :  ",
                                                  "luaotfload-tool version ",
-                                                 "is too low (below 3.15)")) 
+                                                 "is too low (< 3.15)")) 
                     packageStartupMessage(paste0("               :  ",
                                                  "The LuaTeX engine is ",
                                                  "NOT available."))
