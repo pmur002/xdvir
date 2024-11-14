@@ -2,6 +2,8 @@
 \alias{fontspecPackage}
 \alias{xcolorPackage}
 \alias{previewPackage}
+\alias{tikzPackage}
+\alias{tikzPicture}
 \title{
   LaTeX Package fontspec.
 }
@@ -12,10 +14,15 @@
 fontspecPackage(font=NULL, name=font)
 xcolorPackage()
 previewPackage()
+tikzPackage(name="tikz", packages=NULL)
+tikzPicture(name="tikzPicture", packages=NULL, bbox=NULL)
 }
 \arguments{
   \item{font}{The name of a font to use as the main font.  See details.}
   \item{name}{The name of the resulting package.}
+  \item{packages}{A character list of TikZ package names.}
+  \item{bbox}{A numeric vector of 4 values (left, bottom, right, top)
+    describing the bounding box for the TikZ picture.}
 }
 \details{
   A \code{"preview"} package is available for setting a baseline
@@ -32,6 +39,11 @@ previewPackage()
   For more complex situations, fontspec commands can be added to
   the LaTeX code that is sent to functions like
   \code{\link{author}} and \code{\link{grid.latex}} (see the Examples).
+
+  A \code{"tikz"} package is available for including TikZ pictures.
+
+  The \code{"tikzPicture"} package is provided for convenience if the
+  LaTeX code only consists of TikZ code.
 }
 \value{
   These functions return \code{"LaTeXpackage"} objects.

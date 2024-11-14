@@ -21,6 +21,10 @@ glyphIndex <- function(raw) {
 ## set_char_i and set_char are VERY similar
 ## (put_char_i is also VERY similar - just does not adjust (h, v)
 setChar <- function(raw, put=FALSE, state) {
+    if (tikzTransform(state)) {
+        setTransformedChar(raw, put=FALSE, state)
+        return()
+    }
     h <- TeXget("h", state)
     v <- TeXget("v", state)
     ## Default baseline to first set char
@@ -418,6 +422,10 @@ op_x_font_def <- function(op, state) {
 }
 
 setGlyphs <- function(op, state) {
+    if (tikzTransform(state)) {
+        setTransformedGlyphs(op, state)
+        return()
+    }
     h <- TeXget("h", state)
     v <- TeXget("v", state)
     ## Default baseline to first set char
@@ -456,9 +464,9 @@ setGlyphs <- function(op, state) {
         updateBBoxVert(y - bbox[4], state) ## top
         updateTextLeft(x, state)
         updateTextRight(x + width[1], state)
-        addGlyph(glyph, state)
         ## Keep track of total glyph width
         glyphWidth <- glyphWidth + width[1]
+        addGlyph(glyph, state)
     }
     ## Update h at the end for all glyphs
     TeXset("h", h + glyphWidth, state)

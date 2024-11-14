@@ -32,7 +32,7 @@ author <- function(tex,
                 "\\end{document}")
     attr(texDoc, "engine") <- engine
     attr(texDoc, "packages") <- pkgNames
-    class(texDoc) <- "TeXdocument"
+    class(texDoc) <- "LaTeXdocument"
     texDoc
 }
 
@@ -51,7 +51,7 @@ authorEngine.character <- function(tex) {
     }
 }
 
-authorEngine.TeXdocument <- function(tex) {
+authorEngine.LaTeXdocument <- function(tex) {
     attr(tex, "engine")
 }
 
@@ -69,10 +69,10 @@ authorPackages.character <- function(tex) {
     }
 }
 
-authorPackages.TeXdocument <- function(tex) {
+authorPackages.LaTeXdocument <- function(tex) {
     attr(tex, "packages")
 }
 
-print.TeXdocument <- function(x, ...) {
+print.LaTeXdocument <- function(x, ...) {
     cat(as.character(x), sep="\n")
 }

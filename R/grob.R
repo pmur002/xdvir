@@ -3,7 +3,7 @@ objToGrob <- function(obj, ...) {
     UseMethod("objToGrob")
 }
 
-objToGrob.LaTeXglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
+objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
     gx <- convertX(unit(obj$x, "mm"), "bigpts", valueOnly=TRUE)
     gy <- convertY(-unit(obj$y, "mm"), "bigpts", valueOnly=TRUE)
@@ -71,7 +71,7 @@ objToGrob.LaTeXglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
     glyphGrob(info, x, y, hjust=hjust, vjust=vjust)
 }
 
-objToGrob.LaTeXruleObj <- function(obj, xoffset, yoffset, ..., state) {
+objToGrob.XDVIRruleObj <- function(obj, xoffset, yoffset, ..., state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
     x <- convertX(unit(fromTeX(obj$x, state), "mm"), "bigpts", valueOnly=TRUE) +
         convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)

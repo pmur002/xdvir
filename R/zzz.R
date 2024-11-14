@@ -39,6 +39,8 @@ registerEngine(nullEngine)
     registerPackage(fontspecPackage())
     registerPackage(xcolorPackage())
     registerPackage(previewPackage())
+    registerPackage(tikzPackage())
+    registerPackage(tikzPicture())
     ## Default Font Library
     options(xdvir.fontLib=FTfontLibrary)
     options(xdvir.quiet=TRUE)

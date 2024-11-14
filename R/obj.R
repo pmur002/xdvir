@@ -24,12 +24,12 @@ addGlyphObjs <- function(state) {
                    if (x$scaleX[1] == 1 && x$scaleY[1] == 1 &&
                        x$skewX[1] == 0 && x$skewY[1] == 0) {
                        if (x$rotation[1] == 0) {
-                           class(x) <- c("LaTeXglyphObj", class(x))
+                           class(x) <- c("XDVIRglyphObj", class(x))
                        } else {
-                           class(x) <- c("LaTeXrotatedGlyphObj", class(x))
+                           class(x) <- c("XDVIRrotatedGlyphObj", class(x))
                        }
                    } else {
-                       class(x) <- c("LaTeXtransformedGlyphObj", class(x))
+                       class(x) <- c("XDVIRtransformedGlyphObj", class(x))
                    }
                    addDVIobj(x, state)
                })
@@ -46,7 +46,7 @@ addRuleObj <- function(a, b, state) {
         width <- b
         height <- a
         ruleObj <- list(x=x, y=y, w=width, h=height)
-        class(ruleObj) <- "LaTeXruleObj"
+        class(ruleObj) <- "XDVIRruleObj"
         addDVIobj(ruleObj, state)
     } 
 }

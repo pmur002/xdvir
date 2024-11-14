@@ -52,8 +52,8 @@ latex <- function(file, dir, engine, packages, dviFile, sig=TRUE) {
     }
 }
 
-## 'x' is a "TeXdocument" from author()
-typeset.TeXdocument <- function(tex,
+## 'x' is a "LaTeXdocument" from author()
+typeset.LaTeXdocument <- function(tex,
                                 engine=NULL,
                                 texFile=NULL,
                                 ...) {

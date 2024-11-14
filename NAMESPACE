@@ -4,6 +4,7 @@ useDynLib(xdvir, .registration=TRUE, .fixes="C_")
 importFrom("utils",
            "packageVersion")
 importFrom("grDevices",
+           "adjustcolor",
            "glyphAnchor",
            "glyphFont",
            "glyphFontList",
@@ -23,6 +24,7 @@ export("readDVI",
 
        "LaTeXpackage", "registerPackage",
        "fontspecPackage", "xcolorPackage", "previewPackage",
+       "tikzPackage", "tikzPicture",
        
        "grid.dvi", "dviGrob",
 
@@ -48,7 +50,7 @@ S3method("resolvePackages", "LaTeXpackage")
 S3method("resolvePackages", "list")
 S3method("resolvePackages", NULL)
 
-S3method("typeset", "TeXdocument")
+S3method("typeset", "LaTeXdocument")
 S3method("typeset", "character")
 
 S3method("dviGrob", "DVI")
@@ -57,10 +59,20 @@ S3method("dviGrob", "character")
 
 S3method("makeContent", "DVIgrob")
 
-S3method("objToGrob", "LaTeXglyphObj")
-S3method("objToGrob", "LaTeXruleObj")
+S3method("objToGrob", "XDVIRglyphObj")
+S3method("objToGrob", "XDVIRruleObj")
+S3method("objToGrob", "XDVIRtikzObj")
+S3method("objToGrob", "XDVIRtikzParentObj")
+S3method("objToGrob", "XDVIRtikzPathObj")
+S3method("objToGrob", "XDVIRtikzPolylineObj")
+S3method("objToGrob", "XDVIRtikzFillObj")
+S3method("objToGrob", "XDVIRtikzStretchPathObj")
+S3method("objToGrob", "XDVIRtikzStretchPolylineObj")
+S3method("objToGrob", "XDVIRtikzStretchFillObj")
+S3method("objToGrob", "XDVIRrotatedGlyphObj")
+S3method("objToGrob", "XDVIRtransformedGlyphObj")
 
 S3method("print", "DVI")
 S3method("print", "TeXengine")
-S3method("print", "TeXdocument")
+S3method("print", "LaTeXdocument")
 

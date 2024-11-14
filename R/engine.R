@@ -68,7 +68,7 @@ resolveEngine <- function(x, engine) {
 ## Resolve for TeXdocument, which has an "engine" attribute.
 ## If no user engine, use "engine" attribute
 ## If user specifies engine, check for mismatches, but user engine wins.
-resolveEngine.TeXdocument <- function(x, engine) {
+resolveEngine.LaTeXdocument <- function(x, engine) {
     e1 <- authorEngine(x)
     if (is.null(engine)) {
         e1

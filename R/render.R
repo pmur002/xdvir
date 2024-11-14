@@ -16,7 +16,7 @@ calculateOffset <- function(x, y, hjust, vjust, state) {
     TeXset("fonts", fonts, state)
     ## Create dummy glyph grob
     dummyGlyph <- glyph(x=0, y=0, index=0, fontindex=256, size=0)
-    class(dummyGlyph) <- "LaTeXglyphObj"
+    class(dummyGlyph) <- "XDVIRglyphObj"
     dummyGrob <- objToGrob(dummyGlyph, x=x, y=y, hjust=hjust, vjust=vjust,
                            state=state)
     coords <- grobCoords(dummyGrob)

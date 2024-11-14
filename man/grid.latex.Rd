@@ -7,7 +7,7 @@
 \alias{lualatexGrob}
 \alias{author}
 \alias{typeset}
-\alias{typeset.TeXdocument}
+\alias{typeset.LaTeXdocument}
 \alias{typeset.character}
 \title{
   Render LaTeX in R
@@ -60,7 +60,7 @@ author(tex,
 typeset(tex,
         engine=getOption("xdvir.engine"),
         ...)
-\method{typeset}{TeXdocument}(tex,
+\method{typeset}{LaTeXdocument}(tex,
         engine=NULL,
         texFile=NULL,
         ...)
