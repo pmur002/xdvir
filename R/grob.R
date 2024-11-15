@@ -64,7 +64,8 @@ objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
                       obj$size,
                       do.call(glyphFontList, fontList),
                       glyphWidth(maxX - minX),
-                      glyphHeight(bottom - top),
+                      ## Down is bigger in DVI
+                      glyphHeight(top - bottom),
                       hAnchor=hAnchor,
                       vAnchor=vAnchor,
                       obj$colour)

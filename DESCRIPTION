@@ -10,6 +10,6 @@ Description: Functions to author TeX documents, typeset TeX documents,
 Depends: R (>= 4.3.0)
 SystemRequirements: freetype2
 Imports: grDevices, grid, hexView (>= 0.3-4), tinytex
-Suggests: gridBezier, knitr, rmarkdown
+Suggests: gridBezier, knitr, rmarkdown, lattice, gridGraphics, gggrid
 VignetteBuilder: knitr
 License: GPL-3

@@ -48,8 +48,8 @@ setChar <- function(raw, put=FALSE, state) {
         y <- fromTeX(v, state)
         glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
         updateBBoxHoriz(h + bbox[1], state) ## left
-        updateBBoxHoriz(h + bbox[2], state) ## right
-        updateBBoxVert(v - bbox[3], state) ## bottom
+        updateBBoxHoriz(h + bbox[3], state) ## right
+        updateBBoxVert(v - bbox[2], state) ## bottom
         updateBBoxVert(v - bbox[4], state) ## top
         if (!put)
             TeXset("h", h + width[1], state)
@@ -63,8 +63,8 @@ setChar <- function(raw, put=FALSE, state) {
         y <- fromTeX(v + bbox[4] + height[2], state)
         glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
         updateBBoxHoriz(h + bbox[1], state) ## left
-        updateBBoxHoriz(h + bbox[2], state) ## right
-        updateBBoxVert(v + bbox[3], state) ## bottom
+        updateBBoxHoriz(h + bbox[3], state) ## right
+        updateBBoxVert(v + bbox[2], state) ## bottom
         updateBBoxVert(v + bbox[4] + height[2], state) ## top
         if (!put) 
             TeXset("v", v + height[1], state)
@@ -459,8 +459,8 @@ setGlyphs <- function(op, state) {
         bbox <- TeXglyphBounds(id, font$file, font$size, fontLib, state)
         width <- TeXglyphWidth(id, font$file, font$size, fontLib, state)
         updateBBoxHoriz(x + bbox[1], state) ## left
-        updateBBoxHoriz(x + bbox[2], state) ## right
-        updateBBoxVert(y - bbox[3], state) ## bottom
+        updateBBoxHoriz(x + bbox[3], state) ## right
+        updateBBoxVert(y - bbox[2], state) ## bottom
         updateBBoxVert(y - bbox[4], state) ## top
         updateTextLeft(x, state)
         updateTextRight(x + width[1], state)

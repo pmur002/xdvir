@@ -24,7 +24,7 @@ latexGrob(tex,
           fontLib=getOption("xdvir.fontLib"),
           texFile=NULL,
           \dots,
-          name="LaTeXgrob",
+          name=NULL,
           gp=gpar(),
           vp=NULL) 
 grid.latex(\dots)
@@ -36,7 +36,7 @@ xelatexGrob(tex,
             fontLib=getOption("xdvir.fontLib"),
             texFile=NULL,
             \dots,
-            name="XeLaTeXgrob",
+            name=NULL,
             gp=gpar(),
             vp=NULL) 
 grid.xelatex(\dots)
@@ -48,7 +48,7 @@ lualatexGrob(tex,
              fontLib=getOption("xdvir.fontLib"),
              texFile=NULL,
              \dots,
-             name="LuaLaTeXgrob",
+             name=NULL,
              gp=gpar(),
              vp=NULL) 
 grid.lualatex(\dots)

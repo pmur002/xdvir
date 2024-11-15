@@ -19,7 +19,7 @@ dviGrob(dvi, \dots)
         engine=getOption("xdvir.engine"),
         fontLib=getOption("xdvir.fontLib"),
         \dots,
-        name="DVIgrob",
+        name=NULL,
         gp=gpar(),
         vp=NULL)
 grid.dvi(\dots)
