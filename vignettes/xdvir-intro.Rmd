@@ -1,0 +1,189 @@
+---
+title: "The {xdvir} Package"
+author: "Paul Murrell"
+output: 
+  rmarkdown::html_vignette:
+    number_sections: true
+bibliography: xdvir-intro.bib
+vignette: >
+  %\VignetteIndexEntry{The {xdvir} Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(
+  comment = ''
+)
+```
+
+*The {xdvir} package provides functions for rendering LaTeX snippets in
+R plots.*
+
+```{r}
+library(xdvir)
+```
+
+# Rendering LaTeX in R
+
+The plot below, produced with R, features a LaTeX-quality
+mathematical equation in the
+top-left corner.
+Producing an equation like this requires three things:
+
+1.  A **markup** language that allows us to describe the equation. 
+    This is complicated by the fact
+    that the equation is not simply one character placed after another from
+    left to right along a line and the fact that
+    elements of the equation are not simple characters.
+    For example, we need to be able to express that the digit "2"
+    needs to be placed as a superscript relative to the character "z"
+    and we need to be able to express the greek letter pi.
+
+2.  A **typesetter** that can select fonts and individual 
+     glyphs within those fonts and determine the exact placement
+     of each individual glyph.
+
+3.  A **renderer** that can draw the glyphs that the typesetter
+    has selected in the locations that the typesetter has determined.
+
+```{r, echo=FALSE, fig.width=6, fig.height=3, message=FALSE}
+tex <- r"(\huge $\Phi(z) = \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{z^2}{2}}$)"
+library(gggrid)
+x <- seq(-4, 4, length.out=100)
+df <- data.frame(x=x, y=dnorm(x))
+ggplot(df) +
+    geom_area(aes(x, y), colour=NA, fill="grey90") +
+    geom_line(aes(x, y)) +
+    grid_panel(latexGrob(tex, x=0, y=1, hjust="left", vjust="top")) +
+    xlim(-4, 4) +
+    scale_x_continuous(expand=expansion(0)) +
+    scale_y_continuous(expand=expansion(c(0))) +
+    coord_cartesian(clip="off") +
+    theme_minimal() +
+    theme(panel.grid=element_blank(),
+          axis.title=element_blank(),
+          axis.text.y=element_blank(),
+          plot.margin=unit(rep(4, 4), "mm")) 
+```
+
+The {xdvir} package allows us to use LaTeX as the **markup** language,
+a TeX engine as the **typesetter**, and R as the **renderer**.
+This allows us to produce high-quality LaTeX typesetting
+within R plots, as in the image above.
+
+The main function in {xdvir} is `grid.latex()`,
+which takes a LaTeX snippet and draws it on the 
+current R graphics device.
+For example, the following code
+describes the mathematical equation, using LaTeX code, as a character value,
+then draws it by calling `grid.latex()` with the character value
+as the first argument.
+
+Because LaTeX code tends to contain 
+a large number of backslashes, the code below uses the `r"(...)"`
+syntax for raw character constants, so that we do not have to
+escape each backslash with a double backslash.
+
+```{r}
+tex <- r"(\huge $\Phi(z) = \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{z^2}{2}}$)"
+```
+
+```{r fig.width=3, fig.height=1}
+grid.latex(tex)
+```
+
+# Rendering LaTeX in plots
+
+As the function name suggests, {xdvir} only provides a low-level
+interface for drawing LaTeX snippets as part of {grid} output.
+However, there are ways to combine {grid} output with higher-level
+plotting packages.
+
+For example, we can use {grid} within panel functions in the
+{lattice} package [@pkg-lattice].  The following code draws a {lattice} plot
+and adds the mathematical equation in the top-left corner.
+This demonstrates that the `grid.latex()` function has
+arguments `x`, `y`, `hjust`, and `vjust` for positioning the
+LaTeX output.
+
+```{r}
+library(lattice)
+```
+
+```{r, label="lattice-setup", echo=FALSE, eval=FALSE}
+lattice.options(layout.widths=list(left.padding=list(x=0),
+                                   right.padding=list(x=0)),
+                layout.heights=list(bottom.padding=list(x=0),
+                                    top.padding=list(x=0)))
+```
+
+```{r, label="lattice-plot", eval=FALSE}
+xyplot(y ~ x, df, type="l",
+       panel=function(...) {
+           panel.xyplot(...)
+           grid.latex(tex, 
+                      x=unit(2, "mm"),
+                      y=unit(1, "npc") - unit(2, "mm"),
+                      hjust="left", vjust="top")
+       })
+```
+
+```{r, echo=FALSE, fig.width=6, fig.height=3}
+<<lattice-setup>>
+<<lattice-plot>>
+```
+
+If we want to add {grid} to a {graphics} plot, we can use the
+{gridGraphics} package [@RJ-2015-012; @pkg-gridGraphics].
+The following code draws a {graphics} plot, uses `gridGraphics::grid.echo()` to
+convert it to {grid}, navigates to the {grid} viewport that
+represents the main plot region, and draws the mathematical equation
+in the top-left corner.
+
+```{r}
+library(gridGraphics)
+```
+
+```{r, label="graphics-setup", echo=FALSE, eval=FALSE}
+par(mar=c(4, 4, 1, 1))
+```
+```{r, label="graphics-plot", eval=FALSE}
+plot(y ~ x, df, type="l")
+grid.echo()
+downViewport("graphics-plot-1")
+grid.latex(tex, 
+           x=unit(2, "mm"),
+           y=unit(1, "npc") - unit(2, "mm"),
+           hjust="left", vjust="top")
+```
+```{r, echo=FALSE, fig.width=6, fig.height=3, fig.keep="last"}
+<<graphics-setup>>
+<<graphics-plot>>
+```
+
+We can add {grid} output to {ggplot2} plots [@pkg-ggplot2]
+with the {gggrid}
+package [@murrell-gggrid-2021; @pkg-gggrid].
+The following
+code uses the `latexGrob()` function to generate a "graphical object"
+for {ggplot2} to draw, rather than drawing the output immediately as
+`grid.latex()` does, and passes that to `gggrid::grid_panel()`
+so that the mathematical equation is added in the top-left corner
+of the plot.  
+
+
+```{r, message=FALSE}
+library(gggrid)
+```
+
+```{r, fig.width=6, fig.height=3}
+ggplot(df) +
+    geom_line(aes(x, y)) +
+    grid_panel(latexGrob(tex,
+                         x=unit(2, "mm"), 
+                         y=unit(1, "npc") - unit(2, "mm"), 
+                         hjust="left", vjust="top"))
+```
+
+# References
