@@ -7,7 +7,7 @@ latexGrob <- function(tex,
                       fontLib=getOption("xdvir.fontLib"),
                       texFile=NULL,
                       ...,
-                      name="LaTeXgrob",
+                      name=NULL,
                       gp=gpar(),
                       vp=NULL) {
     engine <- getEngine(engine)

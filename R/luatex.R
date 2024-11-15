@@ -63,7 +63,7 @@ lualatexGrob <- function(tex,
                          fontLib=getOption("xdvir.fontLib"),
                          texFile=NULL,
                          ...,
-                         name="LuaLaTeXgrob",
+                         name=NULL,
                          gp=gpar(),
                          vp=NULL) {
     if (!luatexAvailable())

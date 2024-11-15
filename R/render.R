@@ -42,10 +42,9 @@ makeContent.DVIgrob <- function(x, ...) {
                         x=x$x, y=x$y, hjust=x$hjust, vjust=x$vjust,
                         xoffset=offset$x, yoffset=offset$y,
                         state=state)
-        gTree(children=do.call(gList, grobs), cl="LaTeXgrob")
-    } else {
-        gTree(cl="LaTeXgrob")
-    }
+        x <- setChildren(x, do.call(gList, grobs))
+    } 
+    x
 }
 
 ################################################################################
@@ -63,7 +62,7 @@ dviGrob.DVI <- function(dvi,
                         engine=getOption("xdvir.engine"),
                         fontLib=getOption("xdvir.fontLib"),
                         ...,
-                        name="DVIgrob",
+                        name=NULL,
                         gp=gpar(),
                         vp=NULL) {
     if (!is.unit(x))

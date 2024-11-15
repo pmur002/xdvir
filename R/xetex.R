@@ -33,7 +33,7 @@ xelatexGrob <- function(tex,
                         fontLib=getOption("xdvir.fontLib"),
                         texFile=NULL,
                         ...,
-                        name="XeLaTeXgrob",
+                        name=NULL,
                         gp=gpar(),
                         vp=NULL) {
     if (!xetexAvailable())

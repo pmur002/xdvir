@@ -47,44 +47,53 @@ registerEngine(nullEngine)
 }
 
 .onAttach <- function(libname, pkgname) {
+    msg <- NULL
+    width <- 15
+    line <- function(prompt="", x="") {
+        sprintf(paste0("%", width, "s:  %s"), prompt, x)
+    }
     if (haveTeX()) {
-        packageStartupMessage(paste0("            TeX:  ", texVersion()))
+        msg <- c(msg,
+                 line("TeX", texVersion()))
         if (xetexAvailable()) {
-            packageStartupMessage(paste0("          xetex:  ", xetexVersion()))
+            msg <- c(msg,
+                     line("xetex", xetexVersion()))
         } else {
-            packageStartupMessage("          xetex:  Not found.")
-            packageStartupMessage(paste0("               :  ",
-                                         "The XeTeX engine is NOT available."))
+            msg <- c(msg,
+                     line("xetex", "Not found"),
+                     line("", "The XeTeX engine is NOT available."))
         }
         if (luatexAvailable()) {
-            packageStartupMessage(paste0("         luatex:  ", luatexVersion()))
+            msg <- c(msg,
+                     line("luatex", luatexVersion()))
             if (luaOTFloadToolAvailable()) {
-                packageStartupMessage(paste0("luaotfload-tool:  ",
-                                             luaOTFloadToolVersion()))
+                msg <- c(msg,
+                         line("luaotfload-tool", luaOTFloadToolVersion()))
                 if (!luaOTFloadToolSufficient()) {
-                    packageStartupMessage(paste0("               :  ",
-                                                 "The luaotfload-tool version ",
-                                                 "is too low (< 3.15).")) 
-                    packageStartupMessage(paste0("               :  ",
-                                                 "The LuaTeX engine is ",
-                                                 "NOT available."))
+                    msg <- c(msg,
+                             line("",
+                                  "The luaotfload-tool version is too low (< 3.15)."))
+                    msg <- c(msg,
+                             line("",
+                                  "The LuaTeX engine is NOT available."))
                 }
             } 
         } else {
-            packageStartupMessage("         luatex:  Not found.")
-            packageStartupMessage(paste0("               :  ",
-                                         "The LuaTeX engine is NOT available."))
+            msg <- c(msg,
+                     line("luatex", "Not found."),
+                     line("", "The LuaTeX engine is NOT available."))
         }
     } else {
-        packageStartupMessage("            TeX:  Not found.")
-        packageStartupMessage(paste0("               :  ",
-                                     "No TeX installation detected",
-                                     " (see ?tinytex::install_tinytex)."))
+        msg <- c(msg,
+                 line("TeX", "Not found."),
+                 line("",
+                      "No TeX installation detected (see ?tinytex::install_tinytex)."))
     }
     if (!(haveTeX() &&
           any(sapply(get("engines"), canTypeset)))) {
-        packageStartupMessage(paste0("               :  ",
-                                     "Typesetting is NOT available."))
+        msg <- c(msg,
+                 line("", "Typesetting is NOT available."))
     }
+    packageStartupMessage(paste(msg, collapse="\n"))
 }
 
