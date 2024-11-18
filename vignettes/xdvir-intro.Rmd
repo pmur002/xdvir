@@ -186,4 +186,8 @@ ggplot(df) +
                          hjust="left", vjust="top"))
 ```
 
+# Trouble shooting
+
+Detecting TeX (and installing TeX)
+
 # References
