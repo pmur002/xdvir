@@ -186,6 +186,15 @@ ggplot(df) +
                          hjust="left", vjust="top"))
 ```
 
+# Limitations
+
+XeTeX and LuaTeX only
+
+LuaTeX only if luaotfload-tool verion is > 3.15
+
+May need recent LuaTeX (e.g., 1.17.0 as available on Ubuntu 24.04)
+to get reliable full font file paths (and glyph ids) in DVI output.
+
 # Trouble shooting
 
 Detecting TeX (and installing TeX)
