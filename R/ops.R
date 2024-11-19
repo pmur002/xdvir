@@ -376,6 +376,8 @@ op_pre <- function(op, state) {
     TeXset("num", num, state)
     TeXset("den", den, state)
     TeXset("mag", mag, state)
+    scale <- TeXget("scale", state)
+    TeXset("factor", scale*num/den*1000/mag/10^4, state)
     comment <- paste(blockValue(op$blocks$op.opparams.comment.string),
                      collapse="")
     ## Initialise packages

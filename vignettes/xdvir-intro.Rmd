@@ -47,8 +47,10 @@ Producing an equation like this requires three things:
 3.  A **renderer** that can draw the glyphs that the typesetter
     has selected in the locations that the typesetter has determined.
 
-```{r, echo=FALSE, fig.width=6, fig.height=3, message=FALSE}
+```{r, label="tex", echo=FALSE}
 tex <- r"(\huge $\Phi(z) = \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{z^2}{2}}$)"
+```
+```{r, echo=FALSE, fig.width=6, fig.height=3, message=FALSE}
 library(gggrid)
 x <- seq(-4, 4, length.out=100)
 df <- data.frame(x=x, y=dnorm(x))
@@ -86,7 +88,7 @@ syntax for raw character constants, so that we do not have to
 escape each backslash with a double backslash.
 
 ```{r}
-tex <- r"(\huge $\Phi(z) = \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{z^2}{2}}$)"
+<<tex>>
 ```
 
 ```{r fig.width=3, fig.height=1}

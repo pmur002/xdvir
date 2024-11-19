@@ -2,15 +2,13 @@
 ## Conversions
 ## to mm
 fromTeX <- function(x, state) {
-    pre <- TeXmget(c("scale", "num", "den", "mag"), state)
-    factor <- with(pre, scale*num/den*1000/mag/10^4)
+    factor <- TeXget("factor", state)
     x*factor
 }
 
 ## from 'grid' units
 toTeX <- function(unit, state) {
-    pre <- TeXmget(c("scale", "num", "den", "mag"), state)
-    factor <- with(pre, scale*num/den*1000/mag/10^4)
+    factor <- TeXget("factor", state)
     convertX(unit, "mm", valueOnly=TRUE)/factor
 }
 
