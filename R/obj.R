@@ -1,8 +1,5 @@
 
 ## Maintain a list of objects within a TeX state
-initDVIobjs <- function(state) {
-    TeXset("objList", list(), state)
-}
 
 addDVIobj <- function(x, state) {
     objs <- TeXget("objList", state)
@@ -39,13 +36,12 @@ addGlyphObjs <- function(state) {
 }
 
 ## Add a rule
-addRuleObj <- function(a, b, state) {
+addRuleObj <- function(a, b, aa, bb, state) {
     if (a > 0 && b > 0) {
-        x <- TeXget("h", state)
-        y <- TeXget("v", state)
-        width <- b
-        height <- a
-        ruleObj <- list(x=x, y=y, w=width, h=height)
+        ruleObj <- list(x=TeXget("h", state), y=TeXget("v", state),
+                        w=b, h=a,
+                        xx=TeXget("hh", state), yy=TeXget("vv", state),
+                        ww=bb, hh=aa)
         class(ruleObj) <- "XDVIRruleObj"
         addDVIobj(ruleObj, state)
     } 

@@ -18,6 +18,40 @@ glyphIndex <- function(raw) {
            stop("set4 not yet supported"))
 }
 
+moveRight <- function(x, state) {
+    h <- TeXget("h", state)
+    hh <- TeXget("hh", state)
+    ## Avoid hh drifting too far from h
+    maxDrift <- 2
+    hhh = round(TeX2px(h + x, state))
+    if (abs(hhh - hh) > maxDrift) {
+        if (hhh > hh) {
+            hh = hhh - maxDrift
+        } else {
+            hh = hhh + maxDrift
+        }
+        TeXset("hh", hh, state)
+    }
+    TeXset("h", h + x, state)        
+}
+
+moveDown <- function(x, state) {
+    v <- TeXget("v", state)
+    vv <- TeXget("vv", state)
+    ## Avoid vv drifting too far from v
+    maxDrift <- 2
+    vvv = round(TeX2px(v + x, state))
+    if (abs(vvv - vv) > maxDrift) {
+        if (vvv > vv) {
+            vv = vvv - maxDrift
+        } else {
+            vv = vvv + maxDrift
+        }
+        TeXset("vv", vv, state)
+    }
+    TeXset("v", v + x, state)        
+}
+
 ## set_char_i and set_char are VERY similar
 ## (put_char_i is also VERY similar - just does not adjust (h, v)
 setChar <- function(raw, put=FALSE, state) {
@@ -27,6 +61,8 @@ setChar <- function(raw, put=FALSE, state) {
     }
     h <- TeXget("h", state)
     v <- TeXget("v", state)
+    hh <- TeXget("hh", state)
+    vv <- TeXget("vv", state)
     ## Default baseline to first set char
     ## (may be overridden by, e.g., 'preview')
     if (is.na(TeXget("baseline", state)))
@@ -46,28 +82,36 @@ setChar <- function(raw, put=FALSE, state) {
         ## Position glyph then move
         x <- h
         y <- v
-        glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
+        xx <- hh
+        yy <- vv
+        glyph <- glyph(x, y, xx, yy, id, f, font$size, colour=colour[1])
         updateBBoxHoriz(h + bbox[1], state) ## left
         updateBBoxHoriz(h + bbox[3], state) ## right
         updateBBoxVert(v - bbox[2], state) ## bottom
         updateBBoxVert(v - bbox[4], state) ## top
-        if (!put)
-            TeXset("h", h + width[1], state)
+        if (!put) {
+            TeXset("hh", hh + round(TeX2px(width[1], state)), state)
+            moveRight(width[1], state)
+        }
         updateTextLeft(h, state)
         updateTextRight(h + width[1], state)
     } else {
         height <- TeXglyphHeight(id, font$file, font$size, fontLib, state)
         ## Position glyph then move
         x <- h
+        xx <- hh
         ## y origin is v + bbox[4] (ymax) + height[2] (tsb)
         y <- v + bbox[4] + height[2]
-        glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
+        yy <- vv + round(TeX2px(bbox[4] + height[2], state))
+        glyph <- glyph(x, y, xx, yy, id, f, font$size, colour=colour[1])
         updateBBoxHoriz(h + bbox[1], state) ## left
         updateBBoxHoriz(h + bbox[3], state) ## right
         updateBBoxVert(v + bbox[2], state) ## bottom
         updateBBoxVert(v + bbox[4] + height[2], state) ## top
-        if (!put) 
-            TeXset("v", v + height[1], state)
+        if (!put) {
+            TeXset("vv", vv + round(TeX2px(height[1], state)), state)
+            moveDown(height[1], state)
+        }
         updateTextLeft(h, state)
         updateTextRight(h + bbox[2], state)
     }
@@ -89,9 +133,20 @@ op_set <- function(op, state) {
     setChar(op$blocks$op.opparams$fileRaw, put=FALSE, state)
 }
 
+rulePixels <- function(x, state) {
+    pixels <- TeX2px(x, state)
+    n = trunc(pixels)
+    if (n < pixels) {
+        n + 1
+    } else {
+        n
+    }
+}
+
 setRule <- function(op, put=FALSE, state) {
     h <- TeXget("h", state)
     v <- TeXget("v", state)
+    hh <- TeXget("hh", state)
     updateBBoxHoriz(h, state)
     updateBBoxVert(v, state)
     a <- blockValue(op$blocks$op.opparams.a)
@@ -100,9 +155,13 @@ setRule <- function(op, put=FALSE, state) {
     updateBBoxVert(v - a, state)
     ## Need to create glyph object if there have been any glyphs prior to this
     addGlyphObjs(state)
-    addRuleObj(a, b, state)
-    if (!put)
-        TeXset("h", TeXget("h", state) + b, state)
+    aa <- rulePixels(a, state)
+    bb <- rulePixels(b, state)
+    addRuleObj(a, b, aa, bb, state)
+    if (!put) {
+        TeXset("hh", hh + bb, state)
+        moveRight(b, state)
+    }
 }
 
 ## 132
@@ -128,38 +187,6 @@ op_put_rule <- function(op, state) setRule(op, TRUE, state)
 ## 139
 ## bop
 op_bop <- function(op, state) {
-    ## Initialise locations
-    TeXset("h", 0, state)
-    TeXset("v", 0, state)
-    TeXset("w", 0, state)
-    TeXset("x", 0, state)
-    TeXset("y", 0, state)
-    TeXset("z", 0, state)
-    ## Init text left/right
-    TeXset("textleft", Inf, state)
-    TeXset("textright", -Inf, state)
-    ## Init bbox
-    TeXset("top", Inf, state)
-    TeXset("bottom", -Inf, state)
-    TeXset("left", Inf, state)
-    TeXset("right", -Inf, state)
-    ## Init baseline
-    TeXset("baseline", NA, state)
-    ## Init anchors
-    TeXset("hAnchors", NULL, state)
-    TeXset("vAnchors", NULL, state)
-    ## Init cumulative structures
-    initDVIobjs(state)
-    TeXset("glyphs", list(), state)
-    ## Stack for push/pop
-    TeXset("stack", list(), state)
-    TeXset("i", 0, state)
-    ## Font number
-    TeXset("f", NA, state)
-    ## Default colour
-    TeXset("colour", NA, state)
-    ## Default text direction
-    TeXset("dir", 0, state)
 }
 
 ## 140
@@ -175,7 +202,8 @@ op_push <- function(op, state) {
     ## Maintain stack
     i <- TeXget("i", state)
     stack <- TeXget("stack", state)
-    stack[[i + 1]] <- TeXmget(c("h", "v", "w", "x", "y", "z"),
+    stack[[i + 1]] <- TeXmget(c("h", "v", "w", "x", "y", "z",
+                                "hh", "vv"),
                               state)
     TeXset("i", i + 1, state)
     TeXset("stack", stack, state)
@@ -193,6 +221,42 @@ op_pop <- function(op, state) {
     TeXset("stack", stack[-i], state)
 }
 
+hSpace <- function(x, state) {
+    f <- TeXget("f", state)
+    ## Only worry about maintaining hh and vv if we have set a font
+    if (!is.na(f)) {
+        fonts <- TeXget("fonts", state)
+        font <- fonts[[f]]
+        fntSpace <- font$fontSpace
+        h <- TeXget("h", state)
+        hh <- TeXget("hh", state)
+        if (x >= fntSpace || x <= (-4 * fntSpace)) {
+            hh = round(TeX2px(h + x, state))
+        } else {
+            hh = hh + round(TeX2px(x, state))
+        }
+        TeXset("hh", hh, state)
+    }
+}
+
+vSpace <- function(x, state) {
+    f <- TeXget("f", state)
+    ## Only worry about maintaining hh and vv if we have set a font
+    if (!is.na(f)) {
+        fonts <- TeXget("fonts", state)
+        font <- fonts[[f]]
+        fntSpace <- font$fontSpace
+        v <- TeXget("v", state)
+        vv <- TeXget("vv", state)
+        if (abs(x) >= (5 * fntSpace)) {
+            vv = round(TeX2px(v + x, state))
+        } else {
+            vv = vv + round(TeX2px(x, state))
+        }
+        TeXset("vv", vv, state)
+    }
+}
+
 ## 143..146
 ## right1
 ## right2
@@ -203,9 +267,11 @@ op_right <- function(op, state) {
     b <- blockValue(op$blocks$op.opparams)
     dir <- TeXget("dir", state)
     if (dir == 0) {
-        TeXset("h", TeXget("h", state) + b, state)
+        hSpace(b, state)
+        moveRight(b, state)
     } else {
-        TeXset("v", TeXget("v", state) + b, state)
+        vSpace(b, state)
+        moveDown(b, state)
     }
 }
 
@@ -221,11 +287,14 @@ op_w <- function(op, state) {
     if (!is.null(b)) {
         TeXset("w", blockValue(b), state)
     }
+    w <- TeXget("w", state)
     dir <- TeXget("dir", state)
     if (dir == 0) {
-        TeXset("h", TeXget("h", state) + TeXget("w", state), state)
+        hSpace(w, state)
+        moveRight(w, state)
     } else {
-        TeXset("v", TeXget("v", state) + TeXget("w", state), state)
+        vSpace(w, state)
+        moveDown(w, state)
     }
 }
 
@@ -241,11 +310,14 @@ op_x <- function(op, state) {
     if (!is.null(b)) {
         TeXset("x", blockValue(b), state)
     }
+    x <- TeXget("x", state)
     dir <- TeXget("dir", state)
     if (dir == 0) {
-        TeXset("h", TeXget("h", state) + TeXget("x", state), state)
+        hSpace(x, state)
+        moveRight(x, state)
     } else {
-        TeXset("v", TeXget("v", state) + TeXget("x", state), state)
+        vSpace(x, state)
+        moveDown(x, state)
     }
 }
 
@@ -259,9 +331,11 @@ op_down <- function(op, state) {
     a <- blockValue(op$blocks$op.opparams)
     dir <- TeXget("dir", state)
     if (dir == 0) {
-        TeXset("v", TeXget("v", state) + a, state)
+        vSpace(a, state)
+        moveDown(a, state)
     } else {
-        TeXset("h", TeXget("h", state) - a, state)
+        hSpace(-a, state)
+        moveRight(-a, state)
     }
 }
 
@@ -277,11 +351,14 @@ op_y <- function(op, state) {
     if (!is.null(a)) {
         TeXset("y", blockValue(a), state)
     }
+    y <- TeXget("y", state)
     dir <- TeXget("dir", state)
     if (dir == 0) {
-        TeXset("v", TeXget("v", state) + TeXget("y", state), state)
+        vSpace(y, state)
+        moveDown(y, state)
     } else {
-        TeXset("h", TeXget("h", state) - TeXget("y", state), state)
+        hSpace(-y, state)
+        moveRight(-y, state)
     }
 }
 
@@ -297,11 +374,14 @@ op_z <- function(op, state) {
     if (!is.null(a)) {
         TeXset("z", blockValue(a), state)
     }
+    z <- TeXget("z", state)
     dir <- TeXget("dir", state)
     if (dir == 0) {
-        TeXset("v", TeXget("v", state) + TeXget("z", state), state)
+        vSpace(z, state)
+        moveDown(z, state)
     } else {
-        TeXset("h", TeXget("h", state) - TeXget("z", state), state)
+        hSpace(-z, state)
+        moveRight(-z, state)
     }
 }
 
@@ -394,6 +474,11 @@ op_pre <- function(op, state) {
     ## decimicrons / 254000 -> in
     ## dpi * in -> pixels
     dpi <- TeXget("dpi", state)
+    ## If dpi not specified, use number of DVI units per inch
+    ## => hh/vv should end up (basically) the same as h/v
+    if (is.na(dpi)) {
+        dpi <- 65536 * 72.27
+    }
     trueConv <- dpi * ((num/den) / 254000)
     conv <- (mag/1000) * trueConv
     TeXset("conv", conv, state)
@@ -451,6 +536,8 @@ setGlyphs <- function(op, state) {
     }
     h <- TeXget("h", state)
     v <- TeXget("v", state)
+    hh <- TeXget("hh", state)
+    vv <- TeXget("vv", state)
     ## Default baseline to first set char
     ## (may be overridden by, e.g., 'preview')
     if (is.na(TeXget("baseline", state)))
@@ -474,7 +561,9 @@ setGlyphs <- function(op, state) {
         glyphY <- blockValue(op$blocks[[glyphLocs[2*i]]])
         x <- h + glyphX
         y <- v - glyphY
-        glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
+        xx <- round(TeX2px(x, state))
+        yy <- round(TeX2px(y, state))
+        glyph <- glyph(x, y, xx, yy, id, f, font$size, colour=colour[1])
         ## Update bounding box of drawing
         ## BUT do NOT update h/v
         bbox <- TeXglyphBounds(id, font$file, font$size, fontLib, state)
@@ -490,7 +579,8 @@ setGlyphs <- function(op, state) {
         addGlyph(glyph, state)
     }
     ## Update h at the end for all glyphs
-    TeXset("h", h + glyphWidth, state)
+    TeXset("hh", hh + round(TeX2px(glyphWidth, state)), state)
+    moveRight(glyphWidth, state)
 }
 
 ## 253

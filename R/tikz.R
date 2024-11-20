@@ -19,6 +19,8 @@ setTransformedChar <- function(raw, put=FALSE, state) {
     transform <- TeXget("tikzTransformDecomp", state)
     h <- TeXget("h", state)
     v <- TeXget("v", state)
+    hh <- TeXget("hh", state)
+    vv <- TeXget("vv", state)
     ## Current font
     fonts <- TeXget("fonts", state)
     f <- TeXget("f", state)
@@ -31,7 +33,9 @@ setTransformedChar <- function(raw, put=FALSE, state) {
     ## Position glyph then move
     x <- h
     y <- v
-    glyph <- glyph(x, y, id, f, font$size, colour=colour[1],
+    xx <- hh
+    yy <- vv
+    glyph <- glyph(x, y, xx, yy, id, f, font$size, colour=colour[1],
                    transform$rot, transform$sc[1], transform$sc[2],
                    transform$sk[1], transform$sk[2])
     ## Bounding box requires transformation
@@ -53,8 +57,12 @@ setTransformedChar <- function(raw, put=FALSE, state) {
     if (!put) {
         HV <- matrix(TeX2pt(c(h + width[1], -y, 1), state))
         transHV <- tm %*% HV
-        TeXset("h", pt2TeX(transHV[1], state), state)
-        TeXset("v", pt2TeX(-transHV[2], state), state)
+        h <- pt2TeX(transHV[1], state)
+        v <- pt2TeX(-transHV[2], state)
+        TeXset("h", h, state)
+        TeXset("v", v, state)
+        TeXset("hh", round(TeX2px(h, state)), state)
+        TeXset("vv", round(TeX2px(v, state)), state)
     }
     addGlyph(glyph)
 }
@@ -64,6 +72,8 @@ setTransformedGlyphs <- function(op, state) {
     transform <- TeXget("tikzTransformDecomp", state)
     h <- TeXget("h", state)
     v <- TeXget("v", state)
+    hh <- TeXget("hh", state)
+    vv <- TeXget("vv", state)
     ## Current font
     fonts <- TeXget("fonts", state)
     f <- TeXget("f", state)
@@ -84,7 +94,9 @@ setTransformedGlyphs <- function(op, state) {
         glyphY <- blockValue(op$blocks[[glyphLocs[2*i]]])
         x <- h + glyphX
         y <- v - glyphY
-        glyph <- glyph(x, y, id, f, font$size, colour=colour[1],
+        xx <- round(TeX2px(x, state))
+        yy <- round(TeX2px(y, state))
+        glyph <- glyph(x, y, xx, yy, id, f, font$size, colour=colour[1],
                        transform$rot, transform$sc[1], transform$sc[2],
                        transform$sk[1], transform$sk[2])
         ## Update bounding box of drawing
@@ -116,6 +128,8 @@ setTransformedGlyphs <- function(op, state) {
     ## Update h/v at the end for all glyphs
     TeXset("h", glyphH, state)
     TeXset("v", -glyphV, state)
+    TeXset("hh", round(TeX2px(h, state)), state)
+    TeXset("vv", round(TeX2px(v, state)), state)
 }
 
 ## Build grobs from objects

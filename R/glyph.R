@@ -1,9 +1,9 @@
 
 ## Record glyph info
 
-glyph <- function(x, y, index, fontindex, size, colour=NA,
+glyph <- function(x, y, xx, yy, index, fontindex, size, colour=NA,
                   rotation=0, scaleX=1, scaleY=1, skewX=0, skewY=0) {
-    data.frame(x, y, index, fontindex, size, colour,
+    data.frame(x, y, xx, yy, index, fontindex, size, colour,
                rotation, scaleX, scaleY, skewX, skewY)
 }
 

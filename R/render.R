@@ -1,9 +1,42 @@
 
 initTeXstate <- function() {
     state <- TeXstate()
+    ## Initialise locations
+    TeXset("h", 0, state)
+    TeXset("v", 0, state)
+    TeXset("w", 0, state)
+    TeXset("x", 0, state)
+    TeXset("y", 0, state)
+    TeXset("z", 0, state)
+    ## Pixel locations
+    TeXset("hh", 0, state)
+    TeXset("vv", 0, state)
+    ## Init text left/right
+    TeXset("textleft", Inf, state)
+    TeXset("textright", -Inf, state)
+    ## Init bbox
+    TeXset("top", Inf, state)
+    TeXset("bottom", -Inf, state)
+    TeXset("left", Inf, state)
+    TeXset("right", -Inf, state)
+    ## Init baseline
+    TeXset("baseline", NA, state)
+    ## Init anchors
+    TeXset("hAnchors", NULL, state)
+    TeXset("vAnchors", NULL, state)
+    ## Init cumulative structures
     ## Extra slot for dummy font
     TeXset("fonts", vector("list", 256), state)
+    TeXset("objList", list(), state)
     TeXset("glyphs", list(), state)
+    ## Stack for push/pop
+    TeXset("stack", list(), state)
+    TeXset("i", 0, state)
+    ## Font number
+    TeXset("f", NA, state)
+    ## Default colour
+    TeXset("colour", NA, state)
+    ## Default text direction
     TeXset("dir", 0, state)
     state
 }
@@ -14,7 +47,7 @@ calculateOffset <- function(x, y, hjust, vjust, state) {
     fonts[[256]] <- list(file="", index=0, size=0, op=NULL)
     TeXset("fonts", fonts, state)
     ## Create dummy glyph grob
-    dummyGlyph <- glyph(x=0, y=0, index=0, fontindex=256, size=0)
+    dummyGlyph <- glyph(x=0, y=0, xx=0, yy=0, index=0, fontindex=256, size=0)
     class(dummyGlyph) <- "XDVIRglyphObj"
     dummyGrob <- objToGrob(dummyGlyph, x=x, y=y, hjust=hjust, vjust=vjust,
                            state=state)
