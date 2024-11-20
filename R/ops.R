@@ -360,7 +360,7 @@ op_font_def <- function(op, state) {
         mag <- TeXget("mag", state)
         fonts[[fontnum]] <- list(file=fontfile,
                                  index=0,
-                                 size=(scale/design)*(mag/1000),
+                                 size=scale*(mag/1000),
                                  op=op)
         TeXset("fonts", fonts, state)
     }
@@ -369,7 +369,7 @@ op_font_def <- function(op, state) {
 ## 247
 ## pre
 op_pre <- function(op, state) {
-    ## Set up scaling for conversions, e.g., fromTeX()
+    ## Set up scaling for conversions, e.g., TeX2pt() and TeX2px()
     ## DVI units to (big) pts
     ## num/den is dvi -> decimicrons
     ## decimicrons / 10^4 -> mm

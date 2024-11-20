@@ -5,14 +5,14 @@ objToGrob <- function(obj, ...) {
 
 objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    gx <- fromTeX(obj$x, state)
-    gy <- -fromTeX(obj$y, state)
-    textleft <- fromTeX(TeXget("textleft", state), state)
-    textright <- fromTeX(TeXget("textright", state), state)
-    left <- fromTeX(TeXget("left", state), state)
-    right <- fromTeX(TeXget("right", state), state)
-    bottom <- -fromTeX(TeXget("bottom", state), state)
-    top <- -fromTeX(TeXget("top", state), state)
+    gx <- TeX2pt(obj$x, state)
+    gy <- -TeX2pt(obj$y, state)
+    textleft <- TeX2pt(TeXget("textleft", state), state)
+    textright <- TeX2pt(TeXget("textright", state), state)
+    left <- TeX2pt(TeXget("left", state), state)
+    right <- TeX2pt(TeXget("right", state), state)
+    bottom <- -TeX2pt(TeXget("bottom", state), state)
+    top <- -TeX2pt(TeXget("top", state), state)
     if (!is.finite(textleft))
         textleft <- left
     if (!is.finite(textright))
@@ -21,12 +21,12 @@ objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
     vAnchorLabels <- c("bottom", "top", "centre")
     if (is.finite(TeXget("baseline", state))) {
         vAnchorValues <- c(vAnchorValues,
-                           -fromTeX(TeXget("baseline", state), state))
+                           -TeX2pt(TeXget("baseline", state), state))
         vAnchorLabels <- c(vAnchorLabels, "baseline")
     }
     anchors <- TeXget("vAnchors", state)
     if (!is.null(anchors)) {
-        vAnchorValues <- c(vAnchorValues, -fromTeX(anchors$value, state))
+        vAnchorValues <- c(vAnchorValues, -TeX2pt(anchors$value, state))
         vAnchorLabels <- c(vAnchorLabels, anchors$label)
     }
     vAnchor <- glyphAnchor(vAnchorValues, vAnchorLabels)
@@ -51,7 +51,7 @@ objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
                        })
     info <- glyphInfo(obj$index, gx, gy,
                       match(obj$fontindex, fontMap), ## font
-                      fromTeX(obj$size, state),
+                      TeX2pt(obj$size, state),
                       do.call(glyphFontList, fontList),
                       glyphWidth(maxX - minX),
                       ## Down is bigger in DVI
@@ -64,10 +64,10 @@ objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
 
 objToGrob.XDVIRruleObj <- function(obj, xoffset, yoffset, ..., state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    x <- fromTeX(obj$x, state) + xoffset
-    y <- -fromTeX(obj$y, state) + yoffset
-    width <- fromTeX(obj$w, state)
-    height <- fromTeX(obj$h, state)
+    x <- TeX2pt(obj$x, state) + xoffset
+    y <- -TeX2pt(obj$y, state) + yoffset
+    width <- TeX2pt(obj$w, state)
+    height <- TeX2pt(obj$h, state)
     ## Below lwd=1, draw a line
     if (width < .75) { ## 1/96 / (1/72)  [ lwd=1 => 1/96 inch ]
         segmentsGrob(x + width/2,
