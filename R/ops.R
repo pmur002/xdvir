@@ -44,8 +44,8 @@ setChar <- function(raw, put=FALSE, state) {
     if (dir == 0) {
         width <- TeXglyphWidth(id, font$file, font$size, fontLib, state)
         ## Position glyph then move
-        x <- fromTeX(h, state)
-        y <- fromTeX(v, state)
+        x <- h
+        y <- v
         glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
         updateBBoxHoriz(h + bbox[1], state) ## left
         updateBBoxHoriz(h + bbox[3], state) ## right
@@ -58,9 +58,9 @@ setChar <- function(raw, put=FALSE, state) {
     } else {
         height <- TeXglyphHeight(id, font$file, font$size, fontLib, state)
         ## Position glyph then move
-        x <- fromTeX(h, state)
+        x <- h
         ## y origin is v + bbox[4] (ymax) + height[2] (tsb)
-        y <- fromTeX(v + bbox[4] + height[2], state)
+        y <- v + bbox[4] + height[2]
         glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
         updateBBoxHoriz(h + bbox[1], state) ## left
         updateBBoxHoriz(h + bbox[3], state) ## right
@@ -175,7 +175,8 @@ op_push <- function(op, state) {
     ## Maintain stack
     i <- TeXget("i", state)
     stack <- TeXget("stack", state)
-    stack[[i + 1]] <- TeXmget(c("h", "v", "w", "x", "y", "z"), state)
+    stack[[i + 1]] <- TeXmget(c("h", "v", "w", "x", "y", "z"),
+                              state)
     TeXset("i", i + 1, state)
     TeXset("stack", stack, state)
 }
@@ -359,8 +360,7 @@ op_font_def <- function(op, state) {
         mag <- TeXget("mag", state)
         fonts[[fontnum]] <- list(file=fontfile,
                                  index=0,
-                                 size=72.27*fromTeX(design, state)/25.4*
-                                     (scale/design)*(mag/1000),
+                                 size=(scale/design)*(mag/1000),
                                  op=op)
         TeXset("fonts", fonts, state)
     }
@@ -370,6 +370,12 @@ op_font_def <- function(op, state) {
 ## pre
 op_pre <- function(op, state) {
     ## Set up scaling for conversions, e.g., fromTeX()
+    ## DVI units to (big) pts
+    ## num/den is dvi -> decimicrons
+    ## decimicrons / 10^4 -> mm
+    ## mm / 25.4 -> in
+    ## 72 * in -> (big) pts
+    ## mag/1000 is magnification
     num <- blockValue(op$blocks$op.opparams.num)
     den <- blockValue(op$blocks$op.opparams.den)
     mag <- blockValue(op$blocks$op.opparams.mag)
@@ -377,7 +383,19 @@ op_pre <- function(op, state) {
     TeXset("den", den, state)
     TeXset("mag", mag, state)
     scale <- TeXget("scale", state)
-    TeXset("factor", scale*num/den*1000/mag/10^4, state)
+    trueFactor <- 72 * (((num/den) / 10^4) / 25.4)
+    factor <- (mag/1000) * trueFactor
+    TeXset("factor", factor, state)
+    TeXset("scaledFactor", scale*factor, state)
+    ## DVI units to pixels
+    ## num/den is dvi -> decimicrons
+    ## decimicrons / 254000 -> in
+    ## dpi * in -> pixels
+    dpi <- TeXget("dpi", state)
+    trueConv <- dpi * ((num/den) / 254000)
+    conv <- (mag/1000) * trueConv
+    TeXset("conv", conv, state)
+    TeXset("scaledConv", scale*conv, state)
     comment <- paste(blockValue(op$blocks$op.opparams.comment.string),
                      collapse="")
     ## Initialise packages
@@ -416,8 +434,7 @@ op_x_font_def <- function(op, state) {
         fontsize <- blockValue(op$block$op.opparams.ptsize)
         fonts[[fontnum]] <- list(file=fontname,
                                  index=fontindex,
-                                 size=72.27*fromTeX(fontsize, state)/25.4*
-                                     mag/1000,
+                                 size=fontsize,
                                  op=op)
         TeXset("fonts", fonts, state)
     }
@@ -453,9 +470,7 @@ setGlyphs <- function(op, state) {
         glyphY <- blockValue(op$blocks[[glyphLocs[2*i]]])
         x <- h + glyphX
         y <- v - glyphY
-        xx <- fromTeX(x, state)
-        yy <- fromTeX(y, state)
-        glyph <- glyph(xx, yy, id, f, font$size, colour=colour[1])
+        glyph <- glyph(x, y, id, f, font$size, colour=colour[1])
         ## Update bounding box of drawing
         ## BUT do NOT update h/v
         bbox <- TeXglyphBounds(id, font$file, font$size, fontLib, state)

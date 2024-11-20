@@ -29,38 +29,32 @@ setTransformedChar <- function(raw, put=FALSE, state) {
     bbox <- TeXglyphBounds(id, font$file, font$size, fontLib, state)
     width <- TeXglyphWidth(id, font$file, font$size, fontLib, state)
     ## Position glyph then move
-    x <- fromTeX(h, state)
-    y <- fromTeX(v, state)
+    x <- h
+    y <- v
     glyph <- glyph(x, y, id, f, font$size, colour=colour[1],
                    transform$rot, transform$sc[1], transform$sc[2],
                    transform$sk[1], transform$sk[2])
     ## Bounding box requires transformation
+    ## Transformation is for "bigpts"
     tm <- TeXget("tikzTransformText", state)
-    bboxLeft <- convertX(unit(fromTeX(h + bbox[1], state), "mm"), "pt",
-                         valueOnly=TRUE)
-    bboxRight <- convertX(unit(fromTeX(h + bbox[2], state), "mm"), "pt",
-                          valueOnly=TRUE)
-    bboxBottom <- convertY(unit(fromTeX(v - bbox[3], state), "mm"), "pt",
-                           valueOnly=TRUE)
-    bboxTop <- convertY(unit(fromTeX(v - bbox[4], state), "mm"), "pt",
-                        valueOnly=TRUE)
+    bboxLeft <- fromTeX(h + bbox[1], state)
+    bboxRight <- fromTeX(h + bbox[3], state)
+    bboxBottom <- fromTeX(v - bbox[2], state)
+    bboxTop <- fromTeX(v - bbox[4], state)
     bboxCorners <- cbind(c(bboxLeft, bboxBottom, 1),
                          c(bboxRight, bboxBottom, 1),
                          c(bboxLeft, bboxTop, 1),
                          c(bboxRight, bboxTop, 1))
     transCorners <- tm %*% bboxCorners
-    bboxX <- toTeX(unit(transCorners[1,], "pt"), state)
-    bboxY <- toTeX(-unit(transCorners[2,], "pt"), state)
+    bboxX <- toTeX(transCorners[1,], state)
+    bboxY <- toTeX(-transCorners[2,], state)
     lapply(bboxX, updateBBoxHoriz, state)
     lapply(bboxY, updateBBoxVert, state)
     if (!put) {
-        HV <- matrix(c(convertX(unit(fromTeX(h + width[1], state), "mm"), "pt",
-                                valueOnly=TRUE),
-                       convertY(unit(-y, "mm"), "pt", valueOnly=TRUE),
-                       1))
+        HV <- matrix(fromTeX(c(h + width[1], -y, 1), state))
         transHV <- tm %*% HV
-        TeXset("h", toTeX(unit(transHV[1], "pt"), state), state)
-        TeXset("v", toTeX(unit(-transHV[2], "pt"), state), state)
+        TeXset("h", toTeX(transHV[1], state), state)
+        TeXset("v", toTeX(-transHV[2], state), state)
     }
     addGlyph(glyph)
 }
@@ -90,9 +84,7 @@ setTransformedGlyphs <- function(op, state) {
         glyphY <- blockValue(op$blocks[[glyphLocs[2*i]]])
         x <- h + glyphX
         y <- v - glyphY
-        xx <- fromTeX(x, state)
-        yy <- fromTeX(y, state)
-        glyph <- glyph(xx, yy, id, f, font$size, colour=colour[1],
+        glyph <- glyph(x, y, id, f, font$size, colour=colour[1],
                        transform$rot, transform$sc[1], transform$sc[2],
                        transform$sk[1], transform$sk[2])
         ## Update bounding box of drawing
@@ -101,44 +93,35 @@ setTransformedGlyphs <- function(op, state) {
         width <- TeXglyphWidth(id, font$file, font$size, fontLib, state)
         ## Bounding box requires transformation
         tm <- TeXget("tikzTransformText", state)
-        bboxLeft <- convertX(unit(fromTeX(h + bbox[1], state), "mm"), "pt",
-                             valueOnly=TRUE)
-        bboxRight <- convertX(unit(fromTeX(h + bbox[2], state), "mm"), "pt",
-                              valueOnly=TRUE)
-        bboxBottom <- convertY(unit(fromTeX(v - bbox[3], state), "mm"), "pt",
-                               valueOnly=TRUE)
-        bboxTop <- convertY(unit(fromTeX(v - bbox[4], state), "mm"), "pt",
-                            valueOnly=TRUE)
+        bboxLeft <- fromTeX(h + bbox[1], state)
+        bboxRight <- fromTeX(h + bbox[3], state)
+        bboxBottom <- fromTeX(v - bbox[2], state)
+        bboxTop <- fromTeX(v - bbox[4], state)
         bboxCorners <- cbind(c(bboxLeft, bboxBottom, 1),
                              c(bboxRight, bboxBottom, 1),
                              c(bboxLeft, bboxTop, 1),
                              c(bboxRight, bboxTop, 1))
         transCorners <- tm %*% bboxCorners
-        bboxX <- toTeX(unit(transCorners[1,], "pt"), state)
-        bboxY <- toTeX(-unit(transCorners[2,], "pt"), state)
+        bboxX <- toTeX(transCorners[1,], state)
+        bboxY <- toTeX(-transCorners[2,], state)
         lapply(bboxX, updateBBoxHoriz, state)
         lapply(bboxY, updateBBoxVert, state)
-        HV <- matrix(c(convertX(unit(fromTeX(h + width[1], state), "mm"), "pt",
-                                valueOnly=TRUE),
-                       convertY(unit(-y, "mm"), "pt", valueOnly=TRUE),
-                       1))
+        HV <- matrix(fromTeX(c(h + width[1], -y, 1), state))
         transHV <- tm %*% HV
         ## Keep track of total glyph movement
-        glyphH <- glyphH + transHV[1]
-        glyphV <- glyphV + transHV[2]
+        glyphH <- glyphH + toTeX(transHV[1], state)
+        glyphV <- glyphV + toTeX(transHV[2], state)
         addGlyph(glyph, state)
     }
     ## Update h/v at the end for all glyphs
-    TeXset("h", toTeX(unit(glyphH, "pt"), state), state)
-    TeXset("v", toTeX(unit(-glyphV, "pt"), state), state)
+    TeXset("h", glyphH, state)
+    TeXset("v", -glyphV, state)
 }
 
 ## Build grobs from objects
 buildTikZobj <- function(obj, xoffset, yoffset, grobFn, gp) {
-    x <- convertX(obj$x, "bigpts", valueOnly=TRUE) +
-        convertX(unit(xoffset, "in"), "bigpts", valueOnly=TRUE)
-    y <- convertY(obj$y, "bigpts", valueOnly=TRUE) +
-        convertY(unit(yoffset, "in"), "bigpts", valueOnly=TRUE)
+    x <- convertX(obj$x, "bigpts", valueOnly=TRUE) + xoffset
+    y <- convertY(obj$y, "bigpts", valueOnly=TRUE) + yoffset
     grobFn(x, y, default.units="bigpts", gp=gp)
 }
 
@@ -165,8 +148,8 @@ buildTikZstretchObj <- function(obj, xoffset, yoffset, grobFn, gp) {
     defgrob <- defineGrob(grobFn(obj$x, obj$y, default.units="bigpts", gp=gp),
                           vp=defvp,
                           name="xdvirPolylineDef")
-    usevp <- viewport(unit(obj$lx, "bigpts") + unit(xoffset, "in"),
-                      unit(obj$by, "bigpts") + unit(yoffset, "in"),
+    usevp <- viewport(unit(obj$lx + xoffset, "bigpts"),
+                      unit(obj$by + yoffset, "bigpts"),
                       just=c("left", "bottom"),
                       width=scaleX,
                       height=scaleY)
@@ -213,14 +196,15 @@ objToGrob.XDVIRtikzObj <- function(obj, xoffset, yoffset, ..., state) {
 
 buildRotatedGlyph <- function(obj, xoffset, yoffset, state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    x <- unit(obj$x, "mm") + unit(xoffset, "in")
-    y <- unit(-obj$y, "mm") + unit(yoffset, "in")
-    vp <- viewport(x, y, just=c("left", "bottom"), angle=obj$rotation/pi*180)
+    x <- unit(fromTeX(obj$x, state) + xoffset, "bigpts")
+    y <- unit(-fromTeX(obj$y, state) + yoffset, "bigpts")
+    vp <- viewport(x, y, 
+                   just=c("left", "bottom"), angle=obj$rotation/pi*180)
     font <- TeXget("fonts", state)[[obj$fontindex]]
     glyphFont <- glyphFont(font$file, font$index, "", 0, "")
     info <- glyphInfo(obj$index, 0, 0,
                       1, 
-                      obj$size,
+                      fromTeX(obj$size, state),
                       glyphFontList(glyphFont),
                       1, ## Does not matter because will be left-bottom aligned
                       1, ## Does not matter because will be left-bottom aligned
@@ -243,14 +227,14 @@ buildTransformedGlyph <- function(obj, xoffset, yoffset, state) {
     angle <- obj$rotation/pi*180
     
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    x <- unit(obj$x, "mm") + unit(xoffset, "in")
-    y <- unit(-obj$y, "mm") + unit(yoffset, "in")
+    x <- unit(fromTeX(obj$x, state) + xoffset, "bigpts")
+    y <- unit(-fromTeX(obj$y, state) + yoffset, "bigpts")
     
     font <- TeXget("fonts", state)[[obj$fontindex]]
     glyphFont <- glyphFont(font$file, font$index, "", 0, "")
     info <- glyphInfo(obj$index, 0, 0,
                       1, 
-                      obj$size,
+                      fromTeX(obj$size, state),
                       glyphFontList(glyphFont),
                       1, ## Does not matter because will be left-bottom aligned
                       1, ## Does not matter because will be left-bottom aligned
@@ -541,8 +525,8 @@ recordDraw <- function(draw, drawStretch, state) {
     closed <- TeXget("tikzPathClosed", state)
     left <- TeXget("pictureLeft", state)
     bottom <- TeXget("pictureBottom", state)
-    lx <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
-    by <- convertY(unit(bottom, "mm"), "pt", valueOnly=TRUE)
+    lx <- left
+    by <- bottom
     transform <- TeXget("tikzTransform", state)
     transformDecomp <- TeXget("tikzTransformDecomp", state)
     ## Handle scale and skew separately because only some graphics
@@ -593,16 +577,16 @@ recordTransform <- function(x, state) {
     left <- TeXget("pictureLeft", state)
     bottom <- TeXget("pictureBottom", state)
     ## Move to location of text
-    x <- convertX(unit(left, "mm"), "pt", valueOnly=TRUE)
+    x <- left
     ## Negate y because TikZ is "up" while TeX is "down"
-    y <- convertY(unit(-bottom, "mm"), "pt", valueOnly=TRUE)
+    y <- -bottom
     tmText <- rbind(c(1,0,0), c(0,-1,0), c(0,0,1)) %*%
         rbind(c(1,0,x), c(0,1,y), c(0,0,1)) %*%
         tm %*%
         rbind(c(1,0,-x), c(0,1,-y), c(0,0,1))
     xy <-  tmText %*% c(x, y, 1) 
-    TeXset("h", toTeX(convertX(unit(xy[1], "pt"), "mm"), state), state)
-    TeXset("v", toTeX(convertY(unit(xy[2], "pt"), "mm"), state), state)
+    TeXset("h", toTeX(xy[1], state), state)
+    TeXset("v", toTeX(xy[2], state), state)
     TeXset("tikzTransformText", tmText, state)
     TeXset("tikzTransformDecomp", decompose(tm), state)
 }
@@ -721,13 +705,22 @@ recordBBox <- function(x, state) {
     left <- TeXget("pictureLeft", state)
     bottom <- TeXget("pictureBottom", state)
     ## Update DVI bbox for TikZ bbox
-    updateBBoxHoriz(toTeX(unit(left, "mm") + unit(bbox[1], "pt"), state),
+    updateBBoxHoriz(toTeX(left +
+                          convertX(unit(bbox[1], "pt"), "bigpts",
+                                   valueOnly=TRUE), state),
                     state)
-    updateBBoxVert(toTeX(unit(bottom, "mm") - unit(bbox[2], "pt"), state),
+    updateBBoxVert(toTeX(bottom -
+                         convertY(unit(bbox[2], "pt"), "bigpts",
+                                  valueOnly=TRUE), state),
                    state)
-    updateBBoxHoriz(toTeX(unit(left, "mm") + unit(bbox[3], "pt"), state),
+    updateBBoxHoriz(toTeX(left +
+                          convertX(unit(bbox[3], "pt"), "bigpts",
+                                   valueOnly=TRUE),
+                          state),
                     state)
-    updateBBoxVert(toTeX(unit(bottom, "mm") - unit(bbox[4], "pt"), state),
+    updateBBoxVert(toTeX(bottom -
+                         convertY(unit(bbox[4], "pt"), "bigpts",
+                                  valueOnly=TRUE), state),
                    state)
 }
 

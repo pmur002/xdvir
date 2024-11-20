@@ -20,7 +20,8 @@ calculateOffset <- function(x, y, hjust, vjust, state) {
                            state=state)
     coords <- grobCoords(dummyGrob)
     ## Offset is location of dummy glyph grob
-    list(x=coords[[1]]$x[1], y=coords[[1]]$y[1])
+    list(x=convertX(unit(coords[[1]]$x[1], "in"), "bigpts", valueOnly=TRUE),
+         y=convertY(unit(coords[[1]]$y[1], "in"), "bigpts", valueOnly=TRUE))
 }
 
 makeContent.DVIgrob <- function(x, ...) {

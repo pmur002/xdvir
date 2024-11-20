@@ -1,14 +1,14 @@
 
 ## Conversions
-## to mm
+## to (big) points
 fromTeX <- function(x, state) {
-    factor <- TeXget("factor", state)
+    factor <- TeXget("scaledFactor", state)
     x*factor
 }
 
-## from 'grid' units
-toTeX <- function(unit, state) {
-    factor <- TeXget("factor", state)
-    convertX(unit, "mm", valueOnly=TRUE)/factor
+## from (big) points
+toTeX <- function(x, state) {
+    factor <- TeXget("scaledFactor", state)
+    x/factor
 }
 
