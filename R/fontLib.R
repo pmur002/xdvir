@@ -45,34 +45,36 @@ metricUnits <- function(x) {
     attr(x, "unitsPerEm")
 }
 
+## The conversions from font file metrics to TeX units (scaled points)
+## utterly fail to satisfy the requirement described in dvitype ...
+## "This fixed-point multiplication must be done with precisely the same
+##  accuracy by all DVI-reading programs, in order to validate the
+##  assumptions made by DVI-writing programs like TEX82."
+## https://mirror.math.princeton.edu/pub/CTAN/systems/knuth/dist/texware/dvitype.web
+## https://texdoc.org/serve/dvitype.pdf/0
+## ... not least because we are working with OpenType/TrueType fonts
+## rather than TFM files.
+## NOTE that dvi-decode goes via pixels (using dpi), but I do not see how
+## that is any closer to replicating the dvitype algorithm.
 TeXglyphWidth <- function(index, file, size, fontLib, state) {
     width <- fontLib$glyphWidth(index, file)
     unitsPerEm <- metricUnits(width)
-    ## round() to get whole number metrix (at 1000 scale)
-    ## floor() to match what PDF_StrWidthUTF8() does
-    cex <- 1
-    floor(size + .5)*cex*
-        (round(width/(unitsPerEm/1000)))/1000
+    ## round() to get whole number of TeX units (scaled points)
+    round(size * width/unitsPerEm)
 }
 
 TeXglyphHeight <- function(index, file, size, fontLib, state) {
     height <- fontLib$glyphHeight(index, file)
     unitsPerEm <- metricUnits(height)
-    ## round() to get whole number metrix (at 1000 scale)
-    ## floor() to match what PDF_StrWidthUTF8() does
-    cex <- 1
-    floor(size + .5)*cex*
-        (round(height/(unitsPerEm/1000)))/1000
+    ## round() to get whole number of TeX units (scaled points)
+    round(size * height/unitsPerEm)
 }
 
 TeXglyphBounds <- function(index, file, size, fontLib, state) {
     bounds <- fontLib$glyphBounds(index, file)
     unitsPerEm <- metricUnits(bounds)
-    ## round() to get whole number metrix (at 1000 scale)
-    ## floor() to match what PDF_StrWidthUTF8() does
-    cex <- 1
-    floor(size + .5)*cex*
-        (round(bounds/(unitsPerEm/1000)))/1000
+    ## round() to get whole number of TeX units (scaled points)
+    round(size * bounds/unitsPerEm)
 }
 
 ################################################################################

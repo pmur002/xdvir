@@ -355,12 +355,14 @@ op_font_def <- function(op, state) {
         fontname <- paste(blockValue(op$blocks$op.opparams.fontname.name),
                           collapse="")
         fontfile <- gsub("[[]|[]].*", "", fontname)
-        scale <- blockValue(op$blocks$op.opparams.s)
-        design <- blockValue(op$blocks$op.opparams.d)
+        s <- blockValue(op$blocks$op.opparams.s)
+        d <- blockValue(op$blocks$op.opparams.d)
         mag <- TeXget("mag", state)
         fonts[[fontnum]] <- list(file=fontfile,
                                  index=0,
-                                 size=scale*(mag/1000),
+                                 size=s*(mag/1000),
+                                 ## For pixel adjustments
+                                 fontSpace=s %/% 6, 
                                  op=op)
         TeXset("fonts", fonts, state)
     }
@@ -434,7 +436,9 @@ op_x_font_def <- function(op, state) {
         fontsize <- blockValue(op$block$op.opparams.ptsize)
         fonts[[fontnum]] <- list(file=fontname,
                                  index=fontindex,
-                                 size=fontsize,
+                                 size=fontsize*(mag/1000),
+                                 ## For pixel adjustments
+                                 fontSpace=fontsize %/% 6, 
                                  op=op)
         TeXset("fonts", fonts, state)
     }
