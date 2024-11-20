@@ -1,17 +1,18 @@
 
 #include "freetype.h"
 
-SEXP glyphMetrics(SEXP index, SEXP font) {
+SEXP glyphMetrics(SEXP font) {
     FT_Library  library;
     FT_Face     face; 
-    int err;
+    long        numGlyphs;
+    int         i, glyphErr, err;
 
-    SEXP result;
-    PROTECT(result = allocVector(INTSXP, 6));
+    SEXP unitsPerEm, glyphInfo, metrics, result;
+    PROTECT(result = allocVector(VECSXP, 2));
 
     err = FT_Init_FreeType(&library);
     if (err) {
-        error("Intialisation failed");
+        error("FreeType initialisation failed");
     } 
 
     err = FT_New_Face(library,
@@ -19,28 +20,52 @@ SEXP glyphMetrics(SEXP index, SEXP font) {
                       0,
                       &face);
     if (err == FT_Err_Unknown_File_Format) {
-        error("Unknown font format");
+        error("Font read failed: Unknown font format");
     } else if (err) {
         error("Font read failed");
     } 
-    INTEGER(result)[0] = face->units_per_EM;
-    
+
     err = FT_Set_Char_Size(face, 0, 12*64, 96, 0);
     if (err) {
         error("Set char size failed");
     }
-    
-    err = FT_Load_Glyph(face, INTEGER(index)[0], FT_LOAD_NO_SCALE);
-    if (err) {
-        error("Glyph load failed");
+
+    PROTECT(unitsPerEm = allocVector(INTSXP, 1));
+    INTEGER(unitsPerEm)[0] = face->units_per_EM;
+    SET_VECTOR_ELT(result, 0, unitsPerEm);
+    UNPROTECT(1);
+
+    numGlyphs = face->num_glyphs;
+    PROTECT(metrics = allocVector(VECSXP, numGlyphs));
+    glyphErr = 0;
+    for (i=0; i < numGlyphs; i++) {
+        PROTECT(glyphInfo = allocVector(INTSXP, 5));
+        err = FT_Load_Glyph(face, i, FT_LOAD_NO_SCALE);
+        if (err) {
+            glyphErr = 1;
+            INTEGER(glyphInfo)[0] = NA_INTEGER;
+            INTEGER(glyphInfo)[1] = NA_INTEGER;
+            INTEGER(glyphInfo)[2] = NA_INTEGER;
+            INTEGER(glyphInfo)[3] = NA_INTEGER;
+            INTEGER(glyphInfo)[4] = NA_INTEGER;
+        } else {
+            INTEGER(glyphInfo)[0] = face->glyph->metrics.horiAdvance;
+            INTEGER(glyphInfo)[1] = face->glyph->metrics.horiBearingX;
+            INTEGER(glyphInfo)[2] = face->glyph->metrics.horiBearingX + 
+                face->glyph->metrics.width;
+            INTEGER(glyphInfo)[3] = face->glyph->metrics.horiBearingY;
+            INTEGER(glyphInfo)[4] = face->glyph->metrics.horiBearingY - 
+                face->glyph->metrics.height;
+        }
+        SET_VECTOR_ELT(metrics, i, glyphInfo);
+        UNPROTECT(1);
     }
-    INTEGER(result)[1] = face->glyph->metrics.horiAdvance;
-    INTEGER(result)[2] = face->glyph->metrics.horiBearingX;
-    INTEGER(result)[3] = face->glyph->metrics.horiBearingX + 
-        face->glyph->metrics.width;
-    INTEGER(result)[4] = face->glyph->metrics.horiBearingY;
-    INTEGER(result)[5] = face->glyph->metrics.horiBearingY - 
-        face->glyph->metrics.height;
+    SET_VECTOR_ELT(result, 1, metrics);
+    UNPROTECT(1);
+
+    if (glyphErr) {
+        warning("One or more glyph loads failed;  there may be missing values");
+    }
 
     err = FT_Done_Face(face);
     if (err) {
@@ -49,7 +74,7 @@ SEXP glyphMetrics(SEXP index, SEXP font) {
 
     err = FT_Done_FreeType(library);
     if (err) {
-        error("Shut down failed");
+        error("FreeType shut down failed");
     }
 
     UNPROTECT(1);

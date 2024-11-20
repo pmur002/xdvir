@@ -4,7 +4,7 @@
 #include "freetype.h"
 
 static const R_CallMethodDef callMethods[] = {
-    {"glyphMetrics", (DL_FUNC) &glyphMetrics, 2},
+    {"glyphMetrics", (DL_FUNC) &glyphMetrics, 1},
     { NULL, NULL, 0 }
 };
 
