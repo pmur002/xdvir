@@ -121,14 +121,14 @@ typesetEngine.DVI <- function(x) {
                 warning(paste0("More than one engine identified ",
                                "(", paste(sapply(engines[isEngine],
                                                  function(x) x$name),
-                                          collapse=", "), ");",
+                                          collapse=", "), "); ",
                                "using the first match ",
                                "(", engines[[which(isEngine)[1]]]$name, ")"))
             }
             engines[[which(isEngine)[1]]]
         } else {
             warning(paste0("Unable to identify engine from DVI pre op comment ",
-                           "(", commentStr, ");",
+                           "(", commentStr, "); ",
                            "falling back to null engine"))
             engines[["null"]]
         }
