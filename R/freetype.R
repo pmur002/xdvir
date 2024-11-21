@@ -28,7 +28,9 @@ getFont <- function(fontName) {
 
 FTglyphMetrics <- function(index, subset, fontName) {
     font <- getFont(fontName)
-    metrics <- font$metrics[[index]][subset]
+    ## +1 because glyph indices are zero-based, but
+    ## we are accessing a one-based R vector
+    metrics <- font$metrics[[index + 1]][subset]
     attr(metrics, "unitsPerEm") <- font$unitsPerEm
     metrics
 }
