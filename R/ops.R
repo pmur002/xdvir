@@ -554,7 +554,6 @@ setGlyphs <- function(op, state) {
     nGlyphs <- blockValue(op$blocks$op.opparams.n)
     glyphIds <- blockValue(op$blocks$op.opparams.glyphs.id)
     glyphLocs <- paste0("op.opparams.glyphs.xy", 1:(2*nGlyphs))
-    glyphWidth <- 0
     for (i in 1:nGlyphs) {
         id <- glyphIds[i]
         glyphX <- blockValue(op$blocks[[glyphLocs[2*i - 1]]])
@@ -574,13 +573,12 @@ setGlyphs <- function(op, state) {
         updateBBoxVert(y - bbox[4], state) ## top
         updateTextLeft(x, state)
         updateTextRight(x + width[1], state)
-        ## Keep track of total glyph width
-        glyphWidth <- glyphWidth + width[1]
         addGlyph(glyph, state)
     }
     ## Update h at the end for all glyphs
-    TeXset("hh", hh + round(TeX2px(glyphWidth, state)), state)
-    moveRight(glyphWidth, state)
+    w <- blockValue(op$blocks$op.opparams.w)
+    TeXset("hh", hh + round(TeX2px(w, state)), state)
+    moveRight(w, state)
 }
 
 ## 253

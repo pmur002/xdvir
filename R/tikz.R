@@ -55,7 +55,7 @@ setTransformedChar <- function(raw, put=FALSE, state) {
     lapply(bboxX, updateBBoxHoriz, state)
     lapply(bboxY, updateBBoxVert, state)
     if (!put) {
-        HV <- matrix(TeX2pt(c(h + width[1], -y, 1), state))
+        HV <- matrix(TeX2pt(c(h + width[1], -v, 1), state))
         transHV <- tm %*% HV
         h <- pt2TeX(transHV[1], state)
         v <- pt2TeX(-transHV[2], state)
@@ -118,16 +118,16 @@ setTransformedGlyphs <- function(op, state) {
         bboxY <- pt2TeX(-transCorners[2,], state)
         lapply(bboxX, updateBBoxHoriz, state)
         lapply(bboxY, updateBBoxVert, state)
-        HV <- matrix(TeX2pt(c(h + width[1], -y, 1), state))
-        transHV <- tm %*% HV
-        ## Keep track of total glyph movement
-        glyphH <- glyphH + pt2TeX(transHV[1], state)
-        glyphV <- glyphV + pt2TeX(transHV[2], state)
         addGlyph(glyph, state)
     }
     ## Update h/v at the end for all glyphs
-    TeXset("h", glyphH, state)
-    TeXset("v", -glyphV, state)
+    w <- blockValue(op$blocks$op.opparams.w)
+    HV <- matrix(TeX2pt(c(h + w, -v, 1), state))
+    transHV <- tm %*% HV
+    h <- pt2TeX(transHV[1], state)
+    v <- pt2TeX(-transHV[2], state)
+    TeXset("h", h, state)
+    TeXset("v", v, state)
     TeXset("hh", round(TeX2px(h, state)), state)
     TeXset("vv", round(TeX2px(v, state)), state)
 }
