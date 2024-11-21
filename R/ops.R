@@ -223,38 +223,44 @@ op_pop <- function(op, state) {
 
 hSpace <- function(x, state) {
     f <- TeXget("f", state)
-    ## Only worry about maintaining hh and vv if we have set a font
-    if (!is.na(f)) {
+    h <- TeXget("h", state)
+    if (is.na(f)) {
+        ## If no font yet (just setting up) just have hh track h
+        hh = round(TeX2px(h + x, state))
+    } else {
+        ## Otherwise try to be cleverer
         fonts <- TeXget("fonts", state)
         font <- fonts[[f]]
         fntSpace <- font$fontSpace
-        h <- TeXget("h", state)
         hh <- TeXget("hh", state)
         if (x >= fntSpace || x <= (-4 * fntSpace)) {
             hh = round(TeX2px(h + x, state))
         } else {
             hh = hh + round(TeX2px(x, state))
         }
-        TeXset("hh", hh, state)
     }
+    TeXset("hh", hh, state)
 }
 
 vSpace <- function(x, state) {
     f <- TeXget("f", state)
-    ## Only worry about maintaining hh and vv if we have set a font
-    if (!is.na(f)) {
+    v <- TeXget("v", state)
+    if (is.na(f)) {
+        ## If no font yet (just setting up) just have vv track v
+        vv = round(TeX2px(v + x, state))
+    } else {
+        ## Otherwise try to be cleverer
         fonts <- TeXget("fonts", state)
         font <- fonts[[f]]
         fntSpace <- font$fontSpace
-        v <- TeXget("v", state)
         vv <- TeXget("vv", state)
         if (abs(x) >= (5 * fntSpace)) {
             vv = round(TeX2px(v + x, state))
         } else {
             vv = vv + round(TeX2px(x, state))
         }
-        TeXset("vv", vv, state)
     }
+    TeXset("vv", vv, state)
 }
 
 ## 143..146
