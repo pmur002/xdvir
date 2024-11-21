@@ -20,6 +20,8 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
+png("package.png", type="cairo")
+
 if (xdvir:::haveTeX()) {
 
     ## Package as LaTeXpackage object
@@ -36,3 +38,5 @@ if (xdvir:::haveTeX()) {
     ## ...
 
 }
+
+dev.off()

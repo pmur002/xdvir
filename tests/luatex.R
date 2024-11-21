@@ -13,12 +13,18 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
+png("luatex.png", type="cairo")
+
 if (xdvir:::haveTeX()) {
+
+    str <- r"(This is a test: $\frac{x - \mu}{2}$)"
 
     if (xdvir:::luatexAvailable() && xdvir:::luaOTFloadToolSufficient()) {
         grid.newpage()
-        grid.lualatex("This is a test: $x - \\mu$", texFile=texFile)
+        grid.lualatex(str, texFile=texFile)
     }
 
 }
+
+dev.off()
 

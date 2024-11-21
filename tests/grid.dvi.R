@@ -32,16 +32,20 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
+png("grid.dvi.png", type="cairo")
+
 if (xdvir:::haveTeX()) {
 
-    tex <- author("This is a test: $x - \\mu$")
+    str <- r"(This is a test: $\frac{x - \mu}{2}$)"
+    
+    tex <- author(str)
     dviFile <- typeset(tex, texFile=texFile)
     dvi <- readDVI(dviFile)
     grid.newpage()
     grid.dvi(dvi)
 
     ## Explicit render engine that does NOT match typeset() engine
-    tex <- author("This is a test: $x - \\mu$", engine="xetex")
+    tex <- author(str, engine="xetex")
     dviFile <- typeset(tex, engine="xetex", texFile=texFile)
     dvi <- readDVI(dviFile)
     grid.newpage()
@@ -49,3 +53,4 @@ if (xdvir:::haveTeX()) {
 
 }
 
+dev.off()

@@ -13,6 +13,8 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
+png("grid.latex.png", type="cairo")
+
 if (xdvir:::haveTeX()) {
 
     grid.newpage()
@@ -20,4 +22,4 @@ if (xdvir:::haveTeX()) {
 
 }
     
-
+dev.off()

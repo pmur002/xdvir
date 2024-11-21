@@ -20,9 +20,11 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
+png("fontspec.png", type="cairo")
+
 if (xdvir:::haveTeX()) {
     grid.newpage()
     grid.latex(tex, packages=fontspecPackage(), texFile=texFile)
 }
 
-        
+dev.off()
