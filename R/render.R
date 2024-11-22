@@ -69,6 +69,8 @@ makeContent.DVIgrob <- function(x, ...) {
     ## which also establishes metrics of text and any other drawing
     invisible(lapply(x$dvi, DVItoObj, state))
     objList <- TeXget("objList", state)
+    ## Store copy of most recent object list to make debugging easier
+    set(".Last.objList", objList)
     if (length(objList)) {
         ## Calculate offset for non-text drawing
         offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
