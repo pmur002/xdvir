@@ -78,6 +78,7 @@ makeContent.DVIgrob <- function(x, ...) {
         grobs <- lapply(objList, objToGrob,
                         x=x$x, y=x$y, hjust=x$hjust, vjust=x$vjust,
                         xoffset=offset$x, yoffset=offset$y,
+                        dpi=x$dpi,
                         state=state)
         x <- setChildren(x, do.call(gList, grobs))
     } 

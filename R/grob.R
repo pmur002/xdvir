@@ -62,28 +62,38 @@ objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
     glyphGrob(info, x, y, hjust=hjust, vjust=vjust)
 }
 
-objToGrob.XDVIRruleObj <- function(obj, xoffset, yoffset, ..., state) {
+objToGrob.XDVIRruleObj <- function(obj, xoffset, yoffset, dpi, ..., state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    x <- TeX2pt(obj$x, state) + xoffset
-    y <- -TeX2pt(obj$y, state) + yoffset
-    width <- TeX2pt(obj$w, state)
-    height <- TeX2pt(obj$h, state)
-    ## Below lwd=1, draw a line
-    if (width < .75) { ## 1/96 / (1/72)  [ lwd=1 => 1/96 inch ]
-        segmentsGrob(x + width/2,
-                     y,
-                     x + width/2,
-                     y + height,
-                     default.units="bigpts",
-                     gp=gpar(lwd=72*width/96, lineend="butt"))
-    } else if (height < .75) {
-        segmentsGrob(x,
-                     y + height/2,
-                     x + width,
-                     y + height/2,
-                     default.units="bigpts",
-                     gp=gpar(lwd=72*height/96, lineend="butt"))
+    if (is.na(dpi)) {
+        x <- TeX2pt(obj$x, state) + xoffset
+        y <- -TeX2pt(obj$y, state) + yoffset
+        width <- TeX2pt(obj$w, state)
+        height <- TeX2pt(obj$h, state)
+        ## Below lwd=1, draw a line
+        if (width < .75) { ## 1/96 / (1/72)  [ lwd=1 => 1/96 inch ]
+            segmentsGrob(x + width/2,
+                         y,
+                         x + width/2,
+                         y + height,
+                         default.units="bigpts",
+                         gp=gpar(lwd=72*width/96, lineend="butt"))
+        } else if (height < .75) {
+            segmentsGrob(x,
+                         y + height/2,
+                         x + width,
+                         y + height/2,
+                         default.units="bigpts",
+                         gp=gpar(lwd=72*height/96, lineend="butt"))
+        } else {
+            rectGrob(x, y, width, height, default.units="bigpts",
+                     just=c("left", "bottom"),
+                     gp=gpar(col=NA, fill="black"))
+        }
     } else {
+        x <- TeX2pt(px2TeX(obj$xx, state), state) + xoffset
+        y <- -TeX2pt(px2TeX(obj$yy, state), state) + yoffset
+        width <- TeX2pt(px2TeX(obj$ww, state), state)
+        height <- TeX2pt(px2TeX(obj$hh, state), state)
         rectGrob(x, y, width, height, default.units="bigpts",
                  just=c("left", "bottom"),
                  gp=gpar(col=NA, fill="black"))
