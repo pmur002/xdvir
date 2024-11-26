@@ -41,7 +41,7 @@ Producing an equation like this requires three things:
     and we need to be able to express the greek letter pi.
 
 2.  A **typesetter** that can select fonts and individual 
-     glyphs within those fonts and determine the exact placement
+     glyphs from within those fonts and determine the exact placement
      of each individual glyph.
 
 3.  A **renderer** that can draw the glyphs that the typesetter
@@ -97,7 +97,8 @@ grid.latex(tex)
 
 # Rendering LaTeX in plots
 
-As the function name suggests, {xdvir} only provides a low-level
+As the function name `grid.latex()`
+suggests, {xdvir} only provides a low-level
 interface for drawing LaTeX snippets as part of {grid} output.
 However, there are ways to combine {grid} output with higher-level
 plotting packages.
@@ -190,12 +191,7 @@ ggplot(df) +
 
 # Limitations
 
-XeTeX and LuaTeX only
-
-LuaTeX only if luaotfload-tool verion is > 3.15
-
-May need recent LuaTeX (e.g., 1.17.0 as available on Ubuntu 24.04)
-to get reliable full font file paths (and glyph ids) in DVI output.
+Need device with glyph support
 
 # Trouble shooting
 

@@ -388,8 +388,8 @@ characters. For example, we need to be able to express that the digit
 “2” needs to be placed as a superscript relative to the character “z”
 and we need to be able to express the greek letter pi.</p></li>
 <li><p>A <strong>typesetter</strong> that can select fonts and
-individual glyphs within those fonts and determine the exact placement
-of each individual glyph.</p></li>
+individual glyphs from within those fonts and determine the exact
+placement of each individual glyph.</p></li>
 <li><p>A <strong>renderer</strong> that can draw the glyphs that the
 typesetter has selected in the locations that the typesetter has
 determined.</p></li>
@@ -417,10 +417,10 @@ backslash.</p>
 <div id="rendering-latex-in-plots" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> Rendering LaTeX in
 plots</h1>
-<p>As the function name suggests, {xdvir} only provides a low-level
-interface for drawing LaTeX snippets as part of {grid} output. However,
-there are ways to combine {grid} output with higher-level plotting
-packages.</p>
+<p>As the function name <code>grid.latex()</code> suggests, {xdvir} only
+provides a low-level interface for drawing LaTeX snippets as part of
+{grid} output. However, there are ways to combine {grid} output with
+higher-level plotting packages.</p>
 <p>For example, we can use {grid} within panel functions in the
 {lattice} package <span class="citation">(Sarkar 2008)</span>. The
 following code draws a {lattice} plot and adds the mathematical equation
@@ -470,10 +470,7 @@ added in the top-left corner of the plot.</p>
 </div>
 <div id="limitations" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Limitations</h1>
-<p>XeTeX and LuaTeX only</p>
-<p>LuaTeX only if luaotfload-tool verion is &gt; 3.15</p>
-<p>May need recent LuaTeX (e.g., 1.17.0 as available on Ubuntu 24.04) to
-get reliable full font file paths (and glyph ids) in DVI output.</p>
+<p>Need device with glyph support</p>
 </div>
 <div id="trouble-shooting" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Trouble shooting</h1>
