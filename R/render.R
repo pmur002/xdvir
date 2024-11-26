@@ -1,6 +1,8 @@
 
 initTeXstate <- function() {
     state <- TeXstate()
+    ## This **could** be made user-settable at some point?
+    TeXset("scale", 1, state)
     ## Initialise locations
     TeXset("h", 0, state)
     TeXset("v", 0, state)
@@ -63,7 +65,6 @@ makeContent.DVIgrob <- function(x, ...) {
     TeXset("fontLib", x$fontLib, state)
     TeXset("engine", x$engine, state)
     TeXset("dpi", x$dpi, state)
-    TeXset("scale", x$scale, state)
     
     ## Generate objs from DVI,
     ## which also establishes metrics of text and any other drawing
@@ -96,7 +97,7 @@ dviGrob.DVI <- function(dvi,
                         x=0.5, y=0.5,
                         default.units="npc",
                         hjust="centre", vjust="centre",
-                        dpi=NA, scale=1,
+                        dpi=NA, 
                         packages=NULL,
                         engine=getOption("xdvir.engine"),
                         fontLib=getOption("xdvir.fontLib"),
@@ -113,7 +114,7 @@ dviGrob.DVI <- function(dvi,
     pkgs <- resolvePackages(packages)
     pkgs <- checkPackages(pkgs, typesetPackages(dvi))
     gTree(dvi=dvi, x=x, y=y, hjust=hjust, vjust=vjust,
-          dpi=dpi, scale=scale,
+          dpi=dpi, 
           engine=eng, fontLib=lib, packages=pkgs,
           gp=gp, name=name, vp=vp,
           cl="DVIgrob")

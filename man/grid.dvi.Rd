@@ -15,6 +15,7 @@ dviGrob(dvi, \dots)
 \method{dviGrob}{DVI}(dvi, x = 0.5, y = 0.5,
         default.units = "npc",
         hjust="centre", vjust="centre",
+        dpi=NA,
         packages=NULL,
         engine=getOption("xdvir.engine"),
         fontLib=getOption("xdvir.fontLib"),
@@ -33,6 +34,7 @@ grid.dvi(\dots)
     numeric.}
   \item{hjust, vjust}{Justification of the output relative to the
     \code{x}/\code{y} location.}
+  \item{dpi}{Resolution (dots per inch) for rendering.}
   \item{engine}{The TeX engine that should be used to render the DVI
     file (see Details).}
   \item{fontLib}{The font libraary the should be used to query fonts

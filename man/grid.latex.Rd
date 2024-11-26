@@ -19,6 +19,7 @@
 latexGrob(tex,
           x=0.5, y=0.5, default.units="npc",
           hjust="centre", vjust="centre",
+          dpi=NA,
           packages=NULL,
           engine=getOption("xdvir.engine"),
           fontLib=getOption("xdvir.fontLib"),
@@ -32,6 +33,7 @@ grid.latex(\dots)
 xelatexGrob(tex,
             x=0.5, y=0.5, default.units="npc",
             hjust="centre", vjust="centre",
+            dpi=NA,
             packages=NULL,
             fontLib=getOption("xdvir.fontLib"),
             texFile=NULL,
@@ -44,6 +46,7 @@ grid.xelatex(\dots)
 lualatexGrob(tex,
              x=0.5, y=0.5, default.units="npc",
              hjust="centre", vjust="centre",
+             dpi=NA,
              packages=NULL,
              fontLib=getOption("xdvir.fontLib"),
              texFile=NULL,
@@ -78,6 +81,7 @@ typeset(tex,
     numeric.}
   \item{hjust, vjust}{Justification of the output relative to the
     \code{x}/\code{y} location.}
+  \item{dpi}{Resolution (dots per inch) for rendering.}
   \item{engine}{The TeX engine that should be used to author, typeset,
     and render the LaTeX.  May be the name of a TeX engine (character)
     or a \code{"TeXengine"} object.}
