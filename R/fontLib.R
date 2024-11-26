@@ -46,7 +46,7 @@ metricUnits <- function(x) {
 }
 
 ## The conversions from font file metrics to TeX units (scaled points)
-## utterly fail to satisfy the requirement described in dvitype ...
+## will in general fail to satisfy the requirement described in dvitype ...
 ## "This fixed-point multiplication must be done with precisely the same
 ##  accuracy by all DVI-reading programs, in order to validate the
 ##  assumptions made by DVI-writing programs like TEX82."
@@ -56,25 +56,27 @@ metricUnits <- function(x) {
 ## rather than TFM files.
 ## NOTE that dvi-decode goes via pixels (using dpi), but I do not see how
 ## that is any closer to replicating the dvitype algorithm.
+## OTOH, these calculations, when fed the exact values from TFM files
+## do produce identical results to dvitype.
 TeXglyphWidth <- function(index, file, size, fontLib, state) {
     width <- fontLib$glyphWidth(index, file)
     unitsPerEm <- metricUnits(width)
-    ## round() to get whole number of TeX units (scaled points)
-    round(size * width/unitsPerEm)
+    ## floor() to get whole number of TeX units (scaled points)
+    floor(size * width/unitsPerEm)
 }
 
 TeXglyphHeight <- function(index, file, size, fontLib, state) {
     height <- fontLib$glyphHeight(index, file)
     unitsPerEm <- metricUnits(height)
-    ## round() to get whole number of TeX units (scaled points)
-    round(size * height/unitsPerEm)
+    ## floor() to get whole number of TeX units (scaled points)
+    floor(size * height/unitsPerEm)
 }
 
 TeXglyphBounds <- function(index, file, size, fontLib, state) {
     bounds <- fontLib$glyphBounds(index, file)
     unitsPerEm <- metricUnits(bounds)
-    ## round() to get whole number of TeX units (scaled points)
-    round(size * bounds/unitsPerEm)
+    ## floor() to get whole number of TeX units (scaled points)
+    floor(size * bounds/unitsPerEm)
 }
 
 ################################################################################
