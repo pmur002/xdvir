@@ -52,7 +52,7 @@ calculateOffset <- function(x, y, hjust, vjust, state) {
     dummyGlyph <- glyph(x=0, y=0, xx=0, yy=0, index=0, fontindex=256, size=0)
     class(dummyGlyph) <- "XDVIRglyphObj"
     dummyGrob <- objToGrob(dummyGlyph, x=x, y=y, hjust=hjust, vjust=vjust,
-                           state=state)
+                           dpi=NA, state=state)
     coords <- grobCoords(dummyGrob)
     ## Offset is location of dummy glyph grob
     list(x=convertX(unit(coords[[1]]$x[1], "in"), "bigpts", valueOnly=TRUE),

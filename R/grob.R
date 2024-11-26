@@ -3,10 +3,15 @@ objToGrob <- function(obj, ...) {
     UseMethod("objToGrob")
 }
 
-objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, ..., state) {
+objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, dpi, ..., state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    gx <- TeX2pt(obj$x, state)
-    gy <- -TeX2pt(obj$y, state)
+    if (is.na(dpi)) {
+        gx <- TeX2pt(obj$x, state)
+        gy <- -TeX2pt(obj$y, state)
+    } else {
+        gx <- TeX2pt(px2TeX(obj$xx, state), state)
+        gy <- -TeX2pt(px2TeX(obj$yy, state), state)
+    }
     textleft <- TeX2pt(TeXget("textleft", state), state)
     textright <- TeX2pt(TeXget("textright", state), state)
     left <- TeX2pt(TeXget("left", state), state)
@@ -69,35 +74,32 @@ objToGrob.XDVIRruleObj <- function(obj, xoffset, yoffset, dpi, ..., state) {
         y <- -TeX2pt(obj$y, state) + yoffset
         width <- TeX2pt(obj$w, state)
         height <- TeX2pt(obj$h, state)
-        subrule <- getOption("xdvir.substituteRule")
-        if ((width < .75 || height < .75) &&
-            (is.null(subrule) || as.logical(subrule))) {
-            ## Below lwd=1, draw a line
-            if (width < .75) { ## 1/96 / (1/72)  [ lwd=1 => 1/96 inch ]
-                segmentsGrob(x + width/2,
-                             y,
-                             x + width/2,
-                             y + height,
-                             default.units="bigpts",
-                             gp=gpar(lwd=96*width/72, lineend="butt"))
-            } else if (height < .75) {
-                segmentsGrob(x,
-                             y + height/2,
-                             x + width,
-                             y + height/2,
-                             default.units="bigpts",
-                             gp=gpar(lwd=96*height/72, lineend="butt"))
-            }
-        } else {
-            rectGrob(x, y, width, height, default.units="bigpts",
-                     just=c("left", "bottom"),
-                     gp=gpar(col=NA, fill="black"))
-        }
     } else {
         x <- TeX2pt(px2TeX(obj$xx, state), state) + xoffset
         y <- -TeX2pt(px2TeX(obj$yy, state), state) + yoffset
         width <- TeX2pt(px2TeX(obj$ww, state), state)
         height <- TeX2pt(px2TeX(obj$hh, state), state)
+    }
+    subrule <- getOption("xdvir.substituteRule")
+    if ((width < .75 || height < .75) &&
+        (is.null(subrule) || as.logical(subrule))) {
+        ## Below lwd=1, draw a line
+        if (width < .75) { ## 1/96 / (1/72)  [ lwd=1 => 1/96 inch ]
+            segmentsGrob(x + width/2,
+                         y,
+                         x + width/2,
+                         y + height,
+                         default.units="bigpts",
+                         gp=gpar(lwd=96*width/72, lineend="butt"))
+        } else if (height < .75) {
+            segmentsGrob(x,
+                         y + height/2,
+                         x + width,
+                         y + height/2,
+                         default.units="bigpts",
+                         gp=gpar(lwd=96*height/72, lineend="butt"))
+        }
+    } else {
         rectGrob(x, y, width, height, default.units="bigpts",
                  just=c("left", "bottom"),
                  gp=gpar(col=NA, fill="black"))
