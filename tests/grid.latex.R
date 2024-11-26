@@ -13,7 +13,12 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
-png("grid.latex.png", type="cairo")
+if (Sys.info()["sysname"] == "Darwin") {
+    png("grid-latex-%02d.png", type="quartz")
+} else {
+    ## "Windows" or "Linux"
+    png("grid-latex-%02d.png", type="cairo")
+}
 
 if (xdvir:::haveTeX()) {
 

@@ -20,7 +20,12 @@ if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
     texFile <- NULL
 }
 
-png("package.png", type="cairo")
+if (Sys.info()["sysname"] == "Darwin") {
+    png("package-%02d.png", type="quartz")
+} else {
+    ## "Windows" or "Linux"
+    png("package-%02d.png", type="cairo")
+}
 
 if (xdvir:::haveTeX()) {
 
