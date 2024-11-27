@@ -108,11 +108,11 @@ registerPackage <- function(package) {
     alias <- package$name
     existing <- names(register)
     if (!inherits(package, "LaTeXpackage"))
-        stop("Invalid package")
+        stop("Invalid package.")
     if (length(alias) > 1)
-        stop("Please only register one package at a time")
+        stop("Please only register one package at a time.")
     if (alias %in% existing)
-        stop(sprintf("Package alias %s already in use", alias))
+        warning(sprintf("Package %s already registered.", alias))
     register[[alias]] <- package
     set("packageRegister", register)
 }
@@ -168,7 +168,7 @@ checkPackages <- function(x, pkgNames, ...) {
 
 ## User says NULL so take 'pkgNames', if any
 checkPackages.NULL <- function(x, pkgNames, ...) {
-    if (!is.null(pkgNames) && nchar(pkgNames)) {
+    if (!is.null(pkgNames) && any(nchar(pkgNames))) {
         resolvePackages(pkgNames)
     } else {
         NULL

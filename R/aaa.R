@@ -20,12 +20,13 @@ commentSep <- "; "
 commentEngineName <- "engine name: "
 commentEngineVersion <- "engine version: "
 commentPackages <- "packages: "
+commentPackageSep <- ", "
 
 buildSignature <- function(engine, packages) {
     paste0(commentHeader, packageVersion("xdvir"), commentSep,
            commentEngineName, engine$name, commentSep,
            commentEngineVersion, engine$version, commentSep,
-           commentPackages, packages)
+           commentPackages, paste(packages, collapse=commentPackageSep))
 }
 
 splitSignature <- function(sig) {
@@ -40,5 +41,6 @@ signatureEngine <- function(sig) {
 
 signaturePackages <- function(sig) {
     sig <- splitSignature(sig)
-    gsub(commentPackages, "", sig[4], fixed=TRUE)
+    pkgList <- gsub(commentPackages, "", sig[4], fixed=TRUE)
+    strsplit(pkgList, commentPackageSep)[[1]]
 }
