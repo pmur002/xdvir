@@ -189,12 +189,19 @@ ggplot(df) +
                          hjust="left", vjust="top"))
 ```
 
-# Limitations
-
-Need device with glyph support
-
 # Trouble shooting
 
-Detecting TeX (and installing TeX)
+The {xdvir} package relies on the glyph rendering support that was 
+added to the R graphics engine in R version 4.3.0
+[@murrell-pedersen-urbanek-glyphs-2023].
+Furthermore, this support is only available on specific graphics devices:
+the core `pdf()`, Cairo-based devices, and `quartz()` devices, plus
+the devices provided by the {ragg} package [@pkg-ragg].
+
+The {xdvir} package also relies on there being a TeX installation.
+When the package is attached, it reports on the TeX features that
+it can find (see the top of this document for an example).
+If TeX is not found, the simplest solution is to use
+`tinytex::install_tinytex()`.
 
 # References
