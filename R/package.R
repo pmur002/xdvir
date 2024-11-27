@@ -133,6 +133,17 @@ resolvePackage.character <- function(x, ...) {
 }
 
 resolvePackage.LaTeXpackage <- function(x, ...) {
+    ## If user has explicitly specified a package as a LaTeXpackage
+    ## (rather than an alias), and if that package has not yet been
+    ## registered, register it.
+    ## This means that specifying a package via author() or typeset(),
+    ## which embed package name in signature, will resolve package name
+    ## when signature is extracted.
+    register <- get("packageRegister")
+    existing <- names(register)
+    if (!x$name %in% existing) {
+        registerPackage(x)
+    }
     x
 }
 
