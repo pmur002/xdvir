@@ -147,9 +147,9 @@ type <- function(dpi, rules=TRUE, ...) {
 ## generate a set of "objects" with hh/vv.
 xdvir <- function(dpi, dviFile, rules=TRUE, fontLib=NULL, ...) {
     pdf(tempfile(fileext=".pdf"))
-    suppressWarnings(grid.dvi(dviFile, dpi=dpi, fontLib=fontLib))
+    grob <- suppressWarnings(dviGrob(dviFile, dpi=dpi, fontLib=fontLib))
     dev.off()
-    objList <- xdvir:::get(".Last.objList")
+    objList <- grob$objList
     glyphs <- do.call(rbind,
                       lapply(objList,
                              function(x) {

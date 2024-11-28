@@ -59,31 +59,87 @@ calculateOffset <- function(x, y, hjust, vjust, state) {
          y=convertY(unit(coords[[1]]$y[1], "in"), "bigpts", valueOnly=TRUE))
 }
 
-makeContent.DVIgrob <- function(x, ...) {
+buildState <- function(packages, fontLib, engine, dpi) {
     state <- initTeXstate()
-    TeXset("packages", x$packages, state)
-    TeXset("fontLib", x$fontLib, state)
-    TeXset("engine", x$engine, state)
-    TeXset("dpi", x$dpi, state)
-    
+    TeXset("packages", packages, state)
+    TeXset("fontLib", fontLib, state)
+    TeXset("engine", engine, state)
+    TeXset("dpi", dpi, state)
+    state
+}
+
+buildObjList <- function(dvi, state) {
     ## Generate objs from DVI,
     ## which also establishes metrics of text and any other drawing
-    invisible(lapply(x$dvi, DVItoObj, state))
-    objList <- TeXget("objList", state)
-    ## Store copy of most recent object list to make debugging easier
-    set(".Last.objList", objList)
-    if (length(objList)) {
+    lapply(dvi, DVItoObj, state)
+    TeXget("objList", state)
+}
+
+makeContent.DVIgrob <- function(x, ...) {
+    if (length(x$objList)) {
         ## Calculate offset for non-text drawing
-        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
         ## Generate grobs from objs
-        grobs <- lapply(objList, objToGrob,
+        grobs <- lapply(x$objList, objToGrob,
                         x=x$x, y=x$y, hjust=x$hjust, vjust=x$vjust,
                         xoffset=offset$x, yoffset=offset$y,
                         dpi=x$dpi,
-                        state=state)
+                        state=x$state)
         x <- setChildren(x, do.call(gList, grobs))
     } 
     x
+}
+
+xDetails.DVIgrob <- function(x, theta) {
+    if (length(x$objList)) {
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
+        left <- TeX2pt(TeXget("left", x$state), x$state)
+        right <- TeX2pt(TeXget("right", x$state), x$state)
+        bottom <- -TeX2pt(TeXget("bottom", x$state), x$state)
+        top <- -TeX2pt(TeXget("top", x$state), x$state)
+        xDetails(rectGrob(left + offset$x, bottom + offset$y,
+                          right - left, top - bottom,
+                          default.units="bigpts",
+                          just=c("left", "bottom")), theta)
+    } else {
+        unit(.5, "npc")
+    }
+}
+
+yDetails.DVIgrob <- function(x, theta) {
+    if (length(x$objList)) {
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
+        left <- TeX2pt(TeXget("left", x$state), x$state)
+        right <- TeX2pt(TeXget("right", x$state), x$state)
+        bottom <- -TeX2pt(TeXget("bottom", x$state), x$state)
+        top <- -TeX2pt(TeXget("top", x$state), x$state)
+        yDetails(rectGrob(left + offset$x, bottom + offset$y,
+                          right - left, top - bottom,
+                          default.units="bigpts",
+                          just=c("left", "bottom")), theta)
+    } else {
+        unit(.5, "npc")
+    }
+}
+
+widthDetails.DVIgrob <- function(x) {
+    if (length(x$objList)) {
+        left <- TeX2pt(TeXget("left", x$state), x$state)
+        right <- TeX2pt(TeXget("right", x$state), x$state)
+        unit(right - left, "bigpts")
+    } else {
+        unit(0, "mm")
+    }
+}
+
+heightDetails.DVIgrob <- function(x) {
+    if (length(x$objList)) {
+        bottom <- -TeX2pt(TeXget("bottom", x$state), x$state)
+        top <- -TeX2pt(TeXget("top", x$state), x$state)
+        unit(top - bottom, "bigpts")
+    } else {
+        unit(0, "mm")
+    }
 }
 
 ################################################################################
@@ -113,9 +169,11 @@ dviGrob.DVI <- function(dvi,
     lib <- resolveFontLib(fontLib)
     pkgs <- resolvePackages(packages)
     pkgs <- checkPackages(pkgs, typesetPackages(dvi))
-    gTree(dvi=dvi, x=x, y=y, hjust=hjust, vjust=vjust,
-          dpi=dpi, 
-          engine=eng, fontLib=lib, packages=pkgs,
+    state <- buildState(pkgs, fontLib, eng, dpi)
+    objList <- buildObjList(dvi, state)
+    gTree(dvi=dvi, state=state, objList=objList,
+          x=x, y=y, hjust=hjust, vjust=vjust,
+          dpi=dpi,
           gp=gp, name=name, vp=vp,
           cl="DVIgrob")
 }

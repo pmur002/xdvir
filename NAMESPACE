@@ -58,6 +58,10 @@ S3method("dviGrob", "DVIfile")
 S3method("dviGrob", "character")
 
 S3method("makeContent", "DVIgrob")
+S3method("xDetails", "DVIgrob")
+S3method("yDetails", "DVIgrob")
+S3method("widthDetails", "DVIgrob")
+S3method("heightDetails", "DVIgrob")
 
 S3method("objToGrob", "XDVIRglyphObj")
 S3method("objToGrob", "XDVIRruleObj")
