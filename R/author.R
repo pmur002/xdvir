@@ -13,6 +13,10 @@ commentLine <- function(tex) {
 author <- function(tex,
                    engine=getOption("xdvir.engine"),
                    packages=NULL) {
+    if (!is.character(tex))
+        stop("'tex' should be a character value containing a LaTeX fragment")
+    if (length(tex) < 1)
+        stop("No LaTeX fragment to author")
     engine <- getEngine(engine)
     pkgs <- resolvePackages(packages)
     if (length(pkgs)) {

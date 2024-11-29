@@ -33,7 +33,6 @@ xelatexGrob <- function(tex,
                         packages=NULL,
                         fontLib=getOption("xdvir.fontLib"),
                         texFile=NULL,
-                        ...,
                         name=NULL,
                         gp=gpar(),
                         vp=NULL) {
@@ -50,7 +49,6 @@ xelatexGrob <- function(tex,
             hjust=hjust, vjust=vjust,
             dpi=dpi,
             engine=engine, package=pkgs, fontLib=lib,
-            ...,
             name=name, gp=gp, vp=vp)
 }
 

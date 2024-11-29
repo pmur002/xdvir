@@ -7,10 +7,15 @@ latexGrob <- function(tex,
                       engine=getOption("xdvir.engine"),
                       fontLib=getOption("xdvir.fontLib"),
                       texFile=NULL,
-                      ...,
                       name=NULL,
                       gp=gpar(),
                       vp=NULL) {
+    if (length(tex) < 1)
+        stop("No LaTeX fragment to render")
+    if (!is.unit(x))
+        x <- unit(x, default.units)
+    if (!is.unit(y))
+        y <- unit(y, default.units)
     engine <- getEngine(engine)
     lib <- resolveFontLib(fontLib)
     pkgs <- resolvePackages(packages)
@@ -22,7 +27,6 @@ latexGrob <- function(tex,
             hjust=hjust, vjust=vjust,
             dpi=dpi,
             engine=engine, package=pkgs, fontLib=lib,
-            ...,
             name=name, gp=gp, vp=vp)
 }
 

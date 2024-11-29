@@ -178,14 +178,26 @@ dviGrob.DVI <- function(dvi,
           cl="DVIgrob")
 }
 
-## Resolve engine from typeset() engine
+## Resolve engine and packages from typeset() result
 dviGrob.DVIfile <- function(dvi, ..., engine=NULL, packages=NULL) {
+    if (length(dvi) < 1)
+        stop("No DVI files to render")
+    if (length(dvi) > 1) {
+        dvi <- dvi[1]
+        warning("Only rendering first DVI file")
+    }
     eng <- resolveEngine(dvi, engine)
     pkgs <- checkPackages(packages, typesetPackages(dvi))
     dviGrob(readDVI(dvi), ..., engine=eng, packages=pkgs)
 }
 
 dviGrob.character <- function(dvi, ...) {
+    if (length(dvi) < 1)
+        stop("No DVI files to render")
+    if (length(dvi) > 1) {
+        dvi <- dvi[1]
+        warning("Only rendering first DVI file")
+    }
     dviGrob(readDVI(dvi), ...)
 }
 

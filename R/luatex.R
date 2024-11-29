@@ -63,7 +63,6 @@ lualatexGrob <- function(tex,
                          packages=NULL,
                          fontLib=getOption("xdvir.fontLib"),
                          texFile=NULL,
-                         ...,
                          name=NULL,
                          gp=gpar(),
                          vp=NULL) {
@@ -80,7 +79,6 @@ lualatexGrob <- function(tex,
             hjust=hjust, vjust=vjust,
             dpi=dpi,
             engine=engine, package=pkgs, fontLib=lib,
-            ...,
             name=name, gp=gp, vp=vp)
 }
 

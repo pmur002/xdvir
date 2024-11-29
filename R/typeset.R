@@ -54,9 +54,9 @@ latex <- function(file, dir, engine, packages, dviFile, sig=TRUE) {
 
 ## 'x' is a "LaTeXdocument" from author()
 typeset.LaTeXdocument <- function(tex,
-                                engine=NULL,
-                                texFile=NULL,
-                                ...) {
+                                  engine=NULL,
+                                  texFile=NULL,
+                                  ...) {
     engine <- resolveEngine(tex, engine)
     packages <- authorPackages(tex)
     if (is.null(texFile)) {
@@ -72,13 +72,15 @@ typeset.LaTeXdocument <- function(tex,
     invisible(dviFile)    
 }
 
-## 'x' is the name of a file containing TeX code
+## 'x' is LaTeX code
 typeset.character <- function(tex,
                               engine=NULL,
                               texFile=NULL,
                               ## Did R generate the TeX file? (assume no)
                               sig=FALSE, 
                               ...) {
+    if (length(tex) < 1)
+        stop("No LaTeX fragment to typeset")
     engine <- resolveEngine(tex, engine)
     packages <- authorPackages(tex)
     if (is.null(texFile)) {
