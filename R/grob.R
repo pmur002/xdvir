@@ -3,7 +3,9 @@ objToGrob <- function(obj, ...) {
     UseMethod("objToGrob")
 }
 
-objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, dpi, ..., state) {
+objToGrob.XDVIRglyphObj <- function(obj, hjust, vjust,
+                                    width, height, hAnchor, vAnchor,
+                                    dpi, ..., state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
     if (is.na(dpi)) {
         gx <- TeX2pt(obj$x, state)
@@ -12,43 +14,6 @@ objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, dpi, ..., state) {
         gx <- TeX2pt(px2TeX(obj$xx, state), state)
         gy <- -TeX2pt(px2TeX(obj$yy, state), state)
     }
-    textleft <- TeX2pt(TeXget("textleft", state), state)
-    textright <- TeX2pt(TeXget("textright", state), state)
-    left <- TeX2pt(TeXget("left", state), state)
-    right <- TeX2pt(TeXget("right", state), state)
-    bottom <- -TeX2pt(TeXget("bottom", state), state)
-    top <- -TeX2pt(TeXget("top", state), state)
-    if (!is.finite(textleft))
-        textleft <- left
-    if (!is.finite(textright))
-        textright <- right
-    vAnchorValues <- c(bottom, top, (bottom + top)/2)
-    vAnchorLabels <- c("bottom", "top", "centre")
-    if (is.finite(TeXget("baseline", state))) {
-        vAnchorValues <- c(vAnchorValues,
-                           -TeX2pt(TeXget("baseline", state), state))
-        vAnchorLabels <- c(vAnchorLabels, "baseline")
-    }
-    anchors <- TeXget("vAnchors", state)
-    if (!is.null(anchors)) {
-        vAnchorValues <- c(vAnchorValues, -TeX2pt(anchors$value, state))
-        vAnchorLabels <- c(vAnchorLabels, anchors$label)
-    }
-    vAnchor <- glyphAnchor(vAnchorValues, vAnchorLabels)
-    ## NOTE that 'left' and 'right' can exceed 'textleft' and 'textright'
-    ## e.g., if there is non-character output beyond the character output
-    minX <- min(textleft, left)
-    maxX <- max(textright, right)
-    hAnchorValues <- c(minX, maxX, (minX + maxX)/2,
-                       left, right, (left + right)/2)
-    hAnchorLabels <- c("left", "right", "centre",
-                       "bbleft", "bbright", "bbcentre")
-    anchors <- TeXget("hAnchors", state)
-    if (!is.null(anchors)) {
-        hAnchorValues <- c(hAnchorValues, anchors$value)
-        hAnchorLabels <- c(hAnchorLabels, anchors$label)
-    }
-    hAnchor <- glyphAnchor(hAnchorValues, hAnchorLabels)
     fontMap <- unique(obj$fontindex)
     fontList <- lapply(TeXget("fonts", state)[fontMap],
                        function(x) {
@@ -58,25 +23,25 @@ objToGrob.XDVIRglyphObj <- function(obj, x, y, hjust, vjust, dpi, ..., state) {
                       match(obj$fontindex, fontMap), ## font
                       TeX2pt(obj$size, state),
                       do.call(glyphFontList, fontList),
-                      glyphWidth(maxX - minX),
+                      width,
                       ## Down is bigger in DVI
-                      glyphHeight(top - bottom),
+                      height,
                       hAnchor=hAnchor,
                       vAnchor=vAnchor,
                       obj$colour)
-    glyphGrob(info, x, y, hjust=hjust, vjust=vjust)
+    glyphGrob(info, .5, .5, hjust=hjust, vjust=vjust)
 }
 
-objToGrob.XDVIRruleObj <- function(obj, xoffset, yoffset, dpi, ..., state) {
+objToGrob.XDVIRruleObj <- function(obj, dx, dy, dpi, ..., state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
     if (is.na(dpi)) {
-        x <- TeX2pt(obj$x, state) + xoffset
-        y <- -TeX2pt(obj$y, state) + yoffset
+        x <- TeX2pt(obj$x, state) + dx
+        y <- -TeX2pt(obj$y, state) + dy
         width <- TeX2pt(obj$w, state)
         height <- TeX2pt(obj$h, state)
     } else {
-        x <- TeX2pt(px2TeX(obj$xx, state), state) + xoffset
-        y <- -TeX2pt(px2TeX(obj$yy, state), state) + yoffset
+        x <- TeX2pt(px2TeX(obj$xx, state), state) + dx
+        y <- -TeX2pt(px2TeX(obj$yy, state), state) + dy
         width <- TeX2pt(px2TeX(obj$ww, state), state)
         height <- TeX2pt(px2TeX(obj$hh, state), state)
     }

@@ -2,6 +2,7 @@
 latexGrob <- function(tex,
                       x=0.5, y=0.5,
                       margin=0,
+                      rot=0,
                       default.units="npc",
                       hjust="centre", vjust="centre",
                       dpi=NA,
@@ -28,7 +29,7 @@ latexGrob <- function(tex,
     dviFile <- typeset(texDoc, engine=engine, texFile=texFile)
     dvi <- readDVI(dviFile)
     dviGrob(dvi,
-            x=x, y=y, margin=margin,
+            x=x, y=y, margin=margin, rot=rot,
             default.units=default.units,
             hjust=hjust, vjust=vjust,
             dpi=dpi,

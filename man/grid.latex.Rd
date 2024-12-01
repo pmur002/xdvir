@@ -14,7 +14,7 @@
 \usage{
 latexGrob(tex,
           x=0.5, y=0.5,
-          margin=0,
+          margin=0, rot=0,
           default.units="npc",
           hjust="centre", vjust="centre",
           dpi=NA,
@@ -29,7 +29,7 @@ grid.latex(\dots)
 
 xelatexGrob(tex,
             x=0.5, y=0.5,
-            margin=0,
+            margin=0, rot=0,
             default.units="npc",
             hjust="centre", vjust="centre",
             dpi=NA,
@@ -43,7 +43,7 @@ grid.xelatex(\dots)
 
 lualatexGrob(tex,
              x=0.5, y=0.5, 
-             margin=0,
+             margin=0, rot=0,
              default.units="npc",
              hjust="centre", vjust="centre",
              dpi=NA,
@@ -62,6 +62,7 @@ grid.lualatex(\dots)
     output.}
   \item{margin}{Numeric values or units specifying margins (in the order
     bottom, left, top, right).  Recycled if necessary.}
+  \item{rot}{Rotation angle (in degrees).}
   \item{default.units}{Units to use if \code{x} or \code{y} are
     numeric.}
   \item{hjust, vjust}{Justification of the output relative to the

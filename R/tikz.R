@@ -133,25 +133,25 @@ setTransformedGlyphs <- function(op, state) {
 }
 
 ## Build grobs from objects
-buildTikZobj <- function(obj, xoffset, yoffset, grobFn, gp) {
-    x <- convertX(obj$x, "bigpts", valueOnly=TRUE) + xoffset
-    y <- convertY(obj$y, "bigpts", valueOnly=TRUE) + yoffset
+buildTikZobj <- function(obj, dx, dy, grobFn, gp) {
+    x <- convertX(obj$x, "bigpts", valueOnly=TRUE) + dx
+    y <- convertY(obj$y, "bigpts", valueOnly=TRUE) + dy
     grobFn(x, y, default.units="bigpts", gp=gp)
 }
 
-objToGrob.XDVIRtikzPathObj <- function(obj, xoffset, yoffset, ...) {
-    buildTikZobj(obj, xoffset, yoffset, pathGrob, gpar(fill=NA))
+objToGrob.XDVIRtikzPathObj <- function(obj, dx, dy, ...) {
+    buildTikZobj(obj, dx, dy, pathGrob, gpar(fill=NA))
 }
 
-objToGrob.XDVIRtikzPolylineObj <- function(obj, xoffset, yoffset, ...) {
-    buildTikZobj(obj, xoffset, yoffset, polylineGrob, gpar())
+objToGrob.XDVIRtikzPolylineObj <- function(obj, dx, dy, ...) {
+    buildTikZobj(obj, dx, dy, polylineGrob, gpar())
 }
 
-objToGrob.XDVIRtikzFillObj <- function(obj, xoffset, yoffset, ...) {
-    buildTikZobj(obj, xoffset, yoffset, pathGrob, gpar(col=NA))
+objToGrob.XDVIRtikzFillObj <- function(obj, dx, dy, ...) {
+    buildTikZobj(obj, dx, dy, pathGrob, gpar(col=NA))
 }
 
-buildTikZstretchObj <- function(obj, xoffset, yoffset, grobFn, gp) {
+buildTikZstretchObj <- function(obj, dx, dy, grobFn, gp) {
     scaleX <- obj$transform$sc[1]
     scaleY <- obj$transform$sc[2]
     skewX <- obj$transform$sk[1]
@@ -162,8 +162,8 @@ buildTikZstretchObj <- function(obj, xoffset, yoffset, grobFn, gp) {
     defgrob <- defineGrob(grobFn(obj$x, obj$y, default.units="bigpts", gp=gp),
                           vp=defvp,
                           name="xdvirPolylineDef")
-    usevp <- viewport(unit(obj$lx + xoffset, "bigpts"),
-                      unit(obj$by + yoffset, "bigpts"),
+    usevp <- viewport(unit(obj$lx + dx, "bigpts"),
+                      unit(obj$by + dy, "bigpts"),
                       just=c("left", "bottom"),
                       width=scaleX,
                       height=scaleY)
@@ -178,19 +178,19 @@ buildTikZstretchObj <- function(obj, xoffset, yoffset, grobFn, gp) {
     gTree(children=gList(defgrob, usegrob))
 }
 
-objToGrob.XDVIRtikzStretchPathObj <- function(obj, xoffset, yoffset, ...) {
-    buildTikZstretchObj(obj, xoffset, yoffset, pathGrob, gpar(fill=NA))
+objToGrob.XDVIRtikzStretchPathObj <- function(obj, dx, dy, ...) {
+    buildTikZstretchObj(obj, dx, dy, pathGrob, gpar(fill=NA))
 }
 
-objToGrob.XDVIRtikzStretchPolylineObj <- function(obj, xoffset, yoffset, ...) {
-    buildTikZstretchObj(obj, xoffset, yoffset, polylineGrob, gpar())
+objToGrob.XDVIRtikzStretchPolylineObj <- function(obj, dx, dy, ...) {
+    buildTikZstretchObj(obj, dx, dy, polylineGrob, gpar())
 }
 
-objToGrob.XDVIRtikzStretchFillObj <- function(obj, xoffset, yoffset, ...) {
-    buildTikZstretchObj(obj, xoffset, yoffset, pathGrob, gpar(col=NA))
+objToGrob.XDVIRtikzStretchFillObj <- function(obj, dx, dy, ...) {
+    buildTikZstretchObj(obj, dx, dy, pathGrob, gpar(col=NA))
 }
 
-objToGrob.XDVIRtikzParentObj <- function(obj, xoffset, yoffset, ...) {
+objToGrob.XDVIRtikzParentObj <- function(obj, dx, dy, ...) {
     children <- obj$children
     parent <- NULL
     if (!is.null(children)) {
@@ -198,20 +198,20 @@ objToGrob.XDVIRtikzParentObj <- function(obj, xoffset, yoffset, ...) {
         parent <- setChildren(parent,
                               do.call(gList,
                                       lapply(children, objToGrob,
-                                             xoffset, yoffset)))
+                                             dx, dy)))
     }
     parent
 }
 
-objToGrob.XDVIRtikzObj <- function(obj, xoffset, yoffset, ..., state) {
+objToGrob.XDVIRtikzObj <- function(obj, dx, dy, ..., state) {
     gTree(children=do.call(gList,
-                           lapply(obj$children, objToGrob, xoffset, yoffset)))
+                           lapply(obj$children, objToGrob, dx, dy)))
 }
 
-buildRotatedGlyph <- function(obj, xoffset, yoffset, state) {
+buildRotatedGlyph <- function(obj, dx, dy, state) {
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    x <- unit(TeX2pt(obj$x, state) + xoffset, "bigpts")
-    y <- unit(-TeX2pt(obj$y, state) + yoffset, "bigpts")
+    x <- unit(TeX2pt(obj$x, state) + dx, "bigpts")
+    y <- unit(-TeX2pt(obj$y, state) + dy, "bigpts")
     vp <- viewport(x, y, 
                    just=c("left", "bottom"), angle=obj$rotation/pi*180)
     font <- TeXget("fonts", state)[[obj$fontindex]]
@@ -226,14 +226,14 @@ buildRotatedGlyph <- function(obj, xoffset, yoffset, state) {
     glyphGrob(info, 0, 0, hjust="left", vjust="bottom", vp=vp)
 }
 
-objToGrob.XDVIRrotatedGlyphObj <- function(obj, xoffset, yoffset, ..., state) {
+objToGrob.XDVIRrotatedGlyphObj <- function(obj, dx, dy, ..., state) {
     children <- lapply(1:nrow(obj),
                        function(i)
-                           buildRotatedGlyph(obj[i,], xoffset, yoffset, state))
+                           buildRotatedGlyph(obj[i,], dx, dy, state))
     gTree(children=do.call(gList, children))
 }
 
-buildTransformedGlyph <- function(obj, xoffset, yoffset, state) {
+buildTransformedGlyph <- function(obj, dx, dy, state) {
     scaleX <- obj$scaleX
     scaleY <- obj$scaleY
     skewX <- obj$skewX
@@ -241,8 +241,8 @@ buildTransformedGlyph <- function(obj, xoffset, yoffset, state) {
     angle <- obj$rotation/pi*180
     
     ## NEGATE vertical values (because +ve vertical is DOWN in DVI)
-    x <- unit(TeX2pt(obj$x, state) + xoffset, "bigpts")
-    y <- unit(-TeX2pt(obj$y, state) + yoffset, "bigpts")
+    x <- unit(TeX2pt(obj$x, state) + dx, "bigpts")
+    y <- unit(-TeX2pt(obj$y, state) + dy, "bigpts")
     
     font <- TeXget("fonts", state)[[obj$fontindex]]
     glyphFont <- glyphFont(font$file, font$index, "", 0, "")
@@ -274,11 +274,11 @@ buildTransformedGlyph <- function(obj, xoffset, yoffset, state) {
     gTree(children=gList(defgrob, usegrob))
 }
 
-objToGrob.XDVIRtransformedGlyphObj <- function(obj, xoffset, yoffset, ...,
+objToGrob.XDVIRtransformedGlyphObj <- function(obj, dx, dy, ...,
                                                state) {
     children <- lapply(1:nrow(obj),
                        function(i)
-                           buildTransformedGlyph(obj[i,], xoffset, yoffset,
+                           buildTransformedGlyph(obj[i,], dx, dy,
                                                  state))
     gTree(children=do.call(gList, children))
 }

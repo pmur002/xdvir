@@ -58,7 +58,7 @@ isLuaTeX <- function(dvi) {
 
 lualatexGrob <- function(tex,
                          x=0.5, y=0.5,
-                         margin=0,
+                         margin=0, rot=0,
                          default.units="npc",
                          hjust="centre", vjust="centre",
                          dpi=NA,
