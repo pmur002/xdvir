@@ -75,8 +75,30 @@ buildObjList <- function(dvi, state) {
     TeXget("objList", state)
 }
 
+addMargin <- function(margin, state) {
+    ## margin: bottom, left, top, right
+    TeXset("bottom",
+           TeXget("bottom", state) +
+           pt2TeX(convertY(margin[1], "bigpts", valueOnly=TRUE), state),
+           state)
+    TeXset("left",
+           TeXget("left", state) -
+           pt2TeX(convertX(margin[2], "bigpts", valueOnly=TRUE), state),
+           state)
+    TeXset("top",
+           TeXget("top", state) -
+           pt2TeX(convertY(margin[3], "bigpts", valueOnly=TRUE), state),
+           state)
+    TeXset("right",
+           TeXget("right", state) +
+           pt2TeX(convertX(margin[4], "bigpts", valueOnly=TRUE), state),
+           state)
+    state
+}
+
 makeContent.DVIgrob <- function(x, ...) {
     if (length(x$objList)) {
+        x$state <- addMargin(x$margin, x$state)
         ## Calculate offset for non-text drawing
         offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
         ## Generate grobs from objs
@@ -151,6 +173,7 @@ dviGrob <- function(dvi, ...) {
 
 dviGrob.DVI <- function(dvi,
                         x=0.5, y=0.5,
+                        margin=0,
                         default.units="npc",
                         hjust="centre", vjust="centre",
                         dpi=NA, 
@@ -165,6 +188,9 @@ dviGrob.DVI <- function(dvi,
         x <- unit(x, default.units)
     if (!is.unit(y))
         y <- unit(y, default.units)
+    if (!is.unit(margin))
+        margin <- unit(margin, default.units)
+    margin <- rep(margin, length.out=4)
     eng <- resolveEngine(dvi, engine)
     lib <- resolveFontLib(fontLib)
     pkgs <- resolvePackages(packages)
@@ -172,8 +198,9 @@ dviGrob.DVI <- function(dvi,
     state <- buildState(pkgs, fontLib, eng, dpi)
     objList <- buildObjList(dvi, state)
     gTree(dvi=dvi, state=state, objList=objList,
-          x=x, y=y, hjust=hjust, vjust=vjust,
-          dpi=dpi,
+          x=x, y=y, margin=margin,
+          hjust=hjust, vjust=vjust,
+          dpi=dpi, 
           gp=gp, name=name, vp=vp,
           cl="DVIgrob")
 }

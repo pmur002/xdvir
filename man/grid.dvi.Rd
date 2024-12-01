@@ -13,6 +13,7 @@
 dviGrob(dvi, \dots) 
 \method{dviGrob}{character}(dvi, \dots)
 \method{dviGrob}{DVI}(dvi, x = 0.5, y = 0.5,
+        margin=0,
         default.units = "npc",
         hjust="centre", vjust="centre",
         dpi=NA,
@@ -30,6 +31,8 @@ grid.dvi(\dots)
     or the name of a DVI file.}
   \item{x, y}{Numeric values or units specifying where to draw the
     output.}
+  \item{margin}{Numeric values or units specifying margins (in the order
+    bottom, left, top, right).  Recycled if necessary.}
   \item{default.units}{Units to use if \code{x} or \code{y} are
     numeric.}
   \item{hjust, vjust}{Justification of the output relative to the

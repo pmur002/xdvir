@@ -13,7 +13,9 @@
 }
 \usage{
 latexGrob(tex,
-          x=0.5, y=0.5, default.units="npc",
+          x=0.5, y=0.5,
+          margin=0,
+          default.units="npc",
           hjust="centre", vjust="centre",
           dpi=NA,
           packages=NULL,
@@ -26,7 +28,9 @@ latexGrob(tex,
 grid.latex(\dots)
 
 xelatexGrob(tex,
-            x=0.5, y=0.5, default.units="npc",
+            x=0.5, y=0.5,
+            margin=0,
+            default.units="npc",
             hjust="centre", vjust="centre",
             dpi=NA,
             packages=NULL,
@@ -38,7 +42,9 @@ xelatexGrob(tex,
 grid.xelatex(\dots)
 
 lualatexGrob(tex,
-             x=0.5, y=0.5, default.units="npc",
+             x=0.5, y=0.5, 
+             margin=0,
+             default.units="npc",
              hjust="centre", vjust="centre",
              dpi=NA,
              packages=NULL,
@@ -54,6 +60,8 @@ grid.lualatex(\dots)
   \item{tex}{LaTeX code as a character vector.}
   \item{x, y}{Numeric values or units specifying where to draw the
     output.}
+  \item{margin}{Numeric values or units specifying margins (in the order
+    bottom, left, top, right).  Recycled if necessary.}
   \item{default.units}{Units to use if \code{x} or \code{y} are
     numeric.}
   \item{hjust, vjust}{Justification of the output relative to the

@@ -1,6 +1,8 @@
 
 latexGrob <- function(tex,
-                      x=0.5, y=0.5, default.units="npc",
+                      x=0.5, y=0.5,
+                      margin=0,
+                      default.units="npc",
                       hjust="centre", vjust="centre",
                       dpi=NA,
                       packages=NULL,
@@ -16,6 +18,9 @@ latexGrob <- function(tex,
         x <- unit(x, default.units)
     if (!is.unit(y))
         y <- unit(y, default.units)
+    if (!is.unit(margin))
+        margin <- unit(margin, default.units)
+    margin <- rep(margin, length.out=4)
     engine <- getEngine(engine)
     lib <- resolveFontLib(fontLib)
     pkgs <- resolvePackages(packages)
@@ -23,7 +28,8 @@ latexGrob <- function(tex,
     dviFile <- typeset(texDoc, engine=engine, texFile=texFile)
     dvi <- readDVI(dviFile)
     dviGrob(dvi,
-            x=x, y=y, default.units=default.units,
+            x=x, y=y, margin=margin,
+            default.units=default.units,
             hjust=hjust, vjust=vjust,
             dpi=dpi,
             engine=engine, package=pkgs, fontLib=lib,

@@ -27,7 +27,9 @@ isXeTeX <- function(dvi) {
 
 
 xelatexGrob <- function(tex,
-                        x=0.5, y=0.5, default.units="npc",
+                        x=0.5, y=0.5,
+                        margin=0,
+                        default.units="npc",
                         hjust="centre", vjust="centre",
                         dpi=NA,
                         packages=NULL,
