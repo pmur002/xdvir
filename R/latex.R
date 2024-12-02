@@ -22,12 +22,18 @@ latexGrob <- function(tex,
     if (!is.unit(margin))
         margin <- unit(margin, default.units)
     margin <- rep(margin, length.out=4)
+    ## Resolve args
     engine <- getEngine(engine)
     lib <- resolveFontLib(fontLib)
     pkgs <- resolvePackages(packages)
-    texDoc <- author(tex, engine=engine, packages=pkgs)
-    dviFile <- typeset(texDoc, engine=engine, texFile=texFile)
-    dvi <- readDVI(dviFile)
+    ## Only author/typeset unique values
+    uniq <- unique(tex)
+    index <- match(tex, uniq)
+    texDocs <- lapply(uniq, author, engine=engine, packages=pkgs)
+    dviFiles <- lapply(texDocs, typeset, engine=engine, texFile=texFile)
+    dvi <- lapply(dviFiles, readDVI)
+    ## Re-expand dvis
+    dvi <- dvi[index]
     dviGrob(dvi,
             x=x, y=y, margin=margin, rot=rot,
             default.units=default.units,

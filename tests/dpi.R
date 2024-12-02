@@ -149,7 +149,7 @@ xdvir <- function(dpi, dviFile, rules=TRUE, fontLib=NULL, ...) {
     pdf(tempfile(fileext=".pdf"))
     grob <- suppressWarnings(dviGrob(dviFile, dpi=dpi, fontLib=fontLib))
     dev.off()
-    objList <- grob$objList
+    objList <- grob$objList[[1]]
     glyphs <- do.call(rbind,
                       lapply(objList,
                              function(x) {

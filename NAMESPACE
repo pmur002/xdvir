@@ -56,12 +56,33 @@ S3method("typeset", "character")
 S3method("dviGrob", "DVI")
 S3method("dviGrob", "DVIfile")
 S3method("dviGrob", "character")
+S3method("dviGrob", "list")
+
+S3method("resolveEngine", "DVI")
+S3method("resolveEngine", "LaTeXdocument")
+S3method("resolveEngine", "character")
+S3method("resolveEngine", "DVIfile")
+
+S3method("typesetPackages", "DVI")
+S3method("typesetPackages", "DVIfile")
+
+S3method("resolveDVI", "DVI")
+S3method("resolveDVI", "DVIfile")
+S3method("resolveDVI", "character")
+
+S3method("makeContent", "DVIgTree")
+S3method("xDetails", "DVIgTree")
+S3method("yDetails", "DVIgTree")
+S3method("widthDetails", "DVIgTree")
+S3method("heightDetails", "DVIgTree")
 
 S3method("makeContent", "DVIgrob")
 S3method("xDetails", "DVIgrob")
 S3method("yDetails", "DVIgrob")
 S3method("widthDetails", "DVIgrob")
 S3method("heightDetails", "DVIgrob")
+
+S3method("grobCoords", "DVIgrob")
 
 S3method("objToGrob", "XDVIRglyphObj")
 S3method("objToGrob", "XDVIRruleObj")

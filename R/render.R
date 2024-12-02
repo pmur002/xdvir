@@ -145,16 +145,24 @@ rotVP <- function(x, y, rot, offset) {
              angle=rot)
 }
 
+buildDVIgrob <- function(objList, x, y, rot, hjust, vjust, name, gp, state,
+                         margin, dpi) {
+    gTree(objList=objList, x=x, y=y, margin=margin, rot=rot, margin=margin,
+          hjust=hjust, vjust=vjust, dpi=dpi, state=state,
+          name=name, gp=gp, 
+          cl="DVIgrob")
+}
+
 makeContent.DVIgrob <- function(x, ...) {
     if (length(x$objList)) {
         x$state <- addMargin(x$margin, x$state)
-        ## Calculate offset based on justification of glyphs
+        ## Calculate offset for non-text drawing
         offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
         ## Viewport for rotation
         vp <- rotVP(x$x, x$y, x$rot, offset)
         ## Generate grobs from objs
         grobs <- lapply(x$objList, objToGrob,
-                        hjust=x$hjust, vjust=x$vjust,
+                        x=x$x, y=x$y, hjust=x$hjust, vjust=x$vjust,
                         width=offset$width, height=offset$height,
                         hAnchor=offset$hAnchor, vAnchor=offset$vAnchor,
                         dx=offset$x, dy=offset$y,
@@ -259,6 +267,115 @@ heightDetails.DVIgrob <- function(x) {
     }
 }
 
+grobCoords.DVIgrob <- function(x, closed=TRUE, ...) {
+    if (closed && length(x$objList)) {
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
+        vp <- rotVP(x$x, x$y, x$rot, offset)
+        left <- TeX2pt(TeXget("left", x$state), x$state)
+        right <- TeX2pt(TeXget("right", x$state), x$state)
+        bottom <- -TeX2pt(TeXget("bottom", x$state), x$state)
+        top <- -TeX2pt(TeXget("top", x$state), x$state)
+        x <- c(left + offset$x, left + offset$x,
+               right + offset$x, right + offset$x)
+        y <- c(bottom + offset$y, top + offset$y,
+               top + offset$y, bottom + offset$y)
+        grobCoords(polygonGrob(x, y,
+                               default.units="bigpts",
+                               vp=vp))        
+    } else {
+        emptyGrobCoords(x$name)
+    }
+}
+
+resolveDVI <- function(dvi, ...) {
+    UseMethod("resolveDVI")
+}
+
+resolveDVI.DVI <- function(dvi, ...) {
+    dvi
+}
+
+resolveDVI.character <- function(dvi, ...) {
+    readDVI(dvi)
+}
+
+resolveDVI.DVIfile <- function(dvi, ...) {
+    readDVI(dvi)
+}
+
+repGPar <- function(gp, n) {
+    if (length(gp)) {
+        ngp <- max(sapply(gp, length))
+        lapply(1:n, function(i) gp[(i - 1) %% ngp + 1])
+    } else {
+        rep(list(gpar()), length.out=n)
+    }
+}
+
+makeContent.DVIgTree <- function(x, ...) {
+    children <- mapply(buildDVIgrob,
+                       x$objList, x$x, x$y, x$rot, x$hjust, x$vjust,
+                       name=paste0(x$name, ".", 1:x$n), x$gpars, x$state,
+                       MoreArgs=list(margin=x$margin, dpi=x$dpi),
+                       SIMPLIFY=FALSE)
+    x <- setChildren(x, do.call(gList, children))
+    x
+}
+
+xDetails.DVIgTree<- function(x, theta) {
+    children <- mapply(buildDVIgrob,
+                       x$objList, x$x, x$y, x$rot, x$hjust, x$vjust,
+                       name=paste0(x$name, ".", 1:x$n), x$gpars, x$state,
+                       MoreArgs=list(margin=x$margin, dpi=x$dpi),
+                       SIMPLIFY=FALSE)
+    coords <- lapply(children, grobCoords)
+    x <- unlist(lapply(coords, function(x) x[[1]]$x))
+    y <- unlist(lapply(coords, function(x) x[[1]]$y))
+    xDetails(rectGrob(min(x), min(y),
+                      diff(range(x)), diff(range(y)),
+                      default.units="in",
+                      just=c("left", "bottom")),
+             theta)
+}
+
+yDetails.DVIgTree <- function(x, theta) {
+    children <- mapply(buildDVIgrob,
+                       x$objList, x$x, x$y, x$rot, x$hjust, x$vjust,
+                       name=paste0(x$name, ".", 1:x$n), x$gpars, x$state,
+                       MoreArgs=list(margin=x$margin, dpi=x$dpi),
+                       SIMPLIFY=FALSE)
+    coords <- lapply(children, grobCoords)
+    x <- unlist(lapply(coords, function(x) x[[1]]$x))
+    y <- unlist(lapply(coords, function(x) x[[1]]$y))
+    yDetails(rectGrob(min(x), min(y),
+                      diff(range(x)), diff(range(y)),
+                      default.units="in",
+                      just=c("left", "bottom")),
+             theta)
+}
+
+widthDetails.DVIgTree <- function(x) {
+    children <- mapply(buildDVIgrob,
+                       x$objList, x$x, x$y, x$rot, x$hjust, x$vjust,
+                       name=paste0(x$name, ".", 1:x$n), x$gpars, x$state,
+                       MoreArgs=list(margin=x$margin, dpi=x$dpi),
+                       SIMPLIFY=FALSE)
+    coords <- lapply(children, grobCoords)
+    x <- unlist(lapply(coords, function(x) x[[1]]$x))
+    unit(diff(range(x)), "in")
+}
+
+heightDetails.DVIgTree <- function(x) {
+    children <- mapply(buildDVIgrob,
+                       x$objList, x$x, x$y, x$rot, x$hjust, x$vjust,
+                       name=paste0(x$name, ".", 1:x$n), x$gpars, x$state,
+                       MoreArgs=list(margin=x$margin, dpi=x$dpi),
+                       SIMPLIFY=FALSE)
+    coords <- lapply(children, grobCoords)
+    y <- unlist(lapply(coords, function(x) x[[1]]$y))
+    unit(diff(range(y)), "in")
+}
+
 ################################################################################
 ## User API
 
@@ -266,20 +383,46 @@ dviGrob <- function(dvi, ...) {
     UseMethod("dviGrob")
 }
 
-dviGrob.DVI <- function(dvi,
-                        x=0.5, y=0.5,
-                        margin=0,
-                        rot=0,
-                        default.units="npc",
-                        hjust="centre", vjust="centre",
-                        dpi=NA, 
+dviGrob.DVI <- function(dvi, ...,
                         packages=NULL,
-                        engine=getOption("xdvir.engine"),
-                        fontLib=getOption("xdvir.fontLib"),
-                        ...,
-                        name=NULL,
-                        gp=gpar(),
-                        vp=NULL) {
+                        engine=getOption("xdvir.engine")) {
+    eng <- resolveEngine(dvi, engine)
+    pkgs <- resolvePackages(packages)
+    pkgs <- checkPackages(pkgs, typesetPackages(dvi))
+    dviGrob(list(dvi), ..., engine=eng, packages=pkgs)
+}
+
+## Resolve engine and packages from typeset() result
+dviGrob.DVIfile <- function(dvi, ...,
+                            packages=NULL,
+                            engine=NULL) {
+    eng <- resolveEngine(dvi, engine)
+    pkgs <- checkPackages(packages, typesetPackages(dvi))
+    dviGrob(list(readDVI(dvi)), ..., engine=eng, packages=pkgs)
+}
+
+dviGrob.character <- function(dvi, ...) {
+    if (length(dvi) < 1)
+        stop("No DVI files to render")
+    dvi <- lapply(dvi, readDVI)
+    dviGrob(dvi, ...)
+}
+
+## Vectorised
+dviGrob.list <- function(dvi,
+                         x=0.5, y=0.5,
+                         margin=0,
+                         rot=0,
+                         default.units="npc",
+                         hjust="centre", vjust="centre",
+                         dpi=NA, 
+                         packages=NULL,
+                         engine=getOption("xdvir.engine"),
+                         fontLib=getOption("xdvir.fontLib"),
+                         ...,
+                         name=NULL,
+                         gp=gpar(),
+                         vp=NULL) {    
     if (!is.unit(x))
         x <- unit(x, default.units)
     if (!is.unit(y))
@@ -287,41 +430,40 @@ dviGrob.DVI <- function(dvi,
     if (!is.unit(margin))
         margin <- unit(margin, default.units)
     margin <- rep(margin, length.out=4)
-    eng <- resolveEngine(dvi, engine)
+    ## Vectorise arguments
+    n <- max(length(x), length(y), length(dvi))
+    dvi <- rep(dvi, length.out=n)
+    x <- rep(x, length.out=n)
+    y <- rep(y, length.out=n)
+    rot <- rep(rot, length.out=n)
+    hjust <- rep(hjust, length.out=n)
+    vjust <- rep(vjust, length.out=n)
+    gpars <- repGPar(gp, n)
+    ## Resolve args
+    dvis <- lapply(dvi, resolveDVI)
+    engines <- lapply(dvi, resolveEngine, engine)
     lib <- resolveFontLib(fontLib)
     pkgs <- resolvePackages(packages)
-    pkgs <- checkPackages(pkgs, typesetPackages(dvi))
-    state <- buildState(pkgs, fontLib, eng, dpi)
-    objList <- buildObjList(dvi, state)
-    gTree(dvi=dvi, state=state, objList=objList,
+    packages <- mapply(function(dviPkgs, userPkgs) {
+                           checkPackages(userPkgs, dviPkgs)
+                       },
+                       lapply(dvi, typesetPackages),
+                       MoreArgs=list(userPkgs=pkgs),
+                       SIMPLIFY=FALSE)
+    states <- mapply(function(pkgs, eng, fontLib, dpi) {
+                         buildState(pkgs, fontLib, eng, dpi)
+                     },
+                     packages, engines,
+                     MoreArgs=list(fontLib=fontLib, dpi=dpi),
+                     SIMPLIFY=FALSE)
+    objLists <- mapply(buildObjList, dvis, states,
+                       SIMPLIFY=FALSE)
+    gTree(n=n, dvi=dvis, state=states, objList=objLists,
           x=x, y=y, margin=margin, rot=rot,
           hjust=hjust, vjust=vjust,
           dpi=dpi, 
-          gp=gp, name=name, vp=vp,
-          cl="DVIgrob")
-}
-
-## Resolve engine and packages from typeset() result
-dviGrob.DVIfile <- function(dvi, ..., engine=NULL, packages=NULL) {
-    if (length(dvi) < 1)
-        stop("No DVI files to render")
-    if (length(dvi) > 1) {
-        dvi <- dvi[1]
-        warning("Only rendering first DVI file")
-    }
-    eng <- resolveEngine(dvi, engine)
-    pkgs <- checkPackages(packages, typesetPackages(dvi))
-    dviGrob(readDVI(dvi), ..., engine=eng, packages=pkgs)
-}
-
-dviGrob.character <- function(dvi, ...) {
-    if (length(dvi) < 1)
-        stop("No DVI files to render")
-    if (length(dvi) > 1) {
-        dvi <- dvi[1]
-        warning("Only rendering first DVI file")
-    }
-    dviGrob(readDVI(dvi), ...)
+          gpars=gpars, name=name, vp=vp,
+          cl="DVIgTree")
 }
 
 grid.dvi <- function(...) {

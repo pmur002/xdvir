@@ -2,7 +2,9 @@
 \alias{grid.dvi}
 \alias{dviGrob}
 \alias{dviGrob.DVI}
+\alias{dviGrob.DVIfile}
 \alias{dviGrob.character}
+\alias{dviGrob.list}
 \title{
   Render DVI File in R
 }
@@ -12,7 +14,13 @@
 \usage{
 dviGrob(dvi, \dots) 
 \method{dviGrob}{character}(dvi, \dots)
-\method{dviGrob}{DVI}(dvi, x = 0.5, y = 0.5,
+\method{dviGrob}{DVI}(dvi, ...,
+        packages=NULL,
+        engine=getOption("xdvir.engine"))
+\method{dviGrob}{DVIfile}(dvi, ...,
+        packages=NULL,
+        engine=NULL)
+\method{dviGrob}{list}(dvi, x = 0.5, y = 0.5,
         margin=0, rot=0,
         default.units = "npc",
         hjust="centre", vjust="centre",
@@ -27,8 +35,10 @@ dviGrob(dvi, \dots)
 grid.dvi(\dots)
 }
 \arguments{
-  \item{dvi}{A \code{"DVI"} object, as produced by \code{\link{readDVI}},
-    or the name of a DVI file.}
+  \item{dvi}{A \code{"DVI"} object, as produced by
+    \code{\link{readDVI}}, or a \code{"DVIfile"} object, as produced by
+    \code{\link{typeset}}, or the name of a DVI file, or a list
+    containing some combination of all three.}
   \item{x, y}{Numeric values or units specifying where to draw the
     output.}
   \item{margin}{Numeric values or units specifying margins (in the order
