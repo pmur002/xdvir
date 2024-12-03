@@ -44,6 +44,9 @@ registerEngine(nullEngine)
     ## Default Font Library
     options(xdvir.fontLib=FTfontLibrary)
     options(xdvir.quiet=TRUE)
+
+    ## For ggplot2 integration
+    run_on_load()
 }
 
 .onAttach <- function(libname, pkgname) {

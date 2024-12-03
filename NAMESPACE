@@ -19,6 +19,11 @@ importFrom("tinytex",
            "is_tinytex",
            "latexmk",
            "tinytex_root")
+importFrom("rlang",
+           "on_load",
+           "on_package_load",
+           "run_on_load",
+           "%||%")
 
 export("readDVI",
 
@@ -31,7 +36,9 @@ export("readDVI",
        "grid.latex", "latexGrob", "author", "typeset",
 
        "grid.lualatex", "lualatexGrob",
-       "grid.xelatex", "xelatexGrob")
+       "grid.xelatex", "xelatexGrob",
+
+       "element_latex")
 
 
 S3method("packagePreamble", "NULL")
@@ -101,3 +108,5 @@ S3method("print", "DVI")
 S3method("print", "TeXengine")
 S3method("print", "LaTeXdocument")
 
+S3method("widthDetails", "latex_grob")
+S3method("heightDetails", "latex_grob")
