@@ -4,7 +4,7 @@
 latex_grob <- function(label, x, y, hjust, vjust,
                        angle, family, colour, size, lineheight,
                        margin, rotMargins) {
-    tex <- paste0("\\fontsize{", size, "}{", lineheight, "}\n",
+    tex <- paste0("\\fontsize{", size, "}{", size * lineheight, "}\n",
                   "\\selectfont{}\n",
                   label)
     if (rotMargins) {

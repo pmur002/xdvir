@@ -20,6 +20,7 @@ importFrom("tinytex",
            "latexmk",
            "tinytex_root")
 importFrom("rlang",
+           "check_installed",
            "on_load",
            "on_package_load",
            "run_on_load",
@@ -38,7 +39,7 @@ export("readDVI",
        "grid.lualatex", "lualatexGrob",
        "grid.xelatex", "xelatexGrob",
 
-       "element_latex")
+       "element_latex", "geom_latex")
 
 
 S3method("packagePreamble", "NULL")

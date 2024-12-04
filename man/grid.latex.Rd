@@ -68,12 +68,14 @@ grid.lualatex(\dots)
   \item{hjust, vjust}{Justification of the output relative to the
     \code{x}/\code{y} location.}
   \item{dpi}{Resolution (dots per inch) for rendering.}
+  \item{packages}{The LaTeX packages to be used.
+    May be the name of a LaTeX package (character) or a
+    \code{"LaTeXpackage"} object.}
   \item{engine}{The TeX engine that should be used to render the LaTeX.
     May be the name of a TeX engine (character)
     or a \code{"TeXengine"} object.}
   \item{fontLib}{The font libraary the should be used to query fonts
     and glyphs.}
-  \item{packages}{The LaTeX packages to be used.}
   \item{name}{Character value giving name for the grob.}
   \item{gp}{Graphical parameter settings.}
   \item{vp}{A viewport or \code{NULL}.}
