@@ -4,7 +4,6 @@
 
 TeXstate <- function() {
     state <- new.env()
-    class(state) <- "TeXstate"
     state
 }
 

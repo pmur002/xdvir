@@ -5,6 +5,7 @@ importFrom("utils",
            "packageVersion")
 importFrom("grDevices",
            "adjustcolor",
+           "col2rgb",
            "dev.cur",
            "glyphAnchor",
            "glyphFont",
@@ -92,6 +93,12 @@ S3method("xDetails", "DVIgrob")
 S3method("yDetails", "DVIgrob")
 S3method("widthDetails", "DVIgrob")
 S3method("heightDetails", "DVIgrob")
+
+S3method("makeContent", "LaTeXgrob")
+S3method("xDetails", "LaTeXgrob")
+S3method("yDetails", "LaTeXgrob")
+S3method("widthDetails", "LaTeXgrob")
+S3method("heightDetails", "LaTeXgrob")
 
 S3method("grobCoords", "DVIgrob")
 

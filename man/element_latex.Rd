@@ -3,6 +3,7 @@
 \title{ggplot2 Theme Element Supporting Latex Syntax}
 \usage{
 element_latex(family = NULL,
+              fontface = NULL,
               colour = NULL,
               size = NULL,
               hjust = NULL, vjust = NULL,
@@ -15,6 +16,7 @@ element_latex(family = NULL,
 }
 \arguments{
 \item{family}{The default font family.}
+\item{fontface}{The default font face.}
 \item{colour, color}{The default text colour.}
 \item{size}{The deafult font size.}
 \item{hjust}{Horizontal justification.  Typically in \eqn{[0, 1]}, but

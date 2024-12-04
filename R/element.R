@@ -2,25 +2,45 @@
 ## ggplot2 theme element supporting latex syntax
 
 latex_grob <- function(label, x, y, hjust, vjust,
-                       angle, family, colour, size, lineheight,
+                       angle, family, fontface, colour, size, lineheight,
                        margin, rotMargins) {
-    tex <- paste0("\\fontsize{", size, "}{", size * lineheight, "}\n",
-                  "\\selectfont{}\n",
-                  label)
     if (rotMargins) {
         ## ggplot2 margin is tlbr;  grid.latex() margin is bltr
         latexMargin <- margin[c(3, 4, 1, 2)]
     } else {
         latexMargin <- 0
     }
+    packages <- list("preview")
+    tex <- paste0("\\fontsize{", size, "}{",
+                  size * lineheight, "}\n",
+                  "\\selectfont{}\n")
     if (nchar(family)) {
-        packages <- fontspecPackage(font=family)
+        packages <- c(packages, list(fontspecPackage(font=family)))
     } else {
-        packages <- NULL
+        packages <- c(packages, list("fontspec"))
     }
+    if (!is.null(fontface)) {
+        face <- TeXfaces[match(fontface,
+                               c("plain", "bold", "italic", "bold-italic"))]
+        tex <- paste0(tex,
+                      face, "\n")
+    }
+    if (length(colour)) {
+        packages <- c(packages, list("xcolor"))
+        col <- col2rgb(colour)
+        tex <- paste0(tex,
+                      "\\definecolor{xdvir}{RGB}{",
+                      col[1,], ",", col[2,], ",", col[3,], "}\n",
+                      "\\color{xdvir}\n")
+    }
+    tex <- paste0(tex,
+                  label)
+    ## Set gp=NULL so that, unless width is specified, and a relative unit,
+    ## the calculation of widths and heights etc will be a LOT more efficient.
     child <- latexGrob(tex, x, y, hjust=hjust, vjust=vjust, rot=angle,
                        margin=latexMargin,
-                       packages=packages)
+                       packages=packages,
+                       gp=NULL)
     if (rotMargins) {
         vp <- NULL
     } else {
@@ -31,7 +51,6 @@ latex_grob <- function(label, x, y, hjust, vjust,
     }
     gTree(children=gList(child),
           vp=vp,
-          gp=gpar(col=colour),
           ## Record these for width/heightDetails (x/yDetails not required)
           margin=margin, rotMargins=rotMargins,
           cl="latex_grob")
@@ -56,6 +75,7 @@ heightDetails.latex_grob <- function(x) {
 ## Code below modelled on code from {marquee} and {ggtext} and {ggplot2}
 
 element_latex <- function(family = NULL,
+                          fontface = NULL,
                           colour = NULL,
                           size = NULL,
                           hjust = NULL, vjust = NULL,
@@ -68,6 +88,7 @@ element_latex <- function(family = NULL,
     if (!is.null(color))
         colour <- color
     n <- max(length(family),
+             length(fontface),
              length(colour), 
              length(hjust), length(vjust),
              length(angle))
@@ -76,6 +97,7 @@ element_latex <- function(family = NULL,
                         i = "Results may be unexpected or may change in future versions of ggplot2."))
     }
     structure(list(family = family,
+                   face = fontface,
                    colour = colour,
                    size = size,
                    hjust = hjust, vjust = vjust,
@@ -90,7 +112,9 @@ element_grob.element_latex <- function(element,
                                        label = "",
                                        x = NULL, y = NULL,
                                        family = NULL,
+                                       fontface = NULL,
                                        colour = NULL,
+                                       alpha = NULL,
                                        size = NULL,
                                        hjust = NULL, vjust = NULL,
                                        angle = NULL,
@@ -101,7 +125,9 @@ element_grob.element_latex <- function(element,
     if (is.null(label))
         return(ggplot2::zeroGrob())
     family <- family %||% element$family
-    colour = colour %||% element$colour
+    fontface <- fontface %||% element$fontface
+    alpha <- alpha %||% element$alpha %||% 1
+    colour = ggplot2::alpha(colour %||% element$colour, alpha)
     size = size %||% element$size %||% 12
     lineheight = lineheight %||% element$lineheight %||% 1
     margin <- margin %||% element$margin %||% ggplot2::margin(0, 0, 0, 0)
@@ -145,6 +171,7 @@ element_grob.element_latex <- function(element,
                hjust = hjust, vjust = vjust,
                angle = angle,
                family = family,
+               fontface = fontface,
                colour = colour,
                size = size,
                lineheight = lineheight,

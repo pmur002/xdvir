@@ -1,4 +1,76 @@
 
+buildDVI <- function(tex, packages, engine, texFile) {
+    ## Only author/typeset unique values
+    uniq <- unique(tex)
+    index <- match(tex, uniq)
+    texDocs <- lapply(uniq, author, engine=engine, packages=packages)
+    dviFiles <- lapply(texDocs, typeset, engine=engine, texFile=texFile)
+    dvi <- lapply(dviFiles, readDVI)
+    ## Re-expand dvis
+    dvi[index]
+}
+
+makeContent.LaTeXgrob <- function(x, ...) {
+    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    setChildren(x,
+                gList(dviGrob(dvi,
+                              x=x$x, y=x$y, margin=x$margin, rot=x$rot,
+                              hjust=x$hjust, vjust=x$vjust,
+                              dpi=x$dpi,
+                              engine=x$engine, packages=x$packages,
+                              fontLib=x$fontLib,
+                              name=x$name, gp=x$gp, vp=x$vp)))
+}
+
+xDetails.LaTeXgrob <- function(x, theta) {
+    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    xDetails(dviGrob(dvi,
+                     x=x$x, y=x$y, margin=x$margin, rot=x$rot,
+                     hjust=x$hjust, vjust=x$vjust,
+                     dpi=x$dpi,
+                     engine=x$engine, packages=x$packages,
+                     fontLib=x$fontLib,
+                     name=x$name, gp=x$gp, vp=x$vp),
+             theta)
+}
+
+yDetails.LaTeXgrob <- function(x, theta) {
+    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    yDetails(dviGrob(dvi,
+                     x=x$x, y=x$y, margin=x$margin, rot=x$rot,
+                     hjust=x$hjust, vjust=x$vjust,
+                     dpi=x$dpi,
+                     engine=x$engine, packages=x$packages,
+                     fontLib=x$fontLib,
+                     name=x$name, gp=x$gp, vp=x$vp),
+             theta)
+}
+
+widthDetails.LaTeXgrob <- function(x) {
+    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    widthDetails(dviGrob(dvi,
+                         x=x$x, y=x$y, margin=x$margin, rot=x$rot,
+                         hjust=x$hjust, vjust=x$vjust,
+                         dpi=x$dpi,
+                         engine=x$engine, packages=x$packages,
+                         fontLib=x$fontLib,
+                         name=x$name, gp=x$gp, vp=x$vp))
+}
+
+heightDetails.LaTeXgrob <- function(x) {
+    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    heightDetails(dviGrob(dvi,
+                          x=x$x, y=x$y, margin=x$margin, rot=x$rot,
+                          hjust=x$hjust, vjust=x$vjust,
+                          dpi=x$dpi,
+                          engine=x$engine, packages=x$packages,
+                          fontLib=x$fontLib,
+                          name=x$name, gp=x$gp, vp=x$vp))
+}
+
+################################################################################
+## User API
+
 latexGrob <- function(tex,
                       x=0.5, y=0.5,
                       margin=0,
@@ -26,21 +98,23 @@ latexGrob <- function(tex,
     engine <- getEngine(engine)
     lib <- resolveFontLib(fontLib)
     pkgs <- resolvePackages(packages)
-    ## Only author/typeset unique values
-    uniq <- unique(tex)
-    index <- match(tex, uniq)
-    texDocs <- lapply(uniq, author, engine=engine, packages=pkgs)
-    dviFiles <- lapply(texDocs, typeset, engine=engine, texFile=texFile)
-    dvi <- lapply(dviFiles, readDVI)
-    ## Re-expand dvis
-    dvi <- dvi[index]
-    dviGrob(dvi,
-            x=x, y=y, margin=margin, rot=rot,
-            default.units=default.units,
-            hjust=hjust, vjust=vjust,
-            dpi=dpi,
-            engine=engine, package=pkgs, fontLib=lib,
-            name=name, gp=gp, vp=vp)
+    if (delayTypeset(width=NA, gp=gp)) {
+        gTree(tex=tex,
+              x=x, y=y, margin=margin, rot=rot,
+              hjust=hjust, vjust=vjust,
+              dpi=dpi,
+              engine=engine, packages=pkgs, fontLib=lib,
+              name=name, gp=gp, vp=vp,
+              cl="LaTeXgrob")
+    } else {
+        dvi <- buildDVI(tex, pkgs, engine, texFile)
+        dviGrob(dvi,
+                x=x, y=y, margin=margin, rot=rot,
+                hjust=hjust, vjust=vjust,
+                dpi=dpi,
+                engine=engine, packages=pkgs, fontLib=lib,
+                name=name, gp=gp, vp=vp)
+    }
 }
 
 grid.latex <- function(...) {

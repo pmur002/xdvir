@@ -1,6 +1,9 @@
 
 ## ggplot2 geom supporting latex syntax
 
+TeXfaces <- c("\\mdseries ", "\\bfseries ", "\\itshape" ,
+              "\\bfseries \\itshape ")
+    
 geom_latex <- function(mapping=NULL, data=NULL, stat="identity",
                        position="identity", ...,
                        nudge_x=0, nudge_y=0,
@@ -44,10 +47,6 @@ draw_panel_latex <- function(data, panel_params, coord,
     data$hjust <- compute_just(data$hjust, data$x, data$y, data$angle)
     
     size <- 72 * data$size / 25.4
-    tex <- paste0("\\fontsize{", size, "}{",
-                  size * data$lineheight, "}\n",
-                  "\\selectfont{}\n",
-                  data$label)
     
     family <- data$family
     if (any(nchar(family))) {
@@ -60,15 +59,29 @@ draw_panel_latex <- function(data, panel_params, coord,
         ## they need to specify the font change within the label
         fontspec <- "fontspec"
     }
-    packages <- c(resolvePackages(packages), list(fontspec))
+    packages <- c(resolvePackages(packages), list(fontspec, "xcolor"))
 
-    col <- ggplot2::alpha(data$colour, data$alpha)
+    face <- TeXfaces[match(data$fontface,
+                           c("plain", "bold", "italic", "bold-italic"))]
+        
+    col <- col2rgb(ggplot2::alpha(data$colour, data$alpha))
     
+    tex <- paste0("\\fontsize{", size, "}{",
+                  size * data$lineheight, "}\n",
+                  "\\selectfont{}\n",
+                  face, "\n",
+                  "\\definecolor{xdvir}{RGB}{",
+                  col[1,], ",", col[2,], ",", col[3,], "}\n",
+                  "\\color{xdvir}\n",
+                  data$label)
+    
+    ## Set gp=NULL so that, unless width is specified, and a relative unit,
+    ## the calculation of widths and heights etc will be a LOT more efficient.
     latexGrob(tex, data$x, data$y,
               rot=data$angle, dpi=dpi,
               hjust=data$hjust, vjust=data$vjust,
               packages=packages, engine=engine,
-              gp=gpar(col=col))
+              gp=NULL)
 }
 
 draw_key_latex <- function(data, params, size) {
@@ -78,11 +91,18 @@ draw_key_latex <- function(data, params, size) {
     } else {
         fontspec <- "fontspec"
     }
-    packages <- c(resolvePackages(params$packages), list(fontspec))
+    packages <- c(resolvePackages(params$packages), list(fontspec, "xcolor"))
     size <- 72 * data$size / 25.4
+    face <- TeXfaces[match(data$fontface,
+                           c("plain", "bold", "italic", "bold-italic"))]
+    col <- col2rgb(ggplot2::alpha(data$colour, data$alpha))
     tex <- paste0("\\fontsize{", size, "}{",
                   size * data$lineheight, "}\n",
                   "\\selectfont{}\n",
+                  face, "\n",
+                  "\\definecolor{xdvir}{RGB}{",
+                  col[1,], ",", col[2,], ",", col[3,], "}\n",
+                  "\\color{xdvir}\n",
                   "a")
     grob  <- latexGrob(tex,
                        x=.5, y=.5,
@@ -92,7 +112,7 @@ draw_key_latex <- function(data, params, size) {
                        vjust=.5,
                        packages=packages,
                        engine=params$engine,
-                       gp=gpar(col=data$colour))
+                       gp=NULL)
     attr(grob, "width")  <- convertWidth(grobWidth(grob),
                                          "cm", valueOnly=TRUE)
     attr(grob, "height") <- convertHeight(grobHeight(grob),
@@ -109,6 +129,7 @@ make_latex_geom <- function() {
                                 vjust=0.5,
                                 alpha=NA,
                                 family="",
+                                fontface="plain",
                                 lineheight=1.2)
     geom_env$geom <-
         ggplot2::ggproto("GeomLatex", ggplot2::Geom,

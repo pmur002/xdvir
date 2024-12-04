@@ -27,32 +27,10 @@ latexGrob(tex,
           vp=NULL) 
 grid.latex(\dots)
 
-xelatexGrob(tex,
-            x=0.5, y=0.5,
-            margin=0, rot=0,
-            default.units="npc",
-            hjust="centre", vjust="centre",
-            dpi=NA,
-            packages=NULL,
-            fontLib=getOption("xdvir.fontLib"),
-            texFile=NULL,
-            name=NULL,
-            gp=gpar(),
-            vp=NULL) 
+xelatexGrob(tex, \dots)
 grid.xelatex(\dots)
 
-lualatexGrob(tex,
-             x=0.5, y=0.5, 
-             margin=0, rot=0,
-             default.units="npc",
-             hjust="centre", vjust="centre",
-             dpi=NA,
-             packages=NULL,
-             fontLib=getOption("xdvir.fontLib"),
-             texFile=NULL,
-             name=NULL,
-             gp=gpar(),
-             vp=NULL) 
+lualatexGrob(tex, \dots)
 grid.lualatex(\dots)
 
 }
@@ -91,6 +69,16 @@ grid.lualatex(\dots)
 
   \code{grid.xelatex()} is just a convenient front end for
   \code{grid.latex()}, with appropriate default \code{engine}.
+
+  \code{grid.latex()} attempts to be smart about
+  delaying typesetting until drawing time if necessary in order
+  to get the correct context for \code{width} and \code{gp} settings.
+  This means that, unless \code{gp} is set to \code{NULL} and
+  \code{width} is set to either \code{NA} or an
+  absolute unit (e.g., a number of inches), the calculation of, for
+  example, the width of a grob will be less efficient
+  because the typesetting has to be performed
+  all over again.  
 }
 \value{
   A \code{"DVIgrob"} object.

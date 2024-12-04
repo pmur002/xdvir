@@ -119,6 +119,9 @@ buildObjList <- function(dvi, state) {
 }
 
 addMargin <- function(margin, state) {
+    ## Create new environment so that multiple calls to xDetails
+    ## do not accumulate multiple copies of margins
+    state <- as.environment(as.list(state))
     ## margin: bottom, left, top, right
     TeXset("bottom",
            TeXget("bottom", state) +
@@ -155,9 +158,9 @@ buildDVIgrob <- function(objList, x, y, rot, hjust, vjust, name, gp, state,
 
 makeContent.DVIgrob <- function(x, ...) {
     if (length(x$objList)) {
-        x$state <- addMargin(x$margin, x$state)
+        state <- addMargin(x$margin, x$state)
         ## Calculate offset for non-text drawing
-        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
         ## Viewport for rotation
         vp <- rotVP(x$x, x$y, x$rot, offset)
         ## Generate grobs from objs
@@ -167,7 +170,7 @@ makeContent.DVIgrob <- function(x, ...) {
                         hAnchor=offset$hAnchor, vAnchor=offset$vAnchor,
                         dx=offset$x, dy=offset$y,
                         dpi=x$dpi,
-                        state=x$state)
+                        state=state)
         dvigrob <- gTree(children=do.call(gList, grobs),
                          vp=vp)
         x <- setChildren(x, gList(dvigrob))
@@ -177,12 +180,13 @@ makeContent.DVIgrob <- function(x, ...) {
 
 xDetails.DVIgrob <- function(x, theta) {
     if (length(x$objList)) {
-        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
+        state <- addMargin(x$margin, x$state)
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
         vp <- rotVP(x$x, x$y, x$rot, offset)
-        left <- TeX2pt(TeXget("left", x$state), x$state)
-        right <- TeX2pt(TeXget("right", x$state), x$state)
-        bottom <- -TeX2pt(TeXget("bottom", x$state), x$state)
-        top <- -TeX2pt(TeXget("top", x$state), x$state)
+        left <- TeX2pt(TeXget("left", state), state)
+        right <- TeX2pt(TeXget("right", state), state)
+        bottom <- -TeX2pt(TeXget("bottom", state), state)
+        top <- -TeX2pt(TeXget("top", state), state)
         x <- c(left + offset$x, left + offset$x,
                right + offset$x, right + offset$x)
         y <- c(bottom + offset$y, top + offset$y,
@@ -202,12 +206,13 @@ xDetails.DVIgrob <- function(x, theta) {
 
 yDetails.DVIgrob <- function(x, theta) {
     if (length(x$objList)) {
-        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
+        state <- addMargin(x$margin, x$state)
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
         vp <- rotVP(x$x, x$y, x$rot, offset)
-        left <- TeX2pt(TeXget("left", x$state), x$state)
-        right <- TeX2pt(TeXget("right", x$state), x$state)
-        bottom <- -TeX2pt(TeXget("bottom", x$state), x$state)
-        top <- -TeX2pt(TeXget("top", x$state), x$state)
+        left <- TeX2pt(TeXget("left", state), state)
+        right <- TeX2pt(TeXget("right", state), state)
+        bottom <- -TeX2pt(TeXget("bottom", state), state)
+        top <- -TeX2pt(TeXget("top", state), state)
         x <- c(left + offset$x, left + offset$x,
                right + offset$x, right + offset$x)
         y <- c(bottom + offset$y, top + offset$y,
@@ -227,12 +232,13 @@ yDetails.DVIgrob <- function(x, theta) {
 
 widthDetails.DVIgrob <- function(x) {
     if (length(x$objList)) {
-        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
+        state <- addMargin(x$margin, x$state)
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
         vp <- rotVP(x$x, x$y, x$rot, offset)
-        left <- TeX2pt(TeXget("left", x$state), x$state)
-        right <- TeX2pt(TeXget("right", x$state), x$state)
-        bottom <- -TeX2pt(TeXget("bottom", x$state), x$state)
-        top <- -TeX2pt(TeXget("top", x$state), x$state)
+        left <- TeX2pt(TeXget("left", state), state)
+        right <- TeX2pt(TeXget("right", state), state)
+        bottom <- -TeX2pt(TeXget("bottom", state), state)
+        top <- -TeX2pt(TeXget("top", state), state)
         x <- c(left + offset$x, left + offset$x,
                right + offset$x, right + offset$x)
         y <- c(bottom + offset$y, top + offset$y,
@@ -248,12 +254,13 @@ widthDetails.DVIgrob <- function(x) {
 
 heightDetails.DVIgrob <- function(x) {
     if (length(x$objList)) {
-        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
+        state <- addMargin(x$margin, x$state)
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
         vp <- rotVP(x$x, x$y, x$rot, offset)
-        left <- TeX2pt(TeXget("left", x$state), x$state)
-        right <- TeX2pt(TeXget("right", x$state), x$state)
-        bottom <- -TeX2pt(TeXget("bottom", x$state), x$state)
-        top <- -TeX2pt(TeXget("top", x$state), x$state)
+        left <- TeX2pt(TeXget("left", state), state)
+        right <- TeX2pt(TeXget("right", state), state)
+        bottom <- -TeX2pt(TeXget("bottom", state), state)
+        top <- -TeX2pt(TeXget("top", state), state)
         x <- c(left + offset$x, left + offset$x,
                right + offset$x, right + offset$x)
         y <- c(bottom + offset$y, top + offset$y,
@@ -269,12 +276,13 @@ heightDetails.DVIgrob <- function(x) {
 
 grobCoords.DVIgrob <- function(x, closed=TRUE, ...) {
     if (closed && length(x$objList)) {
-        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, x$state)
+        state <- addMargin(x$margin, x$state)
+        offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
         vp <- rotVP(x$x, x$y, x$rot, offset)
-        left <- TeX2pt(TeXget("left", x$state), x$state)
-        right <- TeX2pt(TeXget("right", x$state), x$state)
-        bottom <- -TeX2pt(TeXget("bottom", x$state), x$state)
-        top <- -TeX2pt(TeXget("top", x$state), x$state)
+        left <- TeX2pt(TeXget("left", state), state)
+        right <- TeX2pt(TeXget("right", state), state)
+        bottom <- -TeX2pt(TeXget("bottom", state), state)
+        top <- -TeX2pt(TeXget("top", state), state)
         x <- c(left + offset$x, left + offset$x,
                right + offset$x, right + offset$x)
         y <- c(bottom + offset$y, top + offset$y,

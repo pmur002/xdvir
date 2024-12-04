@@ -46,3 +46,19 @@ currentFace <- function() {
     face <- get.gpar("font")$font
     c("plain", "bold", "italic", "bold-italic")[face]
 }
+
+## Does typesetting need to be delayed
+delayTypeset <- function(width, gp) {
+    ## One reason is that the width is NOT NA
+    ## AND width has been set to a relative unit,
+    ## which will have to be evaulated when drawing occurs
+    relativeWidth <- FALSE
+    naWidth <- is.na(width)
+    if (any(!naWidth)) {
+        relativeWidth <- any(unitType(absolute.size(width[!naWidth])) == "null")
+    }
+    ## One reason is that gp is NOT NULL, so will require the
+    ## fontfamily, fontface, fontsize, and cex in effect when drawing occurs
+    nullGPar <- is.null(gp)
+    relativeWidth || !nullGPar
+}
