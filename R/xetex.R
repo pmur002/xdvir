@@ -26,32 +26,10 @@ isXeTeX <- function(dvi) {
 }
 
 
-xelatexGrob <- function(tex,
-                        x=0.5, y=0.5,
-                        margin=0, rot=0,
-                        default.units="npc",
-                        hjust="centre", vjust="centre",
-                        dpi=NA,
-                        packages=NULL,
-                        fontLib=getOption("xdvir.fontLib"),
-                        texFile=NULL,
-                        name=NULL,
-                        gp=gpar(),
-                        vp=NULL) {
+xelatexGrob <- function(tex, ...) {
     if (!xetexAvailable())
         stop("XeTeX not available")
-    engine <- getEngine("xetex")
-    lib <- resolveFontLib(fontLib)
-    pkgs <- resolvePackages(packages)
-    texDoc <- author(tex, engine=engine, packages=pkgs)
-    dviFile <- typeset(texDoc, engine=engine, texFile=texFile)
-    dvi <- readDVI(dviFile)
-    dviGrob(dvi,
-            x=x, y=y, default.units=default.units,
-            hjust=hjust, vjust=vjust,
-            dpi=dpi,
-            engine=engine, package=pkgs, fontLib=lib,
-            name=name, gp=gp, vp=vp)
+    latexGrob(tex, engine=getEngine("xetex"), ...)
 }
 
 grid.xelatex <- function(...) {
