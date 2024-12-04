@@ -5,6 +5,7 @@ importFrom("utils",
            "packageVersion")
 importFrom("grDevices",
            "adjustcolor",
+           "dev.cur",
            "glyphAnchor",
            "glyphFont",
            "glyphFontList",
@@ -39,7 +40,9 @@ export("readDVI",
        "grid.lualatex", "lualatexGrob",
        "grid.xelatex", "xelatexGrob",
 
-       "element_latex", "geom_latex")
+       "element_latex", "geom_latex",
+
+       "currentFont", "currentFace")
 
 
 S3method("packagePreamble", "NULL")
