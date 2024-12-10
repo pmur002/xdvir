@@ -42,9 +42,8 @@ preset <- function(family, face, size, lineheight, colour) {
     
     if (is.null(face))
         stop("No font face specified")
-    fontface <- paste0(TeXfaces[match(face,
-                                      c("plain", "bold",
-                                        "italic", "bold-italic"))], "\n")
+    faces <- TeXfaces[match(face, c("plain", "bold", "italic", "bold-italic"))]
+    fontface <- ifelse(nchar(faces), paste0(faces, "\n"), "")
     
     if (is.null(size))
         stop("No font size specified")
@@ -71,12 +70,27 @@ preset <- function(family, face, size, lineheight, colour) {
 }
 
 author <- function(tex,
+                   width=NA,
                    engine=getOption("xdvir.engine"),
                    packages=NULL) {
     if (!is.character(tex))
         stop("'tex' should be a character value containing a LaTeX fragment")
     if (length(tex) < 1)
         stop("No LaTeX fragment to author")
+    if (length(width) < 1) {
+        width <- NA
+    }
+    if (length(width) > 1) {
+        warning("Only using first width")
+        width <- width[1]
+    }
+    if (is.na(width)) {
+        varwidth <- "varwidth"
+    } else {
+        varwidth <- paste0("varwidth=",
+                           as.numeric(width),
+                           "in")
+    }
     engine <- getEngine(engine)
     pkgs <- resolvePackages(packages)
     if (length(pkgs)) {
@@ -86,7 +100,7 @@ author <- function(tex,
     }
     texDoc <- c(## Record engine used for authoring
                 comment(engine, pkgNames),
-                "\\documentclass[varwidth]{standalone}",
+                paste0("\\documentclass[", varwidth, "]{standalone}"),
                 engine$preamble,
                 packagePreamble(pkgs),
                 "\\begin{document}",

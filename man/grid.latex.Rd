@@ -17,6 +17,7 @@ latexGrob(tex,
           margin=0, rot=0,
           default.units="npc",
           hjust="centre", vjust="centre",
+          width=NA,
           dpi=NA,
           packages=NULL,
           engine=getOption("xdvir.engine"),
@@ -45,6 +46,9 @@ grid.lualatex(\dots)
     numeric.}
   \item{hjust, vjust}{Justification of the output relative to the
     \code{x}/\code{y} location.}
+  \item{width}{Either \code{NA} or a numeric value or a unit
+    specifying the width for typesetting.  \code{NA} means the natural width of
+    \code{tex}.}
   \item{dpi}{Resolution (dots per inch) for rendering.}
   \item{packages}{The LaTeX packages to be used.
     May be the name of a LaTeX package (character) or a

@@ -2,17 +2,18 @@
 \alias{element_latex}
 \title{ggplot2 Theme Element Supporting Latex Syntax}
 \usage{
-element_latex(family = NULL,
-              fontface = NULL,
-              colour = NULL,
-              size = NULL,
-              hjust = NULL, vjust = NULL,
-              angle = NULL,
-              lineheight = NULL,
-              color = NULL,
-              margin = NULL,
-              rotate_margins = FALSE,
-              inherit.blank = FALSE)
+element_latex(family=NULL,
+              fontface=NULL,
+              colour=NULL,
+              size=NULL,
+              hjust=NULL, vjust=NULL,
+              angle=NULL,
+              lineheight=NULL,
+              color=NULL,
+              margin=NULL,
+              width=NULL,
+              rotate_margins=FALSE,
+              inherit.blank=FALSE)
 }
 \arguments{
 \item{family}{The default font family.}
@@ -26,6 +27,9 @@ element_latex(family = NULL,
 \item{angle}{Angle (in \eqn{[0, 360]})}
 \item{lineheight}{The deafult lineheight.}
 \item{margin}{The margin around the text.}
+\item{width}{Either \code{NA} or a numeric value or a unit
+  specifying the width for typesetting.  \code{NA} means the natural width of
+  the label.}
 \item{rotate_margins}{Whether margins should follow the orientation of
   the text.}
 \item{inherit.blank}{Should this element inherit the existence of an

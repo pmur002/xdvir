@@ -6,6 +6,7 @@
 geom_latex(mapping=NULL, data=NULL, stat="identity",
            position="identity", ...,
            nudge_x=0, nudge_y=0,
+           width=NA,
            dpi=NA, packages=NULL,
            engine=getOption("xdvir.engine"),
            na.rm=FALSE,
@@ -56,6 +57,9 @@ geom_latex(mapping=NULL, data=NULL, stat="identity",
     Useful for offsetting text from points, particularly on discrete scales.
     Cannot be jointly specified with \code{position}.}
 
+  \item{width}{Either \code{NA} or a numeric value or a unit
+    specifying the width for typesetting.  \code{NA} means the natural width of
+    the label.}
   \item{dpi}{Resolution (dots per inch).}
   \item{packages}{The LaTeX packages to be used.
     May be the name of a LaTeX package (character) or a

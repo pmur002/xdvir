@@ -8,11 +8,14 @@
 }
 \usage{
 author(tex,
+       width=NA,
        engine=getOption("xdvir.engine"),
        packages=NULL)
 }
 \arguments{
   \item{tex}{LaTeX code.  See Details.}
+  \item{width}{Either \code{NA} or a numeric value.
+    The latter is assumed to be a number of inches.}
   \item{engine}{The TeX engine that should be used for authoring.
     May be the name of a TeX engine (character)
     or a \code{"TeXengine"} object.}

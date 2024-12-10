@@ -4,6 +4,7 @@
 geom_latex <- function(mapping=NULL, data=NULL, stat="identity",
                        position="identity", ...,
                        nudge_x=0, nudge_y=0,
+                       width=NA,
                        dpi=NA, packages=NULL,
                        engine=getOption("xdvir.engine"),
                        na.rm=FALSE,
@@ -23,7 +24,8 @@ geom_latex <- function(mapping=NULL, data=NULL, stat="identity",
                    geom=GeomLatex,
                    position=position, show.legend=show.legend,
                    inherit.aes=inherit.aes,
-                   params=list(dpi=dpi, packages=packages, engine=engine,
+                   params=list(width=width, dpi=dpi,
+                               packages=packages, engine=engine,
                                na.rm=na.rm, ...))
 }
 
@@ -36,7 +38,7 @@ geom_env <- new.env(parent=emptyenv())
 assign("geom", NULL, envir=geom_env)
 
 draw_panel_latex <- function(data, panel_params, coord, 
-                             dpi, packages, engine,
+                             width, dpi, packages, engine,
                              na.rm=FALSE) {
     data <- coord$transform(data, panel_params)
 
@@ -50,13 +52,13 @@ draw_panel_latex <- function(data, panel_params, coord,
     packages <- c(resolvePackages(packages),
                   list("preview"))
     prefix <- preset(data$family, data$fontface, size, data$lineheight, col)
-    tex <- paste(prefix, data$label)
+    tex <- paste(prefix, data$label, "\n", sep="")
     packages <- c(packages, attr(prefix, "packages"))
 
     ## Set gp=NULL so that, unless width is specified, and a relative unit,
     ## the calculation of widths and heights etc will be a LOT more efficient.
     latexGrob(tex, data$x, data$y,
-              rot=data$angle, dpi=dpi,
+              rot=data$angle, width=width, dpi=dpi,
               hjust=data$hjust, vjust=data$vjust,
               packages=packages, engine=engine,
               gp=NULL)
@@ -68,12 +70,13 @@ draw_key_latex <- function(data, params, size) {
    
     packages <- c(resolvePackages(params$packages), list("preview"))
     prefix <- preset(data$family, data$fontface, size, data$lineheight, col)
-    tex <- paste(prefix, "a")
+    tex <- paste(prefix, "a", sep="")
     packages <- c(packages, attr(prefix, "packages"))
 
     grob  <- latexGrob(tex,
                        x=.5, y=.5,
                        margin=unit(0.1, "lines"),
+                       width=params$width,
                        rot=0,
                        hjust=.5,
                        vjust=.5,
@@ -94,6 +97,7 @@ make_latex_geom <- function() {
                                 angle=0,
                                 hjust=0.5,
                                 vjust=0.5,
+                                width=NA,
                                 alpha=NA,
                                 family="",
                                 fontface="plain",

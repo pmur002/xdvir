@@ -1,9 +1,9 @@
 
 ## ggplot2 theme element supporting latex syntax
 
-latex_grob <- function(label, x, y, hjust, vjust,
+latex_grob <- function(label, x, y, hjust, vjust, 
                        angle, family, fontface, colour, size, lineheight,
-                       margin, rotMargins) {
+                       margin, width, rotMargins) {
     if (rotMargins) {
         ## ggplot2 margin is tlbr;  grid.latex() margin is bltr
         latexMargin <- margin[c(3, 4, 1, 2)]
@@ -12,12 +12,12 @@ latex_grob <- function(label, x, y, hjust, vjust,
     }
     packages <- list("preview")
     prefix <- preset(family, fontface, size, lineheight, colour)
-    tex <- paste(prefix, label)
+    tex <- paste(prefix, label, "\n", sep="")
     packages <- c(packages, attr(prefix, "packages"))
     ## Set gp=NULL so that, unless width is specified, and a relative unit,
     ## the calculation of widths and heights etc will be a LOT more efficient.
     child <- latexGrob(tex, x, y, hjust=hjust, vjust=vjust, rot=angle,
-                       margin=latexMargin,
+                       margin=latexMargin, width=width,
                        packages=packages,
                        gp=NULL)
     if (rotMargins) {
@@ -53,17 +53,18 @@ heightDetails.latex_grob <- function(x) {
 
 ## Code below modelled on code from {marquee} and {ggtext} and {ggplot2}
 
-element_latex <- function(family = NULL,
-                          fontface = NULL,
-                          colour = NULL,
-                          size = NULL,
-                          hjust = NULL, vjust = NULL,
-                          angle = NULL,
-                          lineheight = NULL,
-                          color = NULL,
-                          margin = NULL,
-                          rotate_margins = FALSE,
-                          inherit.blank = FALSE) {
+element_latex <- function(family=NULL,
+                          fontface=NULL,
+                          colour=NULL,
+                          size=NULL,
+                          hjust=NULL, vjust=NULL,
+                          angle=NULL,
+                          lineheight=NULL,
+                          color=NULL,
+                          margin=NULL,
+                          width=NULL,
+                          rotate_margins=FALSE,
+                          inherit.blank=FALSE) {
     if (!is.null(color))
         colour <- color
     n <- max(length(family),
@@ -73,43 +74,46 @@ element_latex <- function(family = NULL,
              length(angle))
     if (n > 1) {
         cli::cli_warn(c("Vectorized input to {.fn element_text} is not officially supported.",
-                        i = "Results may be unexpected or may change in future versions of ggplot2."))
+                        i="Results may be unexpected or may change in future versions of ggplot2."))
     }
-    structure(list(family = family,
-                   face = fontface,
-                   colour = colour,
-                   size = size,
-                   hjust = hjust, vjust = vjust,
-                   angle = angle, 
-                   margin = margin,
-                   rotate_margins = rotate_margins,
-                   inherit.blank = inherit.blank),
-              class = c("element_latex", "element_text", "element"))
+    structure(list(family=family,
+                   face=fontface,
+                   colour=colour,
+                   size=size,
+                   hjust=hjust, vjust=vjust,
+                   angle=angle, 
+                   margin=margin,
+                   width=width,
+                   rotate_margins=rotate_margins,
+                   inherit.blank=inherit.blank),
+              class=c("element_latex", "element_text", "element"))
 }
 
 element_grob.element_latex <- function(element,
-                                       label = "",
-                                       x = NULL, y = NULL,
-                                       family = NULL,
-                                       fontface = NULL,
-                                       colour = NULL,
-                                       alpha = NULL,
-                                       size = NULL,
-                                       hjust = NULL, vjust = NULL,
-                                       angle = NULL,
-                                       lineheight = NULL,
-                                       margin = NULL,
-                                       margin_x = FALSE, margin_y = FALSE,
+                                       label="",
+                                       x=NULL, y=NULL,
+                                       family=NULL,
+                                       fontface=NULL,
+                                       colour=NULL,
+                                       alpha=NULL,
+                                       size=NULL,
+                                       hjust=NULL, vjust=NULL,
+                                       angle=NULL,
+                                       lineheight=NULL,
+                                       margin=NULL,
+                                       width=NULL,
+                                       margin_x=FALSE, margin_y=FALSE,
                                        ...) {
     if (is.null(label))
         return(ggplot2::zeroGrob())
     family <- family %||% element$family
     fontface <- fontface %||% element$face
     alpha <- alpha %||% element$alpha %||% 1
-    colour = ggplot2::alpha(colour %||% element$colour, alpha)
-    size = size %||% element$size %||% 12
-    lineheight = lineheight %||% element$lineheight %||% 1
+    colour=ggplot2::alpha(colour %||% element$colour, alpha)
+    size=size %||% element$size %||% 12
+    lineheight=lineheight %||% element$lineheight %||% 1
     margin <- margin %||% element$margin %||% ggplot2::margin(0, 0, 0, 0)
+    width <- width %||% element$width %||% NA
     angle <- (angle %||% element$angle %||% 0) %% 360
 
     ## NOTE to self:  hjust and vjust should be numeric if sent
@@ -146,16 +150,17 @@ element_grob.element_latex <- function(element,
     }
 
     latex_grob(label,
-               x = x, y = y,
-               hjust = hjust, vjust = vjust,
-               angle = angle,
-               family = family,
-               fontface = fontface,
-               colour = colour,
-               size = size,
-               lineheight = lineheight,
-               margin = margin,
-               rotMargins = element$rotate_margins)
+               x=x, y=y,
+               hjust=hjust, vjust=vjust,
+               angle=angle,
+               family=family,
+               fontface=fontface,
+               colour=colour,
+               size=size,
+               lineheight=lineheight,
+               margin=margin,
+               width=width,
+               rotMargins=element$rotate_margins)
 }
 
 on_load({
@@ -210,6 +215,6 @@ rotate_just <- function(angle, hjust, vjust) {
             )
     )
     
-    list(hjust = hnew, vjust = vnew)
+    list(hjust=hnew, vjust=vnew)
 }
 
