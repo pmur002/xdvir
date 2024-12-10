@@ -50,6 +50,7 @@ makeContent.LaTeXgrob <- function(x, ...) {
                               dpi=x$dpi,
                               engine=x$engine, packages=x$packages,
                               fontLib=x$fontLib,
+                              texFile=x$texFile,
                               name=x$name, vp=x$vp)))
 }
 
@@ -63,6 +64,7 @@ xDetails.LaTeXgrob <- function(x, theta) {
                      dpi=x$dpi,
                      engine=x$engine, packages=x$packages,
                      fontLib=x$fontLib,
+                     texFile=x$texFile,
                      name=x$name, vp=x$vp),
              theta)
 }
@@ -77,6 +79,7 @@ yDetails.LaTeXgrob <- function(x, theta) {
                      dpi=x$dpi,
                      engine=x$engine, packages=x$packages,
                      fontLib=x$fontLib,
+                     texFile=x$texFile,
                      name=x$name, vp=x$vp),
              theta)
 }
@@ -91,6 +94,7 @@ widthDetails.LaTeXgrob <- function(x) {
                          dpi=x$dpi,
                          engine=x$engine, packages=x$packages,
                          fontLib=x$fontLib,
+                         texFile=x$texFile,
                          name=x$name, vp=x$vp))
 }
 
@@ -104,6 +108,7 @@ heightDetails.LaTeXgrob <- function(x) {
                           dpi=x$dpi,
                           engine=x$engine, packages=x$packages,
                           fontLib=x$fontLib,
+                          texFile=x$texFile,
                           name=x$name, vp=x$vp))
 }
 
@@ -147,6 +152,7 @@ latexGrob <- function(tex,
               width=width,
               dpi=dpi,
               engine=engine, packages=pkgs, fontLib=lib,
+              texFile=texFile,
               ## retain 'gp' as 'gpar' for child DVIgrob
               gpar=gp, 
               name=name, gp=if (is.null(gp)) gpar() else gp, vp=vp,
@@ -158,6 +164,7 @@ latexGrob <- function(tex,
                 hjust=hjust, vjust=vjust,
                 dpi=dpi,
                 engine=engine, packages=pkgs, fontLib=lib,
+                texFile=texFile,
                 ## 'gp' has to be NULL to get here.
                 name=name, gp=gpar(), vp=vp)
     }
