@@ -11,30 +11,9 @@ latex_grob <- function(label, x, y, hjust, vjust,
         latexMargin <- 0
     }
     packages <- list("preview")
-    tex <- paste0("\\fontsize{", size, "}{",
-                  size * lineheight, "}\n",
-                  "\\selectfont{}\n")
-    if (nchar(family)) {
-        packages <- c(packages, list(fontspecPackage(font=family)))
-    } else {
-        packages <- c(packages, list("fontspec"))
-    }
-    if (!is.null(fontface)) {
-        face <- TeXfaces[match(fontface,
-                               c("plain", "bold", "italic", "bold-italic"))]
-        tex <- paste0(tex,
-                      face, "\n")
-    }
-    if (length(colour)) {
-        packages <- c(packages, list("xcolor"))
-        col <- col2rgb(colour)
-        tex <- paste0(tex,
-                      "\\definecolor{xdvir}{RGB}{",
-                      col[1,], ",", col[2,], ",", col[3,], "}\n",
-                      "\\color{xdvir}\n")
-    }
-    tex <- paste0(tex,
-                  label)
+    prefix <- preset(family, fontface, size, lineheight, colour)
+    tex <- paste(prefix, label)
+    packages <- c(packages, attr(prefix, "packages"))
     ## Set gp=NULL so that, unless width is specified, and a relative unit,
     ## the calculation of widths and heights etc will be a LOT more efficient.
     child <- latexGrob(tex, x, y, hjust=hjust, vjust=vjust, rot=angle,
@@ -125,7 +104,7 @@ element_grob.element_latex <- function(element,
     if (is.null(label))
         return(ggplot2::zeroGrob())
     family <- family %||% element$family
-    fontface <- fontface %||% element$fontface
+    fontface <- fontface %||% element$face
     alpha <- alpha %||% element$alpha %||% 1
     colour = ggplot2::alpha(colour %||% element$colour, alpha)
     size = size %||% element$size %||% 12

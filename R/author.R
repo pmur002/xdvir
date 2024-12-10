@@ -10,6 +10,66 @@ commentLine <- function(tex) {
     grep(commentHeader, tex, fixed=TRUE, value=TRUE)
 }
 
+## Generate LaTeX code that sets font family, face, size, and lineheight.
+## Return LaTeX code and set of required packages.
+## Assume that all values are non-NULL, though family could be "" (default font)
+## Assume that all arguments are the same length
+##   If they come from element_latex or geom_late they are from a data frame
+##   If they come from grid.latex they are already rep'ed
+## This function MUST be evaluated in the context within which the
+## LaTeX code will be rendered (otherwise, e.g., default fonts may be wrong).
+TeXfaces <- c("", ## "\\mdseries ",
+              "\\bfseries ",
+              "\\itshape ",
+              "\\bfseries \\itshape ")
+    
+preset <- function(family, face, size, lineheight, colour) {
+    packages <- list("fontspec")
+    
+    if (is.null(family))
+        stop("No font family specified")
+    defaultFonts <- !nchar(family) | family %in% c("sans", "serif", "mono")
+    if (any(defaultFonts)) {
+        family[defaultFonts] <- currentFont(family, face)
+    }
+    dirs <- dirname(family)
+    local <- dirs == "."
+    fontfamily <- ifelse(local,
+                         paste0("\\setmainfont{", family, "}\n"),
+                         paste0("\\setmainfont{", basename(family), "}",
+                                ## file.path() to add trailing slash
+                                "[Path=", file.path(dirs, ""), "]\n"))
+    
+    if (is.null(face))
+        stop("No font face specified")
+    fontface <- paste0(TeXfaces[match(face,
+                                      c("plain", "bold",
+                                        "italic", "bold-italic"))], "\n")
+    
+    if (is.null(size))
+        stop("No font size specified")
+    if (is.null(lineheight))
+        stop("No line height specified")
+    fontsize <- paste0("\\fontsize{", size, "}{", size * lineheight, "}\n",
+                       "\\selectfont{}\n")
+    
+    if (is.null(colour))
+        stop("No colour specified")
+    rgb <- col2rgb(colour)
+    col <- paste0("\\definecolor{xdvir}{RGB}{",
+                  rgb[1,], ",", rgb[2,], ",", rgb[3,], "}\n",
+                  "\\color{xdvir}\n")
+    black <- apply(rgb, 2, function(x) all(x == 0))
+    col[black] <- ""
+    if (any(!black)) {
+        packages <- c(packages, list("xcolor"))
+    }
+    
+    tex <- paste(fontfamily, fontsize, fontface, col, sep="")
+    attr(tex, "packages") <- packages
+    tex
+}
+
 author <- function(tex,
                    engine=getOption("xdvir.engine"),
                    packages=NULL) {
@@ -26,7 +86,7 @@ author <- function(tex,
     }
     texDoc <- c(## Record engine used for authoring
                 comment(engine, pkgNames),
-                "\\documentclass{standalone}",
+                "\\documentclass[varwidth]{standalone}",
                 engine$preamble,
                 packagePreamble(pkgs),
                 "\\begin{document}",

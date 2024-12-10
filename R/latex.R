@@ -1,4 +1,21 @@
 
+## MUST be run within, e.g., makeContent(), so that grob gp slot has
+## already been enforced (so get.gpar() result is relevant)
+buildTeX <- function(tex) {
+    gp <- get.gpar()
+    n <- length(tex)
+    family <- rep(gp$fontfamily, length.out=n)
+    face <- rep(c("plain", "bold", "italic", "bold-italic")[gp$font],
+                length.out=n)
+    size <- rep(gp$fontsize, length.out=n)
+    lineheight <- rep(gp$lineheight, length.out=n)
+    colour <- rep(gp$col, length.out=n)
+    prefix <- preset(family, face, size, lineheight, colour)
+    tex <- paste(prefix, tex, sep="")
+    attr(tex, "packages") <- attr(prefix, "packages")
+    tex
+}
+
 buildDVI <- function(tex, packages, engine, texFile) {
     ## Only author/typeset unique values
     uniq <- unique(tex)
@@ -11,7 +28,9 @@ buildDVI <- function(tex, packages, engine, texFile) {
 }
 
 makeContent.LaTeXgrob <- function(x, ...) {
-    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    tex <- buildTeX(x$tex)
+    packages <- c(x$packages, attr(tex, "packages"))
+    dvi <- buildDVI(tex, packages, x$engine, x$texFile)
     setChildren(x,
                 gList(dviGrob(dvi,
                               x=x$x, y=x$y, margin=x$margin, rot=x$rot,
@@ -23,7 +42,9 @@ makeContent.LaTeXgrob <- function(x, ...) {
 }
 
 xDetails.LaTeXgrob <- function(x, theta) {
-    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    tex <- buildTeX(x$tex)
+    packages <- c(x$packages, attr(tex, "packages"))
+    dvi <- buildDVI(tex, packages, x$engine, x$texFile)
     xDetails(dviGrob(dvi,
                      x=x$x, y=x$y, margin=x$margin, rot=x$rot,
                      hjust=x$hjust, vjust=x$vjust,
@@ -35,7 +56,9 @@ xDetails.LaTeXgrob <- function(x, theta) {
 }
 
 yDetails.LaTeXgrob <- function(x, theta) {
-    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    tex <- buildTeX(x$tex)
+    packages <- c(x$packages, attr(tex, "packages"))
+    dvi <- buildDVI(tex, packages, x$engine, x$texFile)
     yDetails(dviGrob(dvi,
                      x=x$x, y=x$y, margin=x$margin, rot=x$rot,
                      hjust=x$hjust, vjust=x$vjust,
@@ -47,7 +70,9 @@ yDetails.LaTeXgrob <- function(x, theta) {
 }
 
 widthDetails.LaTeXgrob <- function(x) {
-    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    tex <- buildTeX(x$tex)
+    packages <- c(x$packages, attr(tex, "packages"))
+    dvi <- buildDVI(tex, packages, x$engine, x$texFile)
     widthDetails(dviGrob(dvi,
                          x=x$x, y=x$y, margin=x$margin, rot=x$rot,
                          hjust=x$hjust, vjust=x$vjust,
@@ -58,7 +83,9 @@ widthDetails.LaTeXgrob <- function(x) {
 }
 
 heightDetails.LaTeXgrob <- function(x) {
-    dvi <- buildDVI(x$tex, x$packages, x$engine, x$texFile)
+    tex <- buildTeX(x$tex)
+    packages <- c(x$packages, attr(tex, "packages"))
+    dvi <- buildDVI(tex, packages, x$engine, x$texFile)
     heightDetails(dviGrob(dvi,
                           x=x$x, y=x$y, margin=x$margin, rot=x$rot,
                           hjust=x$hjust, vjust=x$vjust,
@@ -99,6 +126,10 @@ latexGrob <- function(tex,
     lib <- resolveFontLib(fontLib)
     pkgs <- resolvePackages(packages)
     if (delayTypeset(width=NA, gp=gp)) {
+        ## 'gp' could be NULL
+        if (is.null(gp)) {
+            gp <- gpar()
+        } 
         gTree(tex=tex,
               x=x, y=y, margin=margin, rot=rot,
               hjust=hjust, vjust=vjust,
@@ -113,7 +144,8 @@ latexGrob <- function(tex,
                 hjust=hjust, vjust=vjust,
                 dpi=dpi,
                 engine=engine, packages=pkgs, fontLib=lib,
-                name=name, gp=gp, vp=vp)
+                ## 'gp' has to be NULL to get here.
+                name=name, gp=gpar(), vp=vp)
     }
 }
 

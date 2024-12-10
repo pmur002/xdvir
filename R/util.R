@@ -1,8 +1,8 @@
 
-currentFont <- function() {
-    family <- get.gpar("fontfamily")$fontfamily
-    if (!nchar(family)) {
-        family <- "sans"
+currentFont <- function(family, face) {
+    defaultFonts <- !nchar(family)
+    if (any(defaultFonts)) {
+        family[defaultFonts] <- "sans"
     }
     dev <- names(dev.cur())
     if (dev %in% c("postscript", "pdf")) {
@@ -38,13 +38,11 @@ currentFont <- function() {
                   ifelse(family == "sans", "Helvetica",
                   ifelse(family == "mono", "Courier",
                          family)))
-    }        
-    systemfonts::match_fonts(family)$path
-}
-
-currentFace <- function() {
-    face <- get.gpar("font")$font
-    c("plain", "bold", "italic", "bold-italic")[face]
+    }
+    italic <- face %in% c("italic", "bold-italic")
+    weight <- ifelse(face %in% c("bold", "bold-italic"),
+                     "bold", "normal")
+    systemfonts::match_fonts(family, italic, weight)$path
 }
 
 ## Does typesetting need to be delayed

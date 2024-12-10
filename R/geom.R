@@ -1,9 +1,6 @@
 
 ## ggplot2 geom supporting latex syntax
 
-TeXfaces <- c("\\mdseries ", "\\bfseries ", "\\itshape" ,
-              "\\bfseries \\itshape ")
-    
 geom_latex <- function(mapping=NULL, data=NULL, stat="identity",
                        position="identity", ...,
                        nudge_x=0, nudge_y=0,
@@ -47,34 +44,15 @@ draw_panel_latex <- function(data, panel_params, coord,
     data$hjust <- compute_just(data$hjust, data$x, data$y, data$angle)
     
     size <- 72 * data$size / 25.4
-    
-    family <- data$family
-    if (any(nchar(family))) {
-        if (length(unique(family)) > 1) {
-            warning("Multiple font families not supported; using first")
-        } 
-        fontspec <- fontspecPackage(font=family[1])
-    } else {
-        ## If the user wants different families for different geoms,
-        ## they need to specify the font change within the label
-        fontspec <- "fontspec"
-    }
-    packages <- c(resolvePackages(packages), list(fontspec, "xcolor"))
 
-    face <- TeXfaces[match(data$fontface,
-                           c("plain", "bold", "italic", "bold-italic"))]
-        
-    col <- col2rgb(ggplot2::alpha(data$colour, data$alpha))
+    col <- ggplot2::alpha(data$colour, data$alpha)
     
-    tex <- paste0("\\fontsize{", size, "}{",
-                  size * data$lineheight, "}\n",
-                  "\\selectfont{}\n",
-                  face, "\n",
-                  "\\definecolor{xdvir}{RGB}{",
-                  col[1,], ",", col[2,], ",", col[3,], "}\n",
-                  "\\color{xdvir}\n",
-                  data$label)
-    
+    packages <- c(resolvePackages(packages),
+                  list("preview"))
+    prefix <- preset(data$family, data$fontface, size, data$lineheight, col)
+    tex <- paste(prefix, data$label)
+    packages <- c(packages, attr(prefix, "packages"))
+
     ## Set gp=NULL so that, unless width is specified, and a relative unit,
     ## the calculation of widths and heights etc will be a LOT more efficient.
     latexGrob(tex, data$x, data$y,
@@ -85,25 +63,14 @@ draw_panel_latex <- function(data, panel_params, coord,
 }
 
 draw_key_latex <- function(data, params, size) {
-    family <- data$family
-    if (nchar(family)) {
-        fontspec <- fontspecPackage(font=family)
-    } else {
-        fontspec <- "fontspec"
-    }
-    packages <- c(resolvePackages(params$packages), list(fontspec, "xcolor"))
     size <- 72 * data$size / 25.4
-    face <- TeXfaces[match(data$fontface,
-                           c("plain", "bold", "italic", "bold-italic"))]
-    col <- col2rgb(ggplot2::alpha(data$colour, data$alpha))
-    tex <- paste0("\\fontsize{", size, "}{",
-                  size * data$lineheight, "}\n",
-                  "\\selectfont{}\n",
-                  face, "\n",
-                  "\\definecolor{xdvir}{RGB}{",
-                  col[1,], ",", col[2,], ",", col[3,], "}\n",
-                  "\\color{xdvir}\n",
-                  "a")
+    col <- ggplot2::alpha(data$colour, data$alpha)
+   
+    packages <- c(resolvePackages(params$packages), list("preview"))
+    prefix <- preset(data$family, data$fontface, size, data$lineheight, col)
+    tex <- paste(prefix, "a")
+    packages <- c(packages, attr(prefix, "packages"))
+
     grob  <- latexGrob(tex,
                        x=.5, y=.5,
                        margin=unit(0.1, "lines"),
