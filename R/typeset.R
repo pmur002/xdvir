@@ -20,6 +20,7 @@ addDVI <- function(tex, engine, packages, texFile, sig) {
     writeLines(tex, texFile)
     latex(texFile, texDir, engine, packages, dviFile, sig)
     dvi <- readDVI(dviFile)
+    attr(dvi, "file") <- dviFile
     cache <- get("DVIcache")
     key <- typesetKey(tex, engine, packages)
     cache[[key]] <- dvi
