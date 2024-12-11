@@ -111,6 +111,8 @@
 \def\pgfsys@fill{%
   \ifpgf@sys@xdvir@clipnext%
     \pgf@sys@xdvir@newpath%
+    \pgf@sys@addtoxdvirpath{close}% Ensure path is closed
+    \pgf@sys@addtoxdvirpath{:}%
     \pgf@sys@flushxdvirpath%
     \pgfsysprotocol@literal{fill-clip;}
     \pgf@sys@xdvir@clipnextfalse%
