@@ -32,13 +32,14 @@ preset <- function(family, face, size, lineheight, colour) {
     if (any(defaultFonts)) {
         family[defaultFonts] <- currentFont(family, face)
     }
+    ## NOTE that this returns path with "/" separator even on Windows
     dirs <- dirname(family)
     local <- dirs == "."
     fontfamily <- ifelse(local,
                          paste0("\\setmainfont{", family, "}\n"),
                          paste0("\\setmainfont{", basename(family), "}",
-                                ## file.path() to add trailing slash
-                                "[Path=", file.path(dirs, ""), "]\n"))
+                                ## NOTE that this adds trailing slash to path
+                                "[Path=", dirs, "/]\n"))
     
     if (is.null(face))
         stop("No font face specified")
