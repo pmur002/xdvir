@@ -116,6 +116,8 @@
     \pgf@sys@xdvir@clipnextfalse%
   \else%
     \pgf@sys@xdvir@newpath%
+    \pgf@sys@addtoxdvirpath{close}% Ensure path is closed
+    \pgf@sys@addtoxdvirpath{:}%
     \pgf@sys@flushxdvirpath%
     \pgfsysprotocol@literal{fill;}
   \fi%
