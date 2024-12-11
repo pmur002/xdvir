@@ -2,7 +2,6 @@
 \alias{grid.dvi}
 \alias{dviGrob}
 \alias{dviGrob.DVI}
-\alias{dviGrob.DVIfile}
 \alias{dviGrob.character}
 \alias{dviGrob.list}
 \title{
@@ -17,9 +16,6 @@ dviGrob(dvi, \dots)
 \method{dviGrob}{DVI}(dvi, ...,
         packages=NULL,
         engine=getOption("xdvir.engine"))
-\method{dviGrob}{DVIfile}(dvi, ...,
-        packages=NULL,
-        engine=NULL)
 \method{dviGrob}{list}(dvi, x = 0.5, y = 0.5,
         margin=0, rot=0,
         default.units = "npc",

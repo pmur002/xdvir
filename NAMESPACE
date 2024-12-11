@@ -64,20 +64,16 @@ S3method("typeset", "LaTeXdocument")
 S3method("typeset", "character")
 
 S3method("dviGrob", "DVI")
-S3method("dviGrob", "DVIfile")
 S3method("dviGrob", "character")
 S3method("dviGrob", "list")
 
 S3method("resolveEngine", "DVI")
 S3method("resolveEngine", "LaTeXdocument")
 S3method("resolveEngine", "character")
-S3method("resolveEngine", "DVIfile")
 
 S3method("typesetPackages", "DVI")
-S3method("typesetPackages", "DVIfile")
 
 S3method("resolveDVI", "DVI")
-S3method("resolveDVI", "DVIfile")
 S3method("resolveDVI", "character")
 
 S3method("makeContent", "DVIgTree")

@@ -33,8 +33,7 @@ buildDVI <- function(tex, width, packages, engine, texFile) {
     texDocs <- mapply(author, tex=uniq[,1], width=uniq[,2],
                       MoreArgs=list(engine=engine, packages=packages),
                       SIMPLIFY=FALSE)
-    dviFiles <- lapply(texDocs, typeset, engine=engine, texFile=texFile)
-    dvi <- lapply(dviFiles, readDVI)
+    dvi <- lapply(texDocs, typeset, engine=engine, texFile=texFile)
     ## Re-expand dvis
     dvi[index]
 }

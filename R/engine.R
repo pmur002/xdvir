@@ -106,20 +106,6 @@ resolveEngine.character <- function(x, engine) {
     }
 }
 
-## Resolve for DVIfile object, which has "engine" attribute
-## If no user engine, use "engine" attribute
-## If user specifies engine, check for mismatches, but user engine wins.
-resolveEngine.DVIfile <- function(x, engine) {
-    e1 <- typesetEngine(x)
-    if (is.null(engine)) {
-        e1
-    } else {
-        engine <- getEngine(engine)
-        engineCheck(e1, engine)
-        engine
-    }
-}
-
 ## Resolve for DVI object, which MAY include "engine" comment in pre op.
 ## If pre op does not include "engine" comment, use non-NULL user engine.
 ## If neither provides an engine, default to "xdvir.engine" option.

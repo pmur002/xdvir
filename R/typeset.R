@@ -1,6 +1,43 @@
 
 ## Generate DVI from TeX string
 
+
+set("DVIcache", list())
+
+typesetKey <- function(tex, engine, packages) {
+    paste(paste(tex, collapse=""),
+          engine$name,
+          paste(packages, collapse=","),
+          sep=":::")
+}
+
+addDVI <- function(tex, engine, packages, texFile, sig) {
+    if (is.null(texFile)) {
+        texFile <- tempfile(fileext=".tex")
+    }
+    texDir <- dirname(texFile)
+    dviFile <- paste0(gsub("[.]tex", "", texFile), engine$dviSuffix)
+    writeLines(tex, texFile)
+    latex(texFile, texDir, engine, packages, dviFile, sig)
+    dvi <- readDVI(dviFile)
+    cache <- get("DVIcache")
+    key <- typesetKey(tex, engine, packages)
+    cache[[key]] <- dvi
+    set("DVIcache", cache)
+    dvi
+}
+
+getDVI <- function(tex, engine, packages, texFile, sig=TRUE) {
+    key <- typesetKey(tex, engine, packages)
+    cache <- get("DVIcache")
+    dvi <- cache[[key]]
+    if (is.null(dvi)) {
+        addDVI(tex, engine, packages, texFile, sig)
+    } else {
+        dvi
+    }
+}
+
 canTypeset <- function(engine=getOption("xdvir.engine")) {
     !is.null(engine$command)
 }
@@ -59,17 +96,7 @@ typeset.LaTeXdocument <- function(tex,
                                   ...) {
     engine <- resolveEngine(tex, engine)
     packages <- authorPackages(tex)
-    if (is.null(texFile)) {
-        texFile <- tempfile(fileext=".tex")
-    }
-    texDir <- dirname(texFile)
-    dviFile <- paste0(gsub("[.]tex", "", texFile), engine$dviSuffix)
-    writeLines(tex, texFile)
-    latex(texFile, texDir, engine, packages, dviFile)
-    attr(dviFile, "engine") <- engine
-    attr(dviFile, "packages") <- packages
-    class(dviFile) <- "DVIfile"
-    invisible(dviFile)    
+    getDVI(tex, engine, packages, texFile)
 }
 
 ## 'x' is LaTeX code
@@ -83,26 +110,12 @@ typeset.character <- function(tex,
         stop("No LaTeX fragment to typeset")
     engine <- resolveEngine(tex, engine)
     packages <- authorPackages(tex)
-    if (is.null(texFile)) {
-        texFile <- tempfile(fileext=".tex")
-    }
-    texDir <- dirname(texFile)
-    dviFile <- paste0(gsub("[.]tex", "", texFile), engine$dviSuffix)
-    writeLines(tex, texFile)
-    latex(texFile, texDir, engine, packages, dviFile, sig=sig)
-    attr(dviFile, "engine") <- engine
-    attr(dviFile, "packages") <- packages
-    class(dviFile) <- "DVIfile"
-    invisible(dviFile)
+    getDVI(tex, engine, packages, texFile, sig)
 }
                     
 ## What engine was used to typeset the TeX code?
 typesetEngine <- function(x) {
     UseMethod("typesetEngine")
-}
-
-typesetEngine.DVIfile <- function(x) {
-    attr(x, "engine")
 }
 
 typesetEngine.DVI <- function(x) {
@@ -139,10 +152,6 @@ typesetEngine.DVI <- function(x) {
 
 typesetPackages <- function(x) {
     UseMethod("typesetPackages")
-}
-
-typesetPackages.DVIfile <- function(x) {
-    attr(x, "packages")
 }
 
 typesetPackages.DVI <- function(x) {

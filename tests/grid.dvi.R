@@ -44,15 +44,13 @@ if (xdvir:::haveTeX()) {
     str <- r"(This is a test: $\frac{x - \mu}{2}$)"
     
     tex <- author(str)
-    dviFile <- typeset(tex, texFile=texFile)
-    dvi <- readDVI(dviFile)
+    dvi <- typeset(tex, texFile=texFile)
     grid.newpage()
     grid.dvi(dvi)
 
     ## Explicit render engine that does NOT match typeset() engine
     tex <- author(str, engine="xetex")
-    dviFile <- typeset(tex, engine="xetex", texFile=texFile)
-    dvi <- readDVI(dviFile)
+    dvi <- typeset(tex, engine="xetex", texFile=texFile)
     grid.newpage()
     tools::assertWarning(grid.dvi(dvi, engine="null"))
 

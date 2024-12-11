@@ -39,7 +39,7 @@ typeset(tex,
   character value containing LaTeX code.
 }
 \value{
-  A \code{"DVIfile"} object.
+  A \code{"DVI"} object as produced by \code{\link{readDVI}}.
 }
 \author{
   Paul Murrell

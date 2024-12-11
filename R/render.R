@@ -307,10 +307,6 @@ resolveDVI.character <- function(dvi, ...) {
     readDVI(dvi)
 }
 
-resolveDVI.DVIfile <- function(dvi, ...) {
-    readDVI(dvi)
-}
-
 repGPar <- function(gp, n) {
     if (length(gp)) {
         ngp <- max(sapply(gp, length))
@@ -398,15 +394,6 @@ dviGrob.DVI <- function(dvi, ...,
     pkgs <- resolvePackages(packages)
     pkgs <- checkPackages(pkgs, typesetPackages(dvi))
     dviGrob(list(dvi), ..., engine=eng, packages=pkgs)
-}
-
-## Resolve engine and packages from typeset() result
-dviGrob.DVIfile <- function(dvi, ...,
-                            packages=NULL,
-                            engine=NULL) {
-    eng <- resolveEngine(dvi, engine)
-    pkgs <- checkPackages(packages, typesetPackages(dvi))
-    dviGrob(list(readDVI(dvi)), ..., engine=eng, packages=pkgs)
 }
 
 dviGrob.character <- function(dvi, ...) {
