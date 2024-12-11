@@ -738,31 +738,39 @@ recordBBox <- function(x, state) {
                    state)
 }
 
+beginPicture <- function(state) {
+    h <- TeXget("h", state)
+    v <- TeXget("v", state)
+    TeXset("savedH", h, state)
+    TeXset("savedV", v, state)
+    x <- TeX2pt(h, state)
+    y <- TeX2pt(v, state)
+    TeXset("pictureLeft", x, state)
+    TeXset("pictureBottom", y, state)
+    TeXset("inPicture", TRUE, state)
+    TeXset("tikzParent", NULL, state)
+    TeXset("tikzTransform", NULL, state)
+    TeXset("tikzTransformDepth", 0, state)
+    TeXset("tikzTransformDecomp", NULL, state)
+    TeXset("tikzTransformText", diag(3), state)
+    TeXset("tikzTextColour", NA, state)
+}
+
+endPicture <- function(special, state) {
+    recordBBox(special, state)
+    TeXset("h", TeXget("savedH", state), state)
+    TeXset("v", TeXget("savedV", state), state)        
+    TeXset("inPicture", FALSE, state)
+}
+
 tikzSpecial <- function(specialString, state) {
     ## Ignore any other specials
     if (grepl("^xdvir:: ", specialString)) {
         special <- gsub("xdvir:: ", "", specialString)
         if (grepl("^begin-picture", special)) {
-            h <- TeXget("h", state)
-            v <- TeXget("v", state)
-            TeXset("savedH", h, state)
-            TeXset("savedV", v, state)
-            x <- TeX2pt(h, state)
-            y <- TeX2pt(v, state)
-            TeXset("pictureLeft", x, state)
-            TeXset("pictureBottom", y, state)
-            TeXset("inPicture", TRUE, state)
-            TeXset("tikzParent", NULL, state)
-            TeXset("tikzTransform", NULL, state)
-            TeXset("tikzTransformDepth", 0, state)
-            TeXset("tikzTransformDecomp", NULL, state)
-            TeXset("tikzTransformText", diag(3), state)
-            TeXset("tikzTextColour", NA, state)
+            beginPicture(state)
         } else if (grepl("^end-picture", special)) {
-            recordBBox(special, state)
-            TeXset("h", TeXget("savedH", state), state)
-            TeXset("v", TeXget("savedV", state), state)        
-            TeXset("inPicture", FALSE, state)
+            endPicture(special, state)
         } else {
             if (TeXget("inPicture", state)) {
                 ## Record special
