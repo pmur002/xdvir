@@ -264,6 +264,19 @@ for (i in 171:234) {
     assign(paste0("print_op_", i), print_fnt_num)
 }
 
+## 235..238
+## fnt<i>
+print_fnt <- function(op, code, params) {
+    str <- paste0("fnt_", code - 234,
+                  "        ",
+                  "k=", params[[1]],
+                  "\n")
+    cat(str)    
+}
+for (i in 235:238) {
+    assign(paste0("print_op_", i), print_fnt)
+}
+
 ## xxx<i> (specials)
 print_xxx <- function(op, code, params) {
     str <- paste0("xxx",
@@ -280,21 +293,25 @@ for (i in 239:242) {
     assign(paste0("print_op_", i), print_xxx)
 }
 
-## font_def<i>
-print_op_243 <- function(op, code, params) {
+## 243..246
+## fnt_def_<i>
+print_fnt_def <- function(op, code, params) {
     fontnum <- params$k
     checksum <- params$c
     scale <- params$s
     design <- params$d
     fontname <- paste(params$fontname.name,
                       collapse="")
-    str <- paste0("fnt_def_1    ",
+    str <- paste0("fnt_def_", code - 242, "    ",
                   "fontnum=", fontnum, ", ",
                   "checksum=", checksum, ", ",
                   "scale=", scale, ", ",
                   "design=", design, ",\n             ",
                   "fontname=", fontname, "\n")
     cat(str)
+}
+for (i in 243:246) {
+    assign(paste0("print_op_", i), print_fnt_def)
 }
 
 ## pre

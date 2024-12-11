@@ -29,7 +29,7 @@ if (Sys.info()["sysname"] == "Darwin") {
 
 if (xdvir:::haveTeX()) {
     grid.newpage()
-    grid.latex(tex, packages=fontspecPackage(), texFile=texFile)
+    grid.latex(tex, packages=fontspecPackage(), texFile=texFile, gp=NULL)
 }
 
 dev.off()

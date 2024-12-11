@@ -407,7 +407,7 @@ op_fnt_num <- function(op, state) {
 ## fnt4
 op_fnt <- function(op, state) {
     k <- op$block$op.opparams
-    f <- blockValue(k)
+    f <- blockValue(k) + 1
     TeXset("f", f, state)
 }
 
