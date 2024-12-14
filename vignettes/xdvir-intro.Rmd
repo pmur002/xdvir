@@ -50,15 +50,24 @@ Producing an equation like this requires three things:
 ```{r, label="tex", echo=FALSE}
 tex <- r"(\huge $\Phi(z) = \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{z^2}{2}}$)"
 ```
-```{r, echo=FALSE, fig.width=6, fig.height=3, message=FALSE}
+
+```{r, echo=FALSE, message=FALSE}
 library(gggrid)
+```
+
+```{r, gaussian, echo=FALSE}
 x <- seq(-4, 4, length.out=100)
 df <- data.frame(x=x, y=dnorm(x))
-ggplot(df) +
-    geom_area(aes(x, y), colour=NA, fill="grey90") +
-    geom_line(aes(x, y)) +
+gg <- ggplot(df) +
+    geom_line(aes(x, y))
+```
+
+```{r, echo=FALSE, fig.width=6, fig.height=3, message=FALSE}
+gg +
     grid_panel(latexGrob(tex, x=0, y=1, hjust="left", vjust="top")) +
     xlim(-4, 4) +
+    geom_area(aes(x, y), colour=NA, fill="grey90") +
+    geom_line(aes(x, y)) +
     scale_x_continuous(expand=expansion(0)) +
     scale_y_continuous(expand=expansion(c(0))) +
     coord_cartesian(clip="off") +
@@ -95,7 +104,7 @@ escape each backslash with a double backslash.
 grid.latex(tex)
 ```
 
-# Rendering LaTeX in plots
+# LaTeX annotations in plots
 
 As the function name `grid.latex()`
 suggests, {xdvir} only provides a low-level
@@ -188,6 +197,31 @@ ggplot(df) +
                          y=unit(1, "npc") - unit(2, "mm"), 
                          hjust="left", vjust="top"))
 ```
+
+Another way to do this in {ggplot2} is with 
+`ggplot2::annotation_custom()`, though precisely positioning the annotation
+may be less convenient.
+
+# LaTeX labels in {ggplot2}
+
+The {xdvir} package also provides integration with labels in {ggplot2}
+plots.  This allows, for example, the title of a plot to contain
+LaTeX code, as shown in the image below.  For this to work, the relevant theme
+element must be set using `element_latex()`, as shown in the code below.
+
+```{r, eval=FALSE}
+<<gaussian>>
+```
+```{r, fig.width=6, fig.height=3, message=FALSE}
+gg +
+    labs(title=paste("The Normal Distribution:", tex)) +
+    theme(plot.title=element_latex())
+```
+
+Although the need is probably less, for completeness, there is also
+a `geom_latex()` for adding LaTeX-styled data symbols.
+
+**TODO:** example please !!!
 
 # Trouble shooting
 
