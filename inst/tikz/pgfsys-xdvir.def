@@ -23,16 +23,8 @@
   \global\let\pgf@sys@xdvirpath=\pgfutil@empty%
 }
 
-% Accumulator for gs
-\let\pgf@sys@xdvirgs=\pgfutil@empty
-\def\pgf@sys@addtoxdvirgs#1{\pgfutil@g@addto@macro\pgf@sys@xdvirgs{#1}}
-\def\pgf@sys@flushxdvirgs#1{%
-  \pgfsysprotocol@literal{#1 \pgf@sys@xdvirgs;}%
-  \global\let\pgf@sys@xdvirgs=\pgfutil@empty%
-}
-
 \def\pgf@sys@xdvir@gs#1{%
-  {\pgf@sys@addtoxdvirgs{#1\space}}
+  \pgfsysprotocol@literal{gs #1;}%
 }
 
 %%% \newcount\pgf@sys@svg@objectcount
@@ -93,7 +85,7 @@
 \newif\ifpgf@sys@xdvir@clipnext
 
 \def\pgf@sys@xdvir@newpath{%
-  \pgf@sys@flushxdvirgs{new-path}%
+  \pgfsysprotocol@literal{new-path;}%
 }
 \def\pgfsys@stroke{%
   \ifpgf@sys@xdvir@clipnext%
@@ -173,7 +165,7 @@
   \edef\pgf@sys@xdvir@thescopecount{\the\pgf@sys@xdvir@scopecount}%
   \begingroup%
     \pgf@sys@xdvir@scopecount=1\relax%
-    \pgf@sys@flushxdvirgs{begin-scope}%
+    \pgfsysprotocol@literal{begin-scope;}%
 }
 \def\pgfsys@endscope{%
     \loop%

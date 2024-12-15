@@ -193,8 +193,9 @@ objToGrob.XDVIRtikzStretchFillObj <- function(obj, dx, dy, ...) {
 objToGrob.XDVIRtikzParentObj <- function(obj, dx, dy, ...) {
     children <- obj$children
     parent <- NULL
+    gp <- do.call(gpar, obj$gs)
     if (!is.null(children)) {
-        parent <- gTree(gp=obj$gp)
+        parent <- gTree(gp=gp)
         parent <- setChildren(parent,
                               do.call(gList,
                                       lapply(children, objToGrob,
@@ -399,35 +400,28 @@ recordPathElement <- function(x, i, state) {
            stop("unsupported path element"))
 }
 
-pushTextColour <- function(gp, state) {
-    fill <- NA
-    if ("fill" %in% names(gp)) {
-        fill <- gp$fill
-    }
-    TeXset("tikzTextColour", c(gp$fill, TeXget("tikzTextColour", state)), state)
-    TeXset("colour", fill, state)
+## Text colour is "fill" in TikZ, but "colour" in TeX
+## "colour" needs to be set immediately to affect setChar etc;  see recordGS()
+## At begin/end scope, need to save/restore "colour" 
+pushTextColour <- function(gs, state) {
+    col <- TeXget("colour", state)
+    TeXset("tikzSavedColour",
+           c(col[1], TeXget("tikzSavedColour", state)), state)
 }
 
 popTextColour <- function(state) {
-    fill <- TeXget("tikzTextColour", state)
-    TeXset("tikzTextColour", fill[-1], state)
-    TeXset("colour", fill[1], state)
+    col <- TeXget("tikzSavedColour", state)
+    TeXset("tikzSavedColour", col[-1], state)
+    TeXset("colour", col[1], state)
 }
 
 addParent <- function(x, state) {
-    if (length(x) == 0) {
-        gp <- gpar()
-    } else {
-        tokens <- strsplit(x, "=")
-        names <- sapply(tokens, "[", 1)
-        values <- lapply(tokens, parseSetting)
-        names(values) <- names
-        gp <- do.call(gpar, handleOpacity(values))
-    }
-    parent <- list(children=NULL, gp=gp)
+    gsStack <- TeXget("tikzGS", state)
+    gs <- gsStack[[1]]
+    parent <- list(children=NULL, gs=gs)
     class(parent) <- "XDVIRtikzParentObj"
     TeXset("tikzParent", c(list(parent), TeXget("tikzParent", state)), state)
-    pushTextColour(gp, state)
+    pushTextColour(gs, state)
 }
 
 reduceParent <- function(state) {
@@ -451,6 +445,29 @@ recordNewPath <- function(x, state) {
     TeXset("tikzPathX", NULL, state)
     TeXset("tikzPathY", NULL, state)
     addParent(x, state)
+}
+
+recordGS <- function(x, state) {
+    gsStack <- TeXget("tikzGS", state)
+    gs <- gsStack[[1]]
+    if (length(x) > 0) {
+        tokens <- strsplit(x, "=")
+        names <- sapply(tokens, "[", 1)
+        values <- lapply(tokens, parseSetting)
+        names(values) <- names
+        gs[names] <- handleOpacity(values)
+        gsStack[[1]] <- gs
+        TeXset("tikzGS", gsStack, state)
+        ## Text colour is "fill" in TikZ, but "colour" in TeX
+        ## "colour" needs to be set immediately to affect setChar etc
+        ## At begin/end scope, need to save/restore "colour";
+        ## see pushTextColour()
+        if ("fill" %in% names) {
+            col <- TeXget("colour", state)
+            col[1] <- gs$fill
+            TeXset("colour", col, state)
+        }
+    }
 }
 
 tikzStretch <- function(transform, transformDecomp) {
@@ -660,12 +677,16 @@ addTikzObj <- function(x, state) {
 }
 
 recordBeginScope <- function(x, state) {
+    gsStack <- TeXget("tikzGS", state)
+    TeXset("tikzGS", c(gsStack[1], gsStack), state)
     td <- TeXget("tikzTransformDepth", state)
     TeXset("tikzTransformDepth", c(0, td), state)
     addParent(x, state)
 }
 
 recordEndScope <- function(state) {
+    gsStack <- TeXget("tikzGS", state)
+    TeXset("tikzGS", gsStack[-1], state)
     td <- TeXget("tikzTransformDepth", state)
     if (td[1] > 0) {
         tm <- TeXget("tikzTransform", state)
@@ -689,6 +710,7 @@ recordSpecial <- function(x, state) {
                `begin-scope`=recordBeginScope(tokens[-1], state),
                `end-scope`=recordEndScope(state),
                `new-path`=recordNewPath(tokens[-1], state),
+               `gs`=recordGS(tokens[-1], state),
                `stroke`=recordStroke(state),
                `fill`=recordFill(state),
                `fill-stroke`=recordFillStroke(state), 
@@ -753,7 +775,8 @@ beginPicture <- function(state) {
     TeXset("tikzTransformDepth", 0, state)
     TeXset("tikzTransformDecomp", NULL, state)
     TeXset("tikzTransformText", diag(3), state)
-    TeXset("tikzTextColour", NA, state)
+    TeXset("tikzGS", list(list()), state)
+    TeXset("tikzSavedColour", NA, state)
 }
 
 endPicture <- function(special, state) {
