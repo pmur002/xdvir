@@ -32,19 +32,12 @@ top-left corner.
 Producing an equation like this requires three things:
 
 1.  A **markup** language that allows us to describe the equation. 
-    This is complicated by the fact
-    that the equation is not simply one character placed after another from
-    left to right along a line and the fact that
-    elements of the equation are not simple characters.
-    For example, we need to be able to express that the digit "2"
-    needs to be placed as a superscript relative to the character "z"
-    and we need to be able to express the greek letter pi.
 
 2.  A **typesetter** that can select fonts and individual 
      glyphs from within those fonts and determine the exact placement
      of each individual glyph.
 
-3.  A **renderer** that can draw the glyphs that the typesetter
+3.  A **renderer** that can draw the glyphs from the fonts that the typesetter
     has selected in the locations that the typesetter has determined.
 
 ```{r, label="tex", echo=FALSE}
@@ -58,6 +51,9 @@ library(gggrid)
 ```{r, gaussian, echo=FALSE}
 x <- seq(-4, 4, length.out=100)
 df <- data.frame(x=x, y=dnorm(x))
+```
+
+```{r ggbase, echo=FALSE}
 gg <- ggplot(df) +
     geom_line(aes(x, y))
 ```
@@ -106,8 +102,7 @@ grid.latex(tex)
 
 # LaTeX annotations in plots
 
-As the function name `grid.latex()`
-suggests, {xdvir} only provides a low-level
+The function `grid.latex()` only provides a low-level
 interface for drawing LaTeX snippets as part of {grid} output.
 However, there are ways to combine {grid} output with higher-level
 plotting packages.
@@ -121,6 +116,10 @@ LaTeX output.
 
 ```{r}
 library(lattice)
+```
+
+```{r, eval=FALSE}
+<<gaussian>>
 ```
 
 ```{r, label="lattice-setup", echo=FALSE, eval=FALSE}
@@ -146,9 +145,10 @@ xyplot(y ~ x, df, type="l",
 <<lattice-plot>>
 ```
 
-If we want to add {grid} to a {graphics} plot, we can use the
+If we want to add {grid} output to a {graphics} plot, we can use the
 {gridGraphics} package [@RJ-2015-012; @pkg-gridGraphics].
-The following code draws a {graphics} plot, uses `gridGraphics::grid.echo()` to
+For example,
+the following code draws a {graphics} plot, uses `gridGraphics::grid.echo()` to
 convert it to {grid}, navigates to the {grid} viewport that
 represents the main plot region, and draws the mathematical equation
 in the top-left corner.
@@ -189,9 +189,12 @@ of the plot.
 library(gggrid)
 ```
 
+```{r eval=FALSE}
+<<ggbase>>
+```
+
 ```{r, fig.width=6, fig.height=3}
-ggplot(df) +
-    geom_line(aes(x, y)) +
+gg +
     grid_panel(latexGrob(tex,
                          x=unit(2, "mm"), 
                          y=unit(1, "npc") - unit(2, "mm"), 
@@ -209,9 +212,6 @@ plots.  This allows, for example, the title of a plot to contain
 LaTeX code, as shown in the image below.  For this to work, the relevant theme
 element must be set using `element_latex()`, as shown in the code below.
 
-```{r, eval=FALSE}
-<<gaussian>>
-```
 ```{r, fig.width=6, fig.height=3, message=FALSE}
 gg +
     labs(title=paste("The Normal Distribution:", tex)) +
@@ -238,6 +238,15 @@ ggplot(samples) +
                size=6, vjust=-.4, colour=2) +
     scale_y_continuous(expand=expansion(.25))
 ```
+
+# Related packages
+
+The {xdvir} package provides similar functionality to the 
+{gridtext} and {ggtext} packages [@pkg-gridtext; @pkg-ggtext]
+and the {marquee} package [@pkg-marquee].
+The main difference is the **markup** language that is supported.
+Where those packages are built on markdown, {xdvir} is built on LaTeX,
+with all of the joy and pain that that brings.
 
 # Trouble shooting
 
