@@ -823,10 +823,11 @@ tikzPreamble <- function(packages=NULL) {
     } else {
         usepackages <- NULL
     }
-    c(paste0("\\def\\pgfsysdriver{",
+    ## NOTE: quote path in case it contains spaces
+    c(paste0("\\def\\pgfsysdriver{'",
              system.file("tikz", "pgfsys-xdvir.def",
                          package="xdvir"),
-             "}"),
+             "'}"),
       "\\usepackage{tikz}",
       usepackages)
 }

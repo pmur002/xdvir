@@ -41,7 +41,7 @@ export("readDVI",
        "grid.lualatex", "lualatexGrob",
        "grid.xelatex", "xelatexGrob",
 
-       "element_latex", "geom_latex")
+       "element_latex", "geom_latex", "GeomLatex")
 
 
 S3method("packagePreamble", "NULL")

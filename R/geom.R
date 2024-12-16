@@ -38,7 +38,8 @@ geom_env <- new.env(parent=emptyenv())
 assign("geom", NULL, envir=geom_env)
 
 draw_panel_latex <- function(data, panel_params, coord, 
-                             width, dpi, packages, engine,
+                             width=NA, dpi=NA, packages=NULL,
+                             engine=getOption("xdvir.engine"),
                              na.rm=FALSE) {
     data <- coord$transform(data, panel_params)
 
@@ -111,7 +112,6 @@ make_latex_geom <- function() {
 }
 
 on_load(on_package_load("ggplot2", { make_latex_geom() }))
-
 
 compute_just <- function (just, a = 0.5, b = a, angle = 0) {
   if (!is.character(just)) {

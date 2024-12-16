@@ -220,8 +220,24 @@ gg +
 
 Although the need is probably less, for completeness, there is also
 a `geom_latex()` for adding LaTeX-styled data symbols.
+For example, the following code adds LaTeX text labels to a 
+dot plot.
 
-**TODO:** example please !!!
+```{r}
+samples <- data.frame(x=rnorm(50), sample=rep(1:5, each=10))
+means <- aggregate(samples$x, list(sample=samples$sample), mean)
+means$label <- paste0("$\\bar x_", means$sample, "$")
+```
+
+```{r, fig.width=6, fig.height=3, message=FALSE}
+ggplot(samples) +
+    geom_vline(xintercept=0, linetype="solid", colour=1, linewidth=.5) +
+    geom_point(aes(x, sample), size=4, alpha=.5) +
+    geom_point(aes(x, sample), data=means, colour=2, size=4) +
+    geom_latex(aes(x, sample, label=label), data=means, 
+               size=6, vjust=-.4, colour=2) +
+    scale_y_continuous(expand=expansion(.25))
+```
 
 # Trouble shooting
 
