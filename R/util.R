@@ -1,5 +1,5 @@
 
-currentFont <- function(family, face) {
+currentFamily <- function(family) {
     defaultFonts <- !nchar(family)
     if (any(defaultFonts)) {
         family[defaultFonts] <- "sans"
@@ -39,10 +39,7 @@ currentFont <- function(family, face) {
                   ifelse(family == "mono", "Courier",
                          family)))
     }
-    italic <- face %in% c("italic", "bold-italic")
-    weight <- ifelse(face %in% c("bold", "bold-italic"),
-                     "bold", "normal")
-    systemfonts::match_fonts(family, italic, weight)$path
+    family
 }
 
 ## Does typesetting need to be delayed

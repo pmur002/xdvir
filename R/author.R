@@ -14,7 +14,7 @@ commentLine <- function(tex) {
 ## Return LaTeX code and set of required packages.
 ## Assume that all values are non-NULL, though family could be "" (default font)
 ## Assume that all arguments are the same length
-##   If they come from element_latex or geom_late they are from a data frame
+##   If they come from element_latex or geom_latex they are from a data frame
 ##   If they come from grid.latex they are already rep'ed
 ## This function MUST be evaluated in the context within which the
 ## LaTeX code will be rendered (otherwise, e.g., default fonts may be wrong).
@@ -22,7 +22,23 @@ TeXfaces <- c("", ## "\\mdseries ",
               "\\bfseries ",
               "\\itshape ",
               "\\bfseries \\itshape ")
-    
+
+mainfont <- function(family, dir, local) {
+    if (local) {
+        paste0("\\setmainfont{", family[1], "}%\n",
+               "[BoldFont=", family[2], ",\n",
+               " ItalicFont=", family[3], ",\n",
+               " BoldItalicFont=", family[4], "]\n")
+    } else {
+        paste0("\\setmainfont{", basename(family[1]), "}%\n",
+               ## NOTE that this adds trailing slash to path
+               "[Path=", dir, "/,\n",
+               " BoldFont=", basename(family[2]), ",\n",
+               " ItalicFont=", basename(family[3]), ",\n",
+               " BoldItalicFont=", basename(family[4]), "]\n")
+    }
+}
+
 preset <- function(family, face, size, lineheight, colour) {
     packages <- list("fontspec")
     
@@ -30,16 +46,20 @@ preset <- function(family, face, size, lineheight, colour) {
         stop("No font family specified")
     defaultFonts <- !nchar(family) | family %in% c("sans", "serif", "mono")
     if (any(defaultFonts)) {
-        family[defaultFonts] <- currentFont(family, face)
+        family[defaultFonts] <- currentFamily(family)
     }
+    familyPaths <- lapply(family, 
+                          function(f) {
+                              systemfonts::match_fonts(f,
+                                                       c(FALSE, FALSE,
+                                                         TRUE, TRUE),
+                                                       c("normal", "bold",
+                                                         "normal", "bold"))$path
+                          })
     ## NOTE that this returns path with "/" separator even on Windows
-    dirs <- dirname(family)
+    dirs <- sapply(familyPaths, function(x) dirname(x[1]))
     local <- dirs == "."
-    fontfamily <- ifelse(local,
-                         paste0("\\setmainfont{", family, "}\n"),
-                         paste0("\\setmainfont{", basename(family), "}",
-                                ## NOTE that this adds trailing slash to path
-                                "[Path=", dirs, "/]\n"))
+    fontfamily <- mapply(mainfont, familyPaths, dirs, local)
     
     if (is.null(face))
         stop("No font face specified")
