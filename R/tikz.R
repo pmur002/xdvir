@@ -477,11 +477,29 @@ tikzStretch <- function(transform, transformDecomp) {
          any(transformDecomp$sk != 0))
 }
 
-stretchPaths <- function(px, py, cl, lx, by, transformDecomp,
+stretchPaths <- function(px, py, cl, lx, by, transform, transformDecomp,
                          closedClass, openClass, state) {
     x <- unlist(px)
     y <- unlist(py)
     if (length(unlist(px)) > 1) {
+        ## Apply current transform (if any)
+        ## NOTE that in stretch case this is just for bbox maintenance;
+        ##      the actual transform is implemented later in objToGrob()
+        if (length(transform)) {
+            tm <- transform[[1]]
+            xy <- tm %*% rbind(x, y, 1)
+            xx <- xy[1,]
+            yy <- xy[2,]
+        }
+        xx <- lx + xx
+        ## Negate by because TikZ is "up" while TeX is "down"
+        yy <- -by + yy
+        rx <- range(pt2TeX(xx, state))
+        updateBBoxHoriz(rx[1], state)
+        updateBBoxHoriz(rx[2], state)
+        ry <- -range(pt2TeX(yy, state))
+        updateBBoxVert(ry[1], state)
+        updateBBoxVert(ry[2], state)
         if (cl) {
             child <- list(lx=lx,
                           by=-by,
@@ -501,14 +519,16 @@ stretchPaths <- function(px, py, cl, lx, by, transformDecomp,
     }
 }
 
-strokeStretchPaths <- function(px, py, cl, lx, by, transformDecomp, state) {
-    stretchPaths(px, py, cl, lx, by, transformDecomp,
+strokeStretchPaths <- function(px, py, cl, lx, by, transform,
+                               transformDecomp, state) {
+    stretchPaths(px, py, cl, lx, by, transform, transformDecomp,
                  "XDVIRtikzStretchPathObj", "XDVIRtikzStretchPolylineObj",
                  state)
 }
 
-fillStretchPaths <- function(px, py, cl, lx, by, transformDecomp, state) {
-    stretchPaths(px, py, cl, lx, by, transformDecomp,
+fillStretchPaths <- function(px, py, cl, lx, by, transform,
+                             transformDecomp, state) {
+    stretchPaths(px, py, cl, lx, by, transform, transformDecomp,
                  "XDVIRtikzStretchFillObj", NA, state)
 }
 
@@ -516,17 +536,23 @@ drawPaths <- function(px, py, cl, lx, by, transform,
                       closedClass, openClass, state) {
     x <- unlist(px)
     y <- unlist(py)
-    ## Apply current transform (if any)
-    if (length(transform)) {
-        tm <- transform[[1]]
-        xy <- tm %*% rbind(x, y, 1)
-        x <- xy[1,]
-        y <- xy[2,]
-    }
-    x <- lx + x
-    ## Negate by because TikZ is "up" while TeX is "down"
-    y <- -by + y
     if (length(unlist(px)) > 1) {
+        ## Apply current transform (if any)
+        if (length(transform)) {
+            tm <- transform[[1]]
+            xy <- tm %*% rbind(x, y, 1)
+            x <- xy[1,]
+            y <- xy[2,]
+        }
+        x <- lx + x
+        ## Negate by because TikZ is "up" while TeX is "down"
+        y <- -by + y
+        rx <- range(pt2TeX(x, state))
+        updateBBoxHoriz(rx[1], state)
+        updateBBoxHoriz(rx[2], state)
+        ry <- -range(pt2TeX(y, state))
+        updateBBoxVert(ry[1], state)
+        updateBBoxVert(ry[2], state)
         if (cl) {
             child <- list(x=unit(x, "pt"),
                           y=unit(y, "pt"))
@@ -565,7 +591,7 @@ recordDraw <- function(draw, drawStretch, state) {
     ## (this allows most graphics devices to handle simpler transformations)
     if (tikzStretch(transform, transformDecomp)) { 
         mapply(drawStretch, pathX, pathY, closed,
-               MoreArgs=list(lx, by, transformDecomp, state=state))
+               MoreArgs=list(lx, by, transform, transformDecomp, state=state))
     } else {
         mapply(draw, pathX, pathY, closed,
                MoreArgs=list(lx, by, transform, state=state))
@@ -780,7 +806,7 @@ beginPicture <- function(state) {
 }
 
 endPicture <- function(special, state) {
-    recordBBox(special, state)
+    ## recordBBox(special, state)
     TeXset("h", TeXget("savedH", state), state)
     TeXset("v", TeXget("savedV", state), state)        
     TeXset("inPicture", FALSE, state)
