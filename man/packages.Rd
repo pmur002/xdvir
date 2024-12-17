@@ -14,15 +14,17 @@
 fontspecPackage(font=NULL, name=font)
 xcolorPackage()
 previewPackage()
-tikzPackage(name="tikz", packages=NULL)
-tikzPicture(name="tikzPicture", packages=NULL, bbox=NULL)
+tikzPackage(name="tikz", packages=NULL, bbox=TRUE)
+tikzPicture(name="tikzPicture", packages=NULL, bbox=TRUE)
 }
 \arguments{
   \item{font}{The name of a font to use as the main font.  See details.}
   \item{name}{The name of the resulting package.}
   \item{packages}{A character list of TikZ package names.}
-  \item{bbox}{A numeric vector of 4 values (left, bottom, right, top)
-    describing the bounding box for the TikZ picture.}
+  \item{bbox}{Either a logical indicating whether to use (or ignore) the
+    TikZ bounding box at the end of a TikZ picture,
+    or a numeric vector of 4 values (left, bottom, right, top)
+    describing the bounding box to use for the TikZ picture.}
 }
 \details{
   A \code{"preview"} package is available for setting a baseline

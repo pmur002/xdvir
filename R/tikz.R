@@ -482,24 +482,26 @@ stretchPaths <- function(px, py, cl, lx, by, transform, transformDecomp,
     x <- unlist(px)
     y <- unlist(py)
     if (length(unlist(px)) > 1) {
-        ## Apply current transform (if any)
-        ## NOTE that in stretch case this is just for bbox maintenance;
-        ##      the actual transform is implemented later in objToGrob()
-        if (length(transform)) {
-            tm <- transform[[1]]
-            xy <- tm %*% rbind(x, y, 1)
-            xx <- xy[1,]
-            yy <- xy[2,]
+        if (!TeXget("tikzBBox", state)) {
+            ## Apply current transform (if any)
+            ## NOTE that in stretch case this is just for bbox maintenance;
+            ##      the actual transform is implemented later in objToGrob()
+            if (length(transform)) {
+                tm <- transform[[1]]
+                xy <- tm %*% rbind(x, y, 1)
+                xx <- xy[1,]
+                yy <- xy[2,]
+            }
+            xx <- lx + xx
+            ## Negate by because TikZ is "up" while TeX is "down"
+            yy <- -by + yy
+            rx <- range(pt2TeX(xx, state))
+            updateBBoxHoriz(rx[1], state)
+            updateBBoxHoriz(rx[2], state)
+            ry <- -range(pt2TeX(yy, state))
+            updateBBoxVert(ry[1], state)
+            updateBBoxVert(ry[2], state)
         }
-        xx <- lx + xx
-        ## Negate by because TikZ is "up" while TeX is "down"
-        yy <- -by + yy
-        rx <- range(pt2TeX(xx, state))
-        updateBBoxHoriz(rx[1], state)
-        updateBBoxHoriz(rx[2], state)
-        ry <- -range(pt2TeX(yy, state))
-        updateBBoxVert(ry[1], state)
-        updateBBoxVert(ry[2], state)
         if (cl) {
             child <- list(lx=lx,
                           by=-by,
@@ -547,12 +549,14 @@ drawPaths <- function(px, py, cl, lx, by, transform,
         x <- lx + x
         ## Negate by because TikZ is "up" while TeX is "down"
         y <- -by + y
-        rx <- range(pt2TeX(x, state))
-        updateBBoxHoriz(rx[1], state)
-        updateBBoxHoriz(rx[2], state)
-        ry <- -range(pt2TeX(y, state))
-        updateBBoxVert(ry[1], state)
-        updateBBoxVert(ry[2], state)
+        if (!TeXget("tikzBBox", state)) {
+            rx <- range(pt2TeX(x, state))
+            updateBBoxHoriz(rx[1], state)
+            updateBBoxHoriz(rx[2], state)
+            ry <- -range(pt2TeX(y, state))
+            updateBBoxVert(ry[1], state)
+            updateBBoxVert(ry[2], state)
+        }
         if (cl) {
             child <- list(x=unit(x, "pt"),
                           y=unit(y, "pt"))
@@ -806,7 +810,8 @@ beginPicture <- function(state) {
 }
 
 endPicture <- function(special, state) {
-    ## recordBBox(special, state)
+    if (TeXget("tikzBBox", state))
+        recordBBox(special, state)
     TeXset("h", TeXget("savedH", state), state)
     TeXset("v", TeXget("savedV", state), state)        
     TeXset("inPicture", FALSE, state)
@@ -836,8 +841,13 @@ tikzSpecial <- function(specialString, state) {
 ## The basic preamble, etc
 ## NOTE that the preamble loads the xdvir-specific pgfsysdriver
 
-tikzInit <- function(state) {
-    TeXset("inPicture", FALSE, state)
+tikzInit <- function(bbox=TRUE) {
+    function(state) {
+        TeXset("inPicture", FALSE, state)
+        if (is.numeric(bbox))
+            bbox <- TRUE
+        TeXset("tikzBBox", bbox, state)
+    }
 }
 
 tikzPreamble <- function(packages=NULL) {
@@ -860,9 +870,9 @@ tikzPreamble <- function(packages=NULL) {
 
 tikzPrefix <- "\\begin{tikzpicture}"
 
-tikzSuffix <- function(bbox=NULL) {
+tikzSuffix <- function(bbox=TRUE) {
     suffix <- "\\end{tikzpicture}"
-    if (!is.null(bbox)) {
+    if (!is.logical(bbox)) {
         if (is.numeric(bbox) && length(bbox) == 4) {
             suffix <- c(paste0("\\pgfresetboundingbox\\useasboundingbox (",
                                bbox[1], ",", bbox[2], ") rectangle (",
@@ -875,20 +885,20 @@ tikzSuffix <- function(bbox=NULL) {
     suffix
 }
 
-tikzPackage <- function(name="tikz", packages=NULL) {
+tikzPackage <- function(name="tikz", packages=NULL, bbox=TRUE) {
     LaTeXpackage(name=name,
                  preamble=tikzPreamble(packages),
                  special=tikzSpecial,
-                 init=tikzInit)
+                 init=tikzInit(bbox))
 }
 
-tikzPicture <- function(name="tikzPicture", packages=NULL, bbox=NULL) {
+tikzPicture <- function(name="tikzPicture", packages=NULL, bbox=TRUE) {
     LaTeXpackage(name=name,
                  preamble=tikzPreamble(packages),
                  prefix=tikzPrefix,
                  suffix=tikzSuffix(bbox),
                  special=tikzSpecial,
-                 init=tikzInit)
+                 init=tikzInit(bbox))
 }
 
 

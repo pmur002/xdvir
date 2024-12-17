@@ -11,6 +11,7 @@ LaTeXpackage <- function(name,
     if (!is.character(name) && length(name) == 1) 
         stop("Invalid package name")
     pkg <- list(name=name,
+                init=init,
                 preamble=preamble,
                 prefix=prefix,
                 suffix=suffix,
