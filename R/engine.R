@@ -91,7 +91,7 @@ resolveEngine.character <- function(x, engine) {
     if (is.null(e1)) {
         warning("Unknown author TeX engine; typeset TeX engine may not match")
         if (is.null(engine)) {
-            getOption("xdvir.engine")
+            getEngine(getOption("xdvir.engine"))
         } else {
             getEngine(engine)
         }
@@ -117,7 +117,7 @@ resolveEngine.DVI <- function(x, engine) {
     if (is.null(e1)) {
         warning("Unknown typeset TeX engine; render TeX engine may not match")
         if (is.null(engine)) {
-            getOption("xdvir.engine")
+            getEngine(getOption("xdvir.engine"))
         } else {
             getEngine(engine)
         }
