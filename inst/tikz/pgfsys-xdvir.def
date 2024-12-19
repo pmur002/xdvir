@@ -471,7 +471,7 @@
 
 \newif\ifpgf@sys@xdvir@inpicture
 
-\def\pgfsys@invoke#1{\ifpgf@sys@xdvir@inpicture{\let\#\pgf@sys@xdvir@hash\special{xdvir:: #1}}\fi}
+\def\pgfsys@invoke#1{\ifpgf@sys@xdvir@inpicture{\let\#\pgf@sys@xdvir@hash\special{xdvir::tikz:: #1}}\fi}
 \def\pgfsys@beginpicture{%
   \pgf@sys@xdvir@inpicturetrue%
   \pgfsys@invoke{begin-picture;}%
@@ -532,6 +532,10 @@
 \def\pgfsys@markposition#1{%
   \pdfsavepos%
   \edef\pgf@temp{#1}%
+  \pgfsys@getposition{pgfpageorigin}\relax%
+  \pgfsysprotocol@literal{mark tikzorigin \pgf@sys@tonumber{\pgf@x} \pgf@sys@tonumber{\pgf@y}}%
+  \csname pgf@sys@pdf@mark@pos@#1\endcsname%
+  \pgfsysprotocol@literal{mark \pgf@temp\space \pgf@sys@tonumber{\pgf@x} \pgf@sys@tonumber{\pgf@y}}%
   \expandafter\pgfutil@writetoaux\expandafter{%
     \expandafter\noexpand\expandafter\pgfsyspdfmark\expandafter{\pgf@temp}{\the\pdflastxpos}{\the\pdflastypos}}%
 }

@@ -1,7 +1,7 @@
 
 ## Package zref-savepos for recording positions
 
-zrefPrefix <- "xdvir::zref:: "
+zrefSpecialPrefix <- "xdvir::zref:: "
 
 objToGrob.XDVIRzrefObj <- function(obj, dx, dy, ..., state) {
     x <- TeX2pt(TeXget("left", state) +
@@ -27,8 +27,8 @@ zrefAddObj <- function(x, state) {
 
 zrefSpecial <- function(specialString, state) {
     ## Ignore any other specials
-    if (grepl(paste0("^", zrefPrefix), specialString)) {
-        special <- gsub(zrefPrefix, "", specialString)
+    if (grepl(paste0("^", zrefSpecialPrefix), specialString)) {
+        special <- gsub(zrefSpecialPrefix, "", specialString)
         if (grepl("^mark", special)) {
             zrefAddObj(special, state)
         } else {
@@ -44,7 +44,7 @@ zrefPreamble <- sprintf(r"(
 \usepackage{zref-savepos}
 \newcommand{\zmark}[1]{\special{%smark #1 \zposx{#1} \zposy{#1}}}
 \AtBeginShipoutFirst{\zsavepos{zref:origin}\zmark{zref:origin}}
-)", zrefPrefix)
+)", zrefSpecialPrefix)
 
 zrefPackage <- function() {
     LaTeXpackage(name="zref",

@@ -2,6 +2,8 @@
 ################################################################################
 ## Code to support specials:
 
+tikzSpecialPrefix <- "xdvir::tikz:: "
+
 ## ops
 ## Called from setChar()
 tikzTransform <- function(state) {
@@ -190,7 +192,13 @@ objToGrob.XDVIRtikzStretchFillObj <- function(obj, dx, dy, ...) {
     buildTikZstretchObj(obj, dx, dy, pathGrob, gpar(col=NA))
 }
 
-objToGrob.XDVIRtikzParentObj <- function(obj, dx, dy, ...) {
+objToGrob.XDVIRtikzMarkObj <- function(obj, dx, dy, ..., state) {
+    x <- obj$x + dx
+    y <- obj$y + dy
+    nullGrob(x=x, y=y, default.units="bigpts", name=obj$name)
+}
+
+objToGrob.XDVIRtikzParentObj <- function(obj, dx, dy, ..., state) {
     children <- obj$children
     parent <- NULL
     gp <- do.call(gpar, obj$gs)
@@ -199,14 +207,15 @@ objToGrob.XDVIRtikzParentObj <- function(obj, dx, dy, ...) {
         parent <- setChildren(parent,
                               do.call(gList,
                                       lapply(children, objToGrob,
-                                             dx, dy)))
+                                             dx, dy, ..., state=state)))
     }
     parent
 }
 
 objToGrob.XDVIRtikzObj <- function(obj, dx, dy, ..., state) {
     gTree(children=do.call(gList,
-                           lapply(obj$children, objToGrob, dx, dy)))
+                           lapply(obj$children, objToGrob, dx, dy, ...,
+                                  state=state)))
 }
 
 buildRotatedGlyph <- function(obj, dx, dy, state) {
@@ -706,6 +715,15 @@ addTikzObj <- function(x, state) {
     addDVIobj(tikzObj, state)
 }
 
+recordMark <- function(x, state) {
+    name <- x[1]
+    xx <- as.numeric(x[2])
+    yy <- as.numeric(x[3])
+    markObj <- list(name=name, x=xx, y=yy)
+    class(markObj) <- "XDVIRtikzMarkObj"
+    addChild(markObj, state)
+}
+
 recordBeginScope <- function(x, state) {
     gsStack <- TeXget("tikzGS", state)
     TeXset("tikzGS", c(gsStack[1], gsStack), state)
@@ -745,6 +763,7 @@ recordSpecial <- function(x, state) {
                `fill`=recordFill(state),
                `fill-stroke`=recordFillStroke(state), 
                `transform`=recordTransform(tokens[-1], state),
+               `mark`=recordMark(tokens[-1], state),
                stop("Unsupported TikZ special"))
     } else {
         ## Path
@@ -819,8 +838,8 @@ endPicture <- function(special, state) {
 
 tikzSpecial <- function(specialString, state) {
     ## Ignore any other specials
-    if (grepl("^xdvir:: ", specialString)) {
-        special <- gsub("xdvir:: ", "", specialString)
+    if (grepl(paste0("^", tikzSpecialPrefix), specialString)) {
+        special <- gsub(tikzSpecialPrefix, "", specialString)
         if (grepl("^begin-picture", special)) {
             beginPicture(state)
         } else if (grepl("^end-picture", special)) {
