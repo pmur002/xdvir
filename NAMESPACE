@@ -108,6 +108,7 @@ S3method("objToGrob", "XDVIRtikzStretchPolylineObj")
 S3method("objToGrob", "XDVIRtikzStretchFillObj")
 S3method("objToGrob", "XDVIRrotatedGlyphObj")
 S3method("objToGrob", "XDVIRtransformedGlyphObj")
+S3method("objToGrob", "XDVIRzrefObj")
 
 S3method("print", "DVI")
 S3method("print", "TeXengine")
