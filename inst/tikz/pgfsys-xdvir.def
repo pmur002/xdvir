@@ -532,10 +532,6 @@
 \def\pgfsys@markposition#1{%
   \pdfsavepos%
   \edef\pgf@temp{#1}%
-  \pgfsys@getposition{pgfpageorigin}\relax%
-  \pgfsysprotocol@literal{mark tikzorigin \pgf@sys@tonumber{\pgf@x} \pgf@sys@tonumber{\pgf@y}}%
-  \csname pgf@sys@pdf@mark@pos@#1\endcsname%
-  \pgfsysprotocol@literal{mark \pgf@temp\space \pgf@sys@tonumber{\pgf@x} \pgf@sys@tonumber{\pgf@y}}%
   \expandafter\pgfutil@writetoaux\expandafter{%
     \expandafter\noexpand\expandafter\pgfsyspdfmark\expandafter{\pgf@temp}{\the\pdflastxpos}{\the\pdflastypos}}%
 }

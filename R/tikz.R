@@ -193,8 +193,10 @@ objToGrob.XDVIRtikzStretchFillObj <- function(obj, dx, dy, ...) {
 }
 
 objToGrob.XDVIRtikzMarkObj <- function(obj, dx, dy, ..., state) {
-    x <- obj$x + dx
-    y <- obj$y + dy
+    x <- TeX2pt(TeXget("left", state), state) +
+        (obj$x - TeXget("tikz.origin", state)$x) + dx
+    y <- -TeX2pt(TeXget("top", state), state) -
+        (TeXget("tikz.origin", state)$y - obj$y) + dy
     nullGrob(x=x, y=y, default.units="bigpts", name=obj$name)
 }
 
@@ -717,11 +719,15 @@ addTikzObj <- function(x, state) {
 
 recordMark <- function(x, state) {
     name <- x[1]
-    xx <- as.numeric(x[2])
-    yy <- as.numeric(x[3])
-    markObj <- list(name=name, x=xx, y=yy)
-    class(markObj) <- "XDVIRtikzMarkObj"
-    addChild(markObj, state)
+    xx <- as.numeric(gsub("pt", "", x[2]))
+    yy <- as.numeric(gsub("pt", "", x[3]))
+    if (name == "tikz.origin") {
+        TeXset("tikz.origin", list(x=xx, y=yy), state)
+    } else {
+        markObj <- list(name=name, x=xx, y=yy)
+        class(markObj) <- "XDVIRtikzMarkObj"
+        addChild(markObj, state)
+    }
 }
 
 recordBeginScope <- function(x, state) {
@@ -878,13 +884,22 @@ tikzPreamble <- function(packages=NULL) {
     } else {
         usepackages <- NULL
     }
+    xdvirtikzmark <- paste0(r"(
+\newcommand{\xdvirtikzmark}[1]{%
+\tikz[overlay]%
+\path let \p1=(pic cs:#1) in (\x1, \y1)%
+\pgfextra{\special{)", tikzSpecialPrefix, r"( mark #1 \x1\space \y1}};}%
+\usepackage{atbegshi}
+\AtBeginShipoutFirst{\tikzmark{tikz.origin}\xdvirtikzmark{tikz.origin}}
+)")
     ## NOTE: quote path in case it contains spaces
     c(paste0("\\def\\pgfsysdriver{'",
              system.file("tikz", "pgfsys-xdvir.def",
                          package="xdvir"),
              "'}"),
       "\\usepackage{tikz}",
-      usepackages)
+      usepackages,
+      xdvirtikzmark)
 }
 
 tikzPrefix <- "\\begin{tikzpicture}"
