@@ -875,7 +875,7 @@ tikzInit <- function(bbox=TRUE) {
     }
 }
 
-tikzPreamble <- function(packages=NULL) {
+tikzPreamble <- function(packages=NULL, quote=TRUE) {
     if (!is.null(packages)) {
         if (!is.character(packages))
             stop("Invalid TikZ packages")
@@ -892,11 +892,17 @@ tikzPreamble <- function(packages=NULL) {
 \usepackage{atbegshi}
 \AtBeginShipoutFirst{\tikzmark{tikz.origin}\xdvirtikzmark{tikz.origin}}
 )")
-    ## NOTE: quote path in case it contains spaces
-    c(paste0("\\def\\pgfsysdriver{'",
+    ## NOTE: xelatex requires quote path in case it contains spaces
+    ##       BUT OTOH lualatex treats quotes as part of file name and barfs!
+    if (quote) {
+        quot <- "'"
+    } else {
+        quot <- NULL
+    }
+    c(paste0("\\def\\pgfsysdriver{", quot,
              system.file("tikz", "pgfsys-xdvir.def",
                          package="xdvir"),
-             "'}"),
+             quot, "}"),
       "\\usepackage{tikz}",
       usepackages,
       xdvirtikzmark)
@@ -919,16 +925,17 @@ tikzSuffix <- function(bbox=TRUE) {
     suffix
 }
 
-tikzPackage <- function(name="tikz", packages=NULL, bbox=TRUE) {
+tikzPackage <- function(name="tikz", packages=NULL, bbox=TRUE, quote=TRUE) {
     LaTeXpackage(name=name,
-                 preamble=tikzPreamble(packages),
+                 preamble=tikzPreamble(packages, quote),
                  special=tikzSpecial,
                  init=tikzInit(bbox))
 }
 
-tikzPicture <- function(name="tikzPicture", packages=NULL, bbox=TRUE) {
+tikzPicture <- function(name="tikzPicture", packages=NULL,
+                        bbox=TRUE, quote=TRUE) {
     LaTeXpackage(name=name,
-                 preamble=tikzPreamble(packages),
+                 preamble=tikzPreamble(packages, quote),
                  prefix=tikzPrefix,
                  suffix=tikzSuffix(bbox),
                  special=tikzSpecial,
