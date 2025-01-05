@@ -471,7 +471,7 @@
 
 \newif\ifpgf@sys@xdvir@inpicture
 
-\def\pgfsys@invoke#1{\ifpgf@sys@xdvir@inpicture{\let\#\pgf@sys@xdvir@hash\special{xdvir::tikz:: #1}}\fi}
+\def\pgfsys@invoke#1{\ifpgf@sys@xdvir@inpicture{\let\#\pgf@sys@xdvir@hash\special{xdvir-tikz:: #1}}\fi}
 \def\pgfsys@beginpicture{%
   \pgf@sys@xdvir@inpicturetrue%
   \pgfsys@invoke{begin-picture;}%
