@@ -1,7 +1,7 @@
 
 ## Package zref-savepos for recording positions
 
-zrefSpecialPrefix <- "xdvir::zref:: "
+zrefSpecialPrefix <- "xdvir-zref:: "
 
 objToGrob.XDVIRzrefObj <- function(obj, dx, dy, ..., state) {
     x <- TeX2pt(TeXget("left", state) +

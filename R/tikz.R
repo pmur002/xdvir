@@ -2,7 +2,7 @@
 ################################################################################
 ## Code to support specials:
 
-tikzSpecialPrefix <- "xdvir::tikz:: "
+tikzSpecialPrefix <- "xdvir-tikz:: "
 
 ## ops
 ## Called from setChar()
@@ -884,7 +884,8 @@ tikzPreamble <- function(packages=NULL, quote=TRUE) {
     } else {
         usepackages <- NULL
     }
-    xdvirtikzmark <- paste0(r"(
+    if ("tikzmark" %in% packages) {
+        xdvirtikzmark <- paste0(r"(
 \newcommand{\xdvirtikzmark}[1]{%
 \tikz[overlay]%
 \path let \p1=(pic cs:#1) in (\x1, \y1)%
@@ -892,6 +893,9 @@ tikzPreamble <- function(packages=NULL, quote=TRUE) {
 \usepackage{atbegshi}
 \AtBeginShipoutFirst{\tikzmark{tikz.origin}\xdvirtikzmark{tikz.origin}}
 )")
+    } else {
+        xdvirtikzmark <- ""
+    }
     ## NOTE: xelatex requires quote path in case it contains spaces
     ##       BUT OTOH lualatex treats quotes as part of file name and barfs!
     if (quote) {
