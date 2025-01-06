@@ -77,7 +77,7 @@ calculateOffset <- function(x, y, hjust, vjust, state) {
                        "bbleft", "bbright", "bbcentre")
     anchors <- TeXget("hAnchors", state)
     if (!is.null(anchors)) {
-        hAnchorValues <- c(hAnchorValues, anchors$value)
+        hAnchorValues <- c(hAnchorValues, TeX2pt(anchors$value, state))
         hAnchorLabels <- c(hAnchorLabels, anchors$label)
     }
     hAnchor <- glyphAnchor(hAnchorValues, hAnchorLabels)

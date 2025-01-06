@@ -4,14 +4,12 @@
 zrefSpecialPrefix <- "xdvir-zref:: "
 
 objToGrob.XDVIRzrefObj <- function(obj, dx, dy, ..., state) {
-    x <- TeX2pt(TeXget("left", state) +
-                (obj$x - TeXget("zref.origin", state)$x), state) + dx
-    y <- TeX2pt(-TeXget("top", state) -
-                (TeXget("zref.origin", state)$y - obj$y), state) + dy
-    nullGrob(x=x, y=y, default.units="bigpts", name=obj$name)
+    nullGrob(x=TeX2pt(obj$x, state) + dx,
+             y=-TeX2pt(obj$y, state) + dy,
+             default.units="bigpts", name=obj$name)
 }
 
-zrefAddObj <- function(x, state) {
+zrefRecordObj <- function(x, state) {
     tokens <- strsplit(gsub(" *$", "", x), " ")[[1]]
     label <- tokens[2]
     x <- as.numeric(tokens[3])
@@ -19,9 +17,9 @@ zrefAddObj <- function(x, state) {
     if (label == "zref.origin") {
         TeXset("zref.origin", list(x=x, y=y), state)
     } else {
+        objList <- TeXget("zref.objList", state)
         zrefObj <- list(name=label, x=x, y=y)
-        class(zrefObj) <- "XDVIRzrefObj"
-        addDVIobj(zrefObj, state)
+        TeXset("zref.objList", c(objList, list(zrefObj)), state)
     }
 }
 
@@ -30,11 +28,32 @@ zrefSpecial <- function(specialString, state) {
     if (grepl(paste0("^", zrefSpecialPrefix), specialString)) {
         special <- gsub(zrefSpecialPrefix, "", specialString)
         if (grepl("^mark", special)) {
-            zrefAddObj(special, state)
+            zrefRecordObj(special, state)
         } else {
             warning("Unsupported zref special")
         }
     }
+}
+
+zrefInit <- function(state) {
+    TeXset("zref.objList", NULL, state)
+}
+
+zrefFinal <- function(state) {
+    ## Now we know final left/top etc, we can add zref objects for real
+    ## AND create anchors from zref marks
+    objList <- TeXget("zref.objList", state)
+    origin <- TeXget("zref.origin", state)
+    lapply(objList,
+           function(obj) {
+               x <- TeXget("left", state) + (obj$x - origin$x)
+               y <- TeXget("top", state) + (origin$y - obj$y)
+               zrefObj <- list(name=obj$name, x=x, y=y)
+               class(zrefObj) <- "XDVIRzrefObj"
+               addDVIobj(zrefObj, state)
+               addAnchor(x, obj$name, "h", state)
+               addAnchor(y, obj$name, "v", state)
+           })
 }
 
 ## Define \zmark command to output saved positions to DVI
@@ -50,5 +69,7 @@ zrefPackage <- function() {
     LaTeXpackage(name="zref",
                  preamble=zrefPreamble,
                  suffix=r"()",
-                 special=zrefSpecial)
+                 special=zrefSpecial,
+                 init=zrefInit,
+                 final=zrefFinal)
 }
