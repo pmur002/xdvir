@@ -193,10 +193,8 @@ objToGrob.XDVIRtikzStretchFillObj <- function(obj, dx, dy, ...) {
 }
 
 objToGrob.XDVIRtikzMarkObj <- function(obj, dx, dy, ..., state) {
-    x <- TeX2pt(TeXget("left", state), state) +
-        (obj$x - TeXget("tikz.origin", state)$x) + dx
-    y <- -TeX2pt(TeXget("top", state), state) -
-        (TeXget("tikz.origin", state)$y - obj$y) + dy
+    x <- TeX2pt(obj$x, state) + dx
+    y <- -TeX2pt(obj$y, state) + dy
     nullGrob(x=x, y=y, default.units="bigpts", name=obj$name)
 }
 
@@ -724,9 +722,9 @@ recordMark <- function(x, state) {
     if (name == "tikz.origin") {
         TeXset("tikz.origin", list(x=xx, y=yy), state)
     } else {
-        markObj <- list(name=name, x=xx, y=yy)
-        class(markObj) <- "XDVIRtikzMarkObj"
-        addChild(markObj, state)
+        markList <- TeXget("tikz.markList", state)
+        tikzMark <- list(name=name, x=xx, y=yy)
+        TeXset("tikz.markList", c(markList, list(tikzMark)), state)
     }
 }
 
@@ -872,7 +870,25 @@ tikzInit <- function(bbox=TRUE) {
         if (is.numeric(bbox))
             bbox <- TRUE
         TeXset("tikzBBox", bbox, state)
+        TeXset("tikz.markList", NULL, state)
     }
+}
+
+tikzFinal <- function(state) {
+    ## Now we know final left/top etc, we can add tikz mark objects for real
+    ## AND create anchors from tikz marks
+    markList <- TeXget("tikz.markList", state)
+    origin <- TeXget("tikz.origin", state)
+    lapply(markList,
+           function(mark) {
+               x <- TeXget("left", state) + pt2TeX(mark$x - origin$x, state)
+               y <- TeXget("top", state) + pt2TeX(origin$y - mark$y, state)
+               tikzMark <- list(name=mark$name, x=x, y=y)
+               class(tikzMark) <- "XDVIRtikzMarkObj"
+               addDVIobj(tikzMark, state)
+               addAnchor(x, mark$name, "h", state)
+               addAnchor(y, mark$name, "v", state)
+           })
 }
 
 tikzPreamble <- function(packages=NULL, quote=TRUE) {
@@ -933,7 +949,8 @@ tikzPackage <- function(name="tikz", packages=NULL, bbox=TRUE, quote=TRUE) {
     LaTeXpackage(name=name,
                  preamble=tikzPreamble(packages, quote),
                  special=tikzSpecial,
-                 init=tikzInit(bbox))
+                 init=tikzInit(bbox),
+                 final=tikzFinal)
 }
 
 tikzPicture <- function(name="tikzPicture", packages=NULL,
@@ -943,7 +960,8 @@ tikzPicture <- function(name="tikzPicture", packages=NULL,
                  prefix=tikzPrefix,
                  suffix=tikzSuffix(bbox),
                  special=tikzSpecial,
-                 init=tikzInit(bbox))
+                 init=tikzInit(bbox),
+                 final=tikzFinal)
 }
 
 
