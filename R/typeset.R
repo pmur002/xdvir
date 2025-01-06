@@ -131,7 +131,7 @@ typesetEngine.DVI <- function(x) {
         warning("Guessing typesetting engine from DVI pre op comment")
         ## Try to guess from DVI pre op comment
         engines <- get("engines")
-        isEngine <- sapply(engines, function(y) y$isEngine(x))
+        isEngine <- sapply(engines, function(y) y$isEngine(commentStr))
         if (any(isEngine)) {
             if (sum(isEngine) > 1) {
                 warning(paste0("More than one engine identified ",

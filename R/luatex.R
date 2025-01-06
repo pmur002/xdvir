@@ -51,8 +51,7 @@ luaOTFloadToolSufficient <- function() {
 ## Ensure non-Type1 math font
 lualatexPreamble <- "\\usepackage{unicode-math}"
 
-isLuaTeX <- function(dvi) {
-    commentStr <- commentString(dvi)
+isLuaTeX <- function(commentStr) {
     grepl("LuaTeX", commentStr)
 }
 
