@@ -19,7 +19,9 @@ zrefPackage()
 
   A new command, \code{\\xdvirzmark{label}}, is defined
   to allow saved positions also to be recorded in the rendered LaTeX in
-  R.  See the \code{\link{getMark}} function.
+  R.  This produces \code{\link[grid]{nullGrob}} objects at the
+  relevant locations plus anchors (for justification) at the relevant
+  locations.
   
   A predefined package is pre-registered
   under the name \code{"zref"}.

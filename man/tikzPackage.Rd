@@ -40,7 +40,9 @@ tikzPicture(name="tikzPicture", packages=NULL, bbox=TRUE, quote=TRUE)
   If \code{"tikzmark"} is one of the \code{packages}, then a new
   command, \code{\\xdvirtikzmark{label}}, is defined 
   to allow saved positions also to be recorded in the rendered LaTeX in
-  R.  See the \code{\link{getMark}} function.
+  R.  This produces \code{\link[grid]{nullGrob}} objects at the
+  relevant locations plus anchors (for justification) at the relevant
+  locations.
 }
 \value{
   A \code{"LaTeXpackage"} object.
