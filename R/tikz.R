@@ -193,9 +193,15 @@ objToGrob.XDVIRtikzStretchFillObj <- function(obj, dx, dy, ...) {
 }
 
 objToGrob.XDVIRtikzMarkObj <- function(obj, dx, dy, ..., state) {
-    x <- TeX2pt(obj$x, state) + dx
-    y <- -TeX2pt(obj$y, state) + dy
-    nullGrob(x=x, y=y, default.units="bigpts", name=obj$name)
+    xpt <- unit(TeX2pt(obj$x, state) + dx, "bigpts")
+    ypt <- unit(-TeX2pt(obj$y, state) + dy, "bigpts")
+    ## Add a mark
+    devLoc <- deviceLoc(xpt, ypt)
+    addMark(obj$name,
+            devx=devLoc$x, devy=devLoc$y,
+            vpx=xpt, vpy=ypt, vpPath=current.vpPath())
+    ## Return null grob
+    nullGrob(x=xpt, y=ypt, name=obj$name)
 }
 
 objToGrob.XDVIRtikzParentObj <- function(obj, dx, dy, ..., state) {

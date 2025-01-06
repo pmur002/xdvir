@@ -43,7 +43,9 @@ export("readDVI",
        "grid.lualatex", "lualatexGrob",
        "grid.xelatex", "xelatexGrob",
 
-       "element_latex", "geom_latex", "GeomLatex")
+       "element_latex", "geom_latex", "GeomLatex",
+
+       "addMark", "getMark")
 
 
 S3method("packagePreamble", "NULL")
@@ -84,6 +86,7 @@ S3method("yDetails", "DVIgTree")
 S3method("widthDetails", "DVIgTree")
 S3method("heightDetails", "DVIgTree")
 
+S3method("makeContext", "DVIgrob")
 S3method("makeContent", "DVIgrob")
 S3method("xDetails", "DVIgrob")
 S3method("yDetails", "DVIgrob")

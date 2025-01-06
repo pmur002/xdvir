@@ -4,9 +4,15 @@
 zrefSpecialPrefix <- "xdvir-zref:: "
 
 objToGrob.XDVIRzrefObj <- function(obj, dx, dy, ..., state) {
-    nullGrob(x=TeX2pt(obj$x, state) + dx,
-             y=-TeX2pt(obj$y, state) + dy,
-             default.units="bigpts", name=obj$name)
+    xpt <- unit(TeX2pt(obj$x, state) + dx, "bigpts")
+    ypt <- unit(-TeX2pt(obj$y, state) + dy, "bigpts")
+    ## Add a mark
+    devLoc <- deviceLoc(xpt, ypt)
+    addMark(obj$name,
+            devx=devLoc$x, devy=devLoc$y,
+            vpx=xpt, vpy=ypt, vpPath=current.vpPath())
+    ## Return null grob
+    nullGrob(x=xpt, y=ypt, name=obj$name)
 }
 
 zrefRecordObj <- function(x, state) {
@@ -48,9 +54,11 @@ zrefFinal <- function(state) {
            function(obj) {
                x <- TeXget("left", state) + (obj$x - origin$x)
                y <- TeXget("top", state) + (origin$y - obj$y)
+               ## Add an object to create a nullGrob and add marks
                zrefObj <- list(name=obj$name, x=x, y=y)
                class(zrefObj) <- "XDVIRzrefObj"
                addDVIobj(zrefObj, state)
+               ## Add anchors
                addAnchor(x, obj$name, "h", state)
                addAnchor(y, obj$name, "v", state)
            })

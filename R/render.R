@@ -142,10 +142,8 @@ addMargin <- function(margin, state) {
     state
 }
 
-rotVP <- function(x, y, rot, offset) {
-    viewport(x,
-             y,
-             angle=rot)
+rotVP <- function(x, y, rot) {
+    viewport(x, y, angle=rot)
 }
 
 buildDVIgrob <- function(objList, x, y, rot, hjust, vjust, name, gp, state,
@@ -156,13 +154,19 @@ buildDVIgrob <- function(objList, x, y, rot, hjust, vjust, name, gp, state,
           cl="DVIgrob")
 }
 
+makeContext.DVIgrob <- function(x, ...) {
+    ## This will not override any existing 'vp' because a DVIgrob
+    ## is only created by buildDVIgrob() which does not set 'vp'
+    ## Viewport for rotation
+    x$vp <- rotVP(x$x, x$y, x$rot)
+    x
+}
+
 makeContent.DVIgrob <- function(x, ...) {
     if (length(x$objList)) {
         state <- addMargin(x$margin, x$state)
         ## Calculate offset for non-text drawing
         offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
-        ## Viewport for rotation
-        vp <- rotVP(x$x, x$y, x$rot, offset)
         ## Generate grobs from objs
         grobs <- lapply(x$objList, objToGrob,
                         x=x$x, y=x$y, hjust=x$hjust, vjust=x$vjust,
@@ -171,9 +175,7 @@ makeContent.DVIgrob <- function(x, ...) {
                         dx=offset$x, dy=offset$y,
                         dpi=x$dpi,
                         state=state)
-        dvigrob <- gTree(children=do.call(gList, grobs),
-                         vp=vp)
-        x <- setChildren(x, gList(dvigrob))
+        x <- setChildren(x, do.call(gList, grobs))
     } 
     x
 }
@@ -182,7 +184,7 @@ xDetails.DVIgrob <- function(x, theta) {
     if (length(x$objList)) {
         state <- addMargin(x$margin, x$state)
         offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
-        vp <- rotVP(x$x, x$y, x$rot, offset)
+        vp <- rotVP(x$x, x$y, x$rot)
         left <- TeX2pt(TeXget("left", state), state)
         right <- TeX2pt(TeXget("right", state), state)
         bottom <- -TeX2pt(TeXget("bottom", state), state)
@@ -208,7 +210,7 @@ yDetails.DVIgrob <- function(x, theta) {
     if (length(x$objList)) {
         state <- addMargin(x$margin, x$state)
         offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
-        vp <- rotVP(x$x, x$y, x$rot, offset)
+        vp <- rotVP(x$x, x$y, x$rot)
         left <- TeX2pt(TeXget("left", state), state)
         right <- TeX2pt(TeXget("right", state), state)
         bottom <- -TeX2pt(TeXget("bottom", state), state)
@@ -234,7 +236,7 @@ widthDetails.DVIgrob <- function(x) {
     if (length(x$objList)) {
         state <- addMargin(x$margin, x$state)
         offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
-        vp <- rotVP(x$x, x$y, x$rot, offset)
+        vp <- rotVP(x$x, x$y, x$rot)
         left <- TeX2pt(TeXget("left", state), state)
         right <- TeX2pt(TeXget("right", state), state)
         bottom <- -TeX2pt(TeXget("bottom", state), state)
@@ -256,7 +258,7 @@ heightDetails.DVIgrob <- function(x) {
     if (length(x$objList)) {
         state <- addMargin(x$margin, x$state)
         offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
-        vp <- rotVP(x$x, x$y, x$rot, offset)
+        vp <- rotVP(x$x, x$y, x$rot)
         left <- TeX2pt(TeXget("left", state), state)
         right <- TeX2pt(TeXget("right", state), state)
         bottom <- -TeX2pt(TeXget("bottom", state), state)
@@ -278,7 +280,7 @@ grobCoords.DVIgrob <- function(x, closed=TRUE, ...) {
     if (closed && length(x$objList)) {
         state <- addMargin(x$margin, x$state)
         offset <- calculateOffset(x$x, x$y, x$hjust, x$vjust, state)
-        vp <- rotVP(x$x, x$y, x$rot, offset)
+        vp <- rotVP(x$x, x$y, x$rot)
         left <- TeX2pt(TeXget("left", state), state)
         right <- TeX2pt(TeXget("right", state), state)
         bottom <- -TeX2pt(TeXget("bottom", state), state)
