@@ -3,7 +3,10 @@
 nullEngine <- TeXengine(name="null",
                         version=packageVersion("xdvir"),
                         command=NULL,
-                        isEngine=function(dvi) FALSE)
+                        isEngine=function(dvi) FALSE,
+                        glyphIndex=function(raw) glyphIndex(raw),
+                        fontFile=function(fontname)
+                            gsub("[[]|[]].*", "", fontname))
 registerEngine(nullEngine)
 
 .onLoad <- function(libname, pkgname) {
@@ -17,6 +20,8 @@ registerEngine(nullEngine)
                                  version=xetexVersion(),
                                  command="xelatex",
                                  isEngine=isXeTeX,
+                                 glyphIndex=xeGlyphIndex,
+                                 fontFile=xeFontFile,
                                  options="--no-pdf",
                                  preamble=xelatexPreamble,
                                  dviSuffix=".xdv")   
@@ -30,6 +35,8 @@ registerEngine(nullEngine)
                                   version=luatexVersion(),
                                   command="lualatex",
                                   isEngine=isLuaTeX,
+                                  glyphIndex=luaGlyphIndex,
+                                  fontFile=luaFontFile,
                                   options="--output-format=dvi",
                                   preamble=lualatexPreamble)
         registerEngine(LuaTeXengine)

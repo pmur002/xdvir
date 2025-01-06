@@ -20,10 +20,18 @@ xetexAvailable <- function() {
 ## Ensure non-Type1 math font
 xelatexPreamble <- "\\usepackage{unicode-math}"
 
-isXeTeX <- function(commentStr) {
+isXeTeX <- function(dvi) {
+    commentStr <- commentString(dvi)
     grepl("XeTeX", commentStr)
 }
 
+xeGlyphIndex <- function(raw) {
+    glyphIndex(raw)
+}
+
+xeFontFile <- function(fontname) {
+    gsub("[[]|[]].*", "", fontname)
+}
 
 xelatexGrob <- function(tex, ...) {
     if (!xetexAvailable())

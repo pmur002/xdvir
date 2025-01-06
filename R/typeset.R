@@ -64,12 +64,12 @@ latex <- function(file, dir, engine, packages, dviFile, sig=TRUE) {
         options <- c(engine$options,
                      shQuote(paste0("--output-directory=", dir)))
     }
+    options(tinytex.output_dir=dir)
     if (tinytexVersion() > "0.54") {
         ## A bit of jumping through hoops to use output-directory successfully
         ## 1.  Set options(tinytex.output) below
         ## 2.  Use shQuote() in 'options' above to match internal call
         ##     in latexmk()
-        options(tinytex.output_dir=dir)
         latexmk(file,
                 engine=engine$command,
                 engine_args=options)
@@ -131,7 +131,7 @@ typesetEngine.DVI <- function(x) {
         warning("Guessing typesetting engine from DVI pre op comment")
         ## Try to guess from DVI pre op comment
         engines <- get("engines")
-        isEngine <- sapply(engines, function(y) y$isEngine(commentStr))
+        isEngine <- sapply(engines, function(y) y$isEngine(x))
         if (any(isEngine)) {
             if (sum(isEngine) > 1) {
                 warning(paste0("More than one engine identified ",

@@ -51,8 +51,17 @@ luaOTFloadToolSufficient <- function() {
 ## Ensure non-Type1 math font
 lualatexPreamble <- "\\usepackage{unicode-math}"
 
-isLuaTeX <- function(commentStr) {
+isLuaTeX <- function(dvi) {
+    commentStr <- commentString(dvi)
     grepl("LuaTeX", commentStr)
+}
+
+luaGlyphIndex <- function(raw) {
+    glyphIndex(raw)
+}
+
+luaFontFile <- function(fontname) {
+    gsub("[[]|[]].*", "", fontname)
 }
 
 lualatexGrob <- function(tex, ...) {

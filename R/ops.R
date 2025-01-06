@@ -75,7 +75,8 @@ setChar <- function(raw, put=FALSE, state) {
     fontLib <- TeXget("fontLib", state)
     ## Lots of things depend on text direction
     dir <- TeXget("dir", state)
-    id <- glyphIndex(raw)
+    engine <- TeXget("engine", state)
+    id <- engine$glyphIndex(raw)
     bbox <- TeXglyphBounds(id, font$file, font$size, fontLib, state)
     if (dir == 0) {
         width <- TeXglyphWidth(id, font$file, font$size, fontLib, state)
@@ -440,7 +441,7 @@ op_font_def <- function(op, state) {
         ## Reduce vector of individual characters to single character value
         fontname <- paste(blockValue(op$blocks$op.opparams.fontname.name),
                           collapse="")
-        fontfile <- gsub("[[]|[]].*", "", fontname)
+        fontfile <- engine$fontFile(fontname)
         s <- blockValue(op$blocks$op.opparams.s)
         d <- blockValue(op$blocks$op.opparams.d)
         mag <- TeXget("mag", state)
