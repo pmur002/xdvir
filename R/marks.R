@@ -9,13 +9,13 @@ initMarks <- function() {
 setHook("grid.newpage", initMarks)
 
 ## Add a mark
-addMark <- function(name, devx, devy, vpx, vpy, vpPath) {
+addMark <- function(name, devx, devy, vpx=NA, vpy=NA, vpPath=NULL) {
     if (!is.character(name) || length(name) != 1)
         stop("Invalid mark name")
-    if (!is.numeric(devx) || length(devx) != 1 ||
-        !is.numeric(devy) || length(devy) != 1 ||
-        !is.numeric(vpx) || length(vpx) != 1 ||
-        !is.numeric(vpy) || length(vpy) != 1)
+    if (!(is.na(devx) || is.numeric(devx)) || length(devx) != 1 ||
+        !(is.na(devy) || is.numeric(devy)) || length(devy) != 1 ||
+        !(is.na(vpx) || is.numeric(vpx)) || length(vpx) != 1 ||
+        !(is.na(vpy) || is.numeric(vpy)) || length(vpy) != 1)
         stop("Invalid mark location")
     if (!(is.null(vpPath) || inherits(vpPath, "vpPath"))) 
         stop("Invalid mark vpPath")

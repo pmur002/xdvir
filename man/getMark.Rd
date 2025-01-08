@@ -14,7 +14,7 @@
 }
 \usage{
 getMark(name)
-addMark(name, devx, devy, vpx, vpy, vpPath)
+addMark(name, devx, devy, vpx=NA, vpy=NA, vpPath=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

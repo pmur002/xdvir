@@ -81,7 +81,9 @@ calculateOffset <- function(x, y, hjust, vjust, state) {
         hAnchorLabels <- c(hAnchorLabels, anchors$label)
     }
     hAnchor <- glyphAnchor(hAnchorValues, hAnchorLabels)
-    width <- glyphWidth(maxX - minX)
+    width <- glyphWidth(c(maxX - minX, right - left),
+                        c("width", "bbwidth"),
+                        c("left", "bbleft"))
     height <- glyphHeight(top - bottom)
     ## Create dummy font
     fonts <- TeXget("fonts", state)
