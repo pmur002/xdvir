@@ -36,9 +36,11 @@ export("readDVI",
        "fontspecPackage", "xcolorPackage", "previewPackage",
        "tikzPackage", "tikzPicture",
 
+       "author", "typeset", "render",
+       
        "grid.dvi", "dviGrob",
 
-       "grid.latex", "latexGrob", "author", "typeset",
+       "grid.latex", "latexGrob", 
 
        "grid.lualatex", "lualatexGrob",
        "grid.xelatex", "xelatexGrob",

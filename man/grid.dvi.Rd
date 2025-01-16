@@ -1,5 +1,6 @@
 \name{grid.dvi}
 \alias{grid.dvi}
+\alias{render}
 \alias{dviGrob}
 \alias{dviGrob.DVI}
 \alias{dviGrob.character}
@@ -29,6 +30,7 @@ dviGrob(dvi, \dots)
         gp=gpar(),
         vp=NULL)
 grid.dvi(\dots)
+render(\dots)
 }
 \arguments{
   \item{dvi}{A \code{"DVI"} object, as produced by
@@ -66,6 +68,8 @@ grid.dvi(\dots)
   attribute of the \code{dvi} then, if the \code{dvi} engine was
   guessed the \code{engine} will be used, otherwise the conflict will
   result in an error.
+
+  \code{render()} is an alias for \code{grid.dvi()}.
 }
 \value{
   A \code{"DVIgrob"} object.

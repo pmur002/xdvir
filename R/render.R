@@ -469,3 +469,4 @@ grid.dvi <- function(...) {
     grid.draw(dviGrob(...))
 }
 
+render <- grid.dvi
