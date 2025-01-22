@@ -58,19 +58,15 @@
   \pgf@sys@addtoxdvirpath{,}\pgf@sys@xdvirnum{#6}%
   \pgf@sys@addtoxdvirpath{:}%
 }
-% Convert rect to move-line-close so ALL paths start with move
+% Start with moveto so ALL paths start with move
 \def\pgfsys@rect#1#2#3#4{%
   \pgf@sys@addtoxdvirpath{moveto }\pgf@sys@xdvirnum{#1}%
   \pgf@sys@addtoxdvirpath{,}\pgf@sys@xdvirnum{#2}%
   \pgf@sys@addtoxdvirpath{:}%
-  \pgf@sys@addtoxdvirpath{lineto }\pgf@sys@xdvirnum{#1}%
-  \pgf@sys@addtoxdvirpath{,}\pgf@sys@xdvirnum{#4}%
-  \pgf@sys@addtoxdvirpath{:}%
-  \pgf@sys@addtoxdvirpath{lineto }\pgf@sys@xdvirnum{#3}%
-  \pgf@sys@addtoxdvirpath{,}\pgf@sys@xdvirnum{#4}%
-  \pgf@sys@addtoxdvirpath{:}%
-  \pgf@sys@addtoxdvirpath{lineto }\pgf@sys@xdvirnum{#3}%
+  \pgf@sys@addtoxdvirpath{rect }\pgf@sys@xdvirnum{#1}%
   \pgf@sys@addtoxdvirpath{,}\pgf@sys@xdvirnum{#2}%
+  \pgf@sys@addtoxdvirpath{,}\pgf@sys@xdvirnum{#3}%
+  \pgf@sys@addtoxdvirpath{,}\pgf@sys@xdvirnum{#4}%
   \pgf@sys@addtoxdvirpath{:}%
   \pgf@sys@addtoxdvirpath{close}%
   \pgf@sys@addtoxdvirpath{:}%

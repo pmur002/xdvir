@@ -384,6 +384,21 @@ parseCurveTo <- function(x, i, state) {
     TeXset("tikzPathY", pathY, state)
 }
 
+parseRect <- function(x, i, state) {
+    xywh <- strsplit(x, ",")[[1]]
+    sub <- TeXget("tikzSubPath", state)
+    pathX <- TeXget("tikzPathX", state)
+    pathY <- TeXget("tikzPathY", state)
+    x <- as.numeric(xywh[1])
+    y <- as.numeric(xywh[2])
+    w <- as.numeric(xywh[3])
+    h <- as.numeric(xywh[4])
+    pathX[[sub]][[i]] <- c(x, x + w, x + w)
+    pathY[[sub]][[i]] <- c(y + h, y + h, y)
+    TeXset("tikzPathX", pathX, state)
+    TeXset("tikzPathY", pathY, state)
+}
+
 parseClose <- function(i, state) {
     ## Start new subPath
     sub <- TeXget("tikzSubPath", state) + 1
@@ -411,6 +426,7 @@ recordPathElement <- function(x, i, state) {
            moveto=parseMoveTo(tokens[-1], i, state),
            lineto=parseLineTo(tokens[-1], i, state),
            curveto=parseCurveTo(tokens[-1], i, state),
+           rect=parseRect(tokens[-1], i, state),
            close=parseClose(i, state),
            stop("unsupported path element"))
 }
