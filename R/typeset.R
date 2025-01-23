@@ -64,6 +64,8 @@ latex <- function(file, dir, engine, packages, dviFile, sig=TRUE) {
         options <- c(engine$options,
                      shQuote(paste0("--output-directory=", dir)))
     }
+    oodir <- getOption("tinytex.output_dir")
+    on.exit(options(tinytex.output_dir=oodir))
     options(tinytex.output_dir=dir)
     if (tinytexVersion() > "0.54") {
         ## A bit of jumping through hoops to use output-directory successfully
