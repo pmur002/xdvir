@@ -924,12 +924,12 @@ tikzPreamble <- function(packages=NULL, quote=TRUE) {
     }
     if ("tikzmark" %in% packages) {
         xdvirtikzmark <- paste0(r"(
-\newcommand{\xdvirtikzmark}[1]{%
+\newcommand{\Rtikzmark}[1]{%
 \tikz[overlay]%
 \path let \p1=(pic cs:#1) in (\x1, \y1)%
 \pgfextra{\special{)", tikzSpecialPrefix, r"( mark #1 \x1\space \y1}};}%
 \usepackage{atbegshi}
-\AtBeginShipoutFirst{\tikzmark{tikz.origin}\xdvirtikzmark{tikz.origin}}
+\AtBeginShipoutFirst{\tikzmark{tikz.origin}\Rtikzmark{tikz.origin}}
 )")
     } else {
         xdvirtikzmark <- ""

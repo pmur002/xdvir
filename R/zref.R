@@ -68,9 +68,9 @@ zrefFinal <- function(state) {
 ## Record zref origin using \zmark
 zrefPreamble <- sprintf(r"(
 \usepackage{zref-savepos}
-\newcommand{\xdvirzmark}[1]{\special{%smark #1 \zposx{#1} \zposy{#1}}}
+\newcommand{\Rzmark}[1]{\special{%smark #1 \zposx{#1} \zposy{#1}}}
 \usepackage{atbegshi}
-\AtBeginShipoutFirst{\zsavepos{zref.origin}\xdvirzmark{zref.origin}}
+\AtBeginShipoutFirst{\zsavepos{zref.origin}\Rzmark{zref.origin}}
 )", zrefSpecialPrefix)
 
 zrefPackage <- function() {
