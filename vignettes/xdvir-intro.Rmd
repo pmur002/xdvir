@@ -256,6 +256,8 @@ added to the R graphics engine in R version 4.3.0
 Furthermore, this support is only available on specific graphics devices:
 the core `pdf()`, Cairo-based devices, and `quartz()` devices, plus
 the devices provided by the {ragg} package [@pkg-ragg].
+R Studio users should set the graphics backend to 
+"AGG" or "cairo" (if either of those is not the default).
 
 The {xdvir} package also relies on there being a TeX installation.
 When the package is attached, it reports on the TeX features that
