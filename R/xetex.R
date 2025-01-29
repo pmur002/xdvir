@@ -3,8 +3,12 @@ initXeTeX <- function() {
     xetex <- Sys.which("xelatex")
     if (nchar(xetex) > 0) {
         versText <- system("xelatex --version", intern=TRUE)
-        versLine <- grep("^XeTeX", versText)
-        version <- gsub(".+ ([0-9.-]+) .+", "\\1", versText[versLine])
+        set("xetexVersionStr", versText)
+        if (length(versText)) {
+            version <- versText[1]
+        } else {
+            version <- "unknown version"
+        }
         set("xetexVersion", version)
     }
 }
@@ -22,7 +26,7 @@ xelatexPreamble <- "\\usepackage{unicode-math}"
 
 isXeTeX <- function(dvi) {
     commentStr <- commentString(dvi)
-    grepl("XeTeX", commentStr)
+    grepl(xetexVersion(), commentStr)
 }
 
 xeGlyphIndex <- function(raw) {
