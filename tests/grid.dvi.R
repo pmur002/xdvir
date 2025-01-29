@@ -24,13 +24,9 @@ if (Sys.getenv("USER") == "pmur002") {
 
 ## Generate DVI
 
-if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
-    ## For testing on github Windows runners, avoid tmp dir
-    ## for files that a TeX engine will run on
-    texFile <- "test-dvi.tex"
-} else {
-    texFile <- NULL
-}
+## Create .tex files within .Rcheck directory so that we can more easily
+## debug problems (or return them as artifacts from github runners)
+texFile <- "test-dvi.tex"
 
 if (Sys.info()["sysname"] == "Darwin") {
     png("grid-dvi-%02d.png", type="quartz")

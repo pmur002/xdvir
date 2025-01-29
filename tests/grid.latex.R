@@ -5,13 +5,9 @@ library(xdvir)
 ## Make debugging information available
 options(tinytex.verbose=TRUE, xdvir.quiet=FALSE)
 
-if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
-    ## For testing on github runners, create files within .Rcheck
-    ## directory so that we can easily return them as artifacts
-    texFile <- "test-latex.tex"
-} else {
-    texFile <- NULL
-}
+## Create .tex files within .Rcheck directory so that we can more easily
+## debug problems (or return them as artifacts from github runners)
+texFile <- "test-latex.tex"
 
 if (Sys.info()["sysname"] == "Darwin") {
     png("grid-latex-%02d.png", type="quartz")

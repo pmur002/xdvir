@@ -12,13 +12,9 @@ tex <- paste0("\\setmainfont{Montserrat-Regular.ttf}",
               "[Path=", gsub("~", "\\\\string~", fontpath), "/]\n",
               "This is a test")
 
-if (nchar(Sys.getenv("GITHUB_RUN_ID"))) {
-    ## For testing on github runners, create files within .Rcheck
-    ## directory so that we can easily return them as artifacts
-    texFile <- "test-package.tex"
-} else {
-    texFile <- NULL
-}
+## Create .tex files within .Rcheck directory so that we can more easily
+## debug problems (or return them as artifacts from github runners)
+texFile <- "test-package.tex"
 
 if (Sys.info()["sysname"] == "Darwin") {
     png("package-%02d.png", type="quartz")
