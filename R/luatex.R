@@ -11,7 +11,12 @@ initLuaTeX <- function() {
         if (nchar(Sys.getenv("TERM"))) {
             TERM <- ""
         } else {
-            TERM <- "TERM=dumb"
+            if (.Platform$OS.type == "windows") {
+                Sys.setenv("TERM"="dumb")
+                TERM <- ""
+            } else {
+                TERM <- "TERM=dumb"
+            }
         }
         loadToolText <- system(paste(TERM, "luaotfload-tool --version"),
                                intern=TRUE)
