@@ -32,7 +32,8 @@ getDVI <- function(tex, engine, packages, texFile, sig=TRUE) {
     key <- typesetKey(tex, engine, packages)
     cache <- get("DVIcache")
     dvi <- cache[[key]]
-    if (is.null(dvi)) {
+    useCache <- getOption("xdvir.useDVIcache")
+    if (is.null(dvi) || !useCache) {
         addDVI(tex, engine, packages, texFile, sig)
     } else {
         dvi
@@ -41,12 +42,6 @@ getDVI <- function(tex, engine, packages, texFile, sig=TRUE) {
 
 canTypeset <- function(engine=getOption("xdvir.engine")) {
     !is.null(engine$command)
-}
-
-typeset <- function(tex,
-                    engine=getOption("xdvir.engine"),
-                    ...) {
-    UseMethod("typeset")
 }
 
 latex <- function(file, dir, engine, packages, dviFile, sig=TRUE) {
@@ -92,6 +87,12 @@ latex <- function(file, dir, engine, packages, dviFile, sig=TRUE) {
                         " and associated .log file"))
         }
     }
+}
+
+typeset <- function(tex,
+                    engine=getOption("xdvir.engine"),
+                    ...) {
+    UseMethod("typeset")
 }
 
 ## 'x' is a "LaTeXdocument" from author()

@@ -52,6 +52,8 @@ registerEngine(nullEngine)
     ## Default Font Library
     options(xdvir.fontLib=FTfontLibrary)
     options(xdvir.quiet=TRUE)
+    ## Use DVI cache by default
+    options(xdvir.useDVIcache=TRUE)
 
     ## For ggplot2 integration
     run_on_load()
