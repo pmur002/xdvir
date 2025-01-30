@@ -6,8 +6,8 @@ fontspecPreamble <- function(font=NULL) {
             setfont <- paste0("\\setmainfont{", font, "}")
         } else {
             setfont <- paste0("\\setmainfont{", basename(font), "}",
-                              ## file.path() to add trailing slash
-                              "[Path=", file.path(dirname(font), ""), "]")
+                              ## Must add trailing slash
+                              "[Path=", paste0(dirname(font), "/"), "]")
         }
         preamble <- c(preamble, setfont)
     }
