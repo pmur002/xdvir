@@ -27,6 +27,8 @@ importFrom("rlang",
            "on_package_load",
            "run_on_load",
            "%||%")
+importFrom("systemfonts",
+           "match_fonts")
 
 export("readDVI",
 
