@@ -15,6 +15,8 @@ registerEngine(nullEngine)
     initTinyTeX()
     ## Define and register XeTeX engine 
     initXeTeX()
+    ## XeTeX wants tikz pgf driver path quoted
+    tikzQuote <- TRUE
     if (xetexAvailable()) {
         XeTeXengine <- TeXengine(name="XeTeX",
                                  version=xetexVersion(),
@@ -41,13 +43,15 @@ registerEngine(nullEngine)
                                   preamble=lualatexPreamble)
         registerEngine(LuaTeXengine)
         options(xdvir.engine=LuaTeXengine)
+        ## LuaTeX does NOT want tikz pgf driver path quoted
+        tikzQuote <- FALSE
     }
     ## Define and register packages
     registerPackage(fontspecPackage())
     registerPackage(xcolorPackage())
     registerPackage(previewPackage())
-    registerPackage(tikzPackage())
-    registerPackage(tikzPicture())
+    registerPackage(tikzPackage(quote=tikzQuote))
+    registerPackage(tikzPicture(quote=tikzQuote))
     registerPackage(zrefPackage())
     ## Default Font Library
     options(xdvir.fontLib=FTfontLibrary)
