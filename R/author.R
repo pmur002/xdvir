@@ -23,19 +23,42 @@ TeXfaces <- c("", ## "\\mdseries ",
               "\\itshape ",
               "\\bfseries \\itshape ")
 
-mainfont <- function(family, dir, local) {
+## NOTE that this assumes that all variants of the font are available
+## in the same directory
+mainfont <- function(fontSet, dir, local) {
+    ## ttc fonts need different spec
+    path <- fontSet$path
+    suffix <- gsub(".+[.]", "", path[1])
     if (local) {
-        paste0("\\setmainfont{", family[1], "}%\n",
-               "[BoldFont=", family[2], ",\n",
-               " ItalicFont=", family[3], ",\n",
-               " BoldItalicFont=", family[4], "]\n")
+        if (suffix == "ttc") {
+            paste0("\\setmainfont{", path[1], "}%\n",
+                   "[UprightFeatures = {FontIndex=0},\n",
+                   " BoldFeatures = {FontIndex=1},\n",
+                   " ItalicFeatures = {FontIndex=2},\n",
+                   " BoldItalicFeatures = {FontIndex=3}]\n")
+        } else {
+            paste0("\\setmainfont{", path[1], "}%\n",
+                   "[BoldFont=", path[2], ",\n",
+                   " ItalicFont=", path[3], ",\n",
+                   " BoldItalicFont=", path[4], "]\n")
+        }
     } else {
-        paste0("\\setmainfont{", basename(family[1]), "}%\n",
-               ## NOTE that this adds trailing slash to path
-               "[Path=", dir, "/,\n",
-               " BoldFont=", basename(family[2]), ",\n",
-               " ItalicFont=", basename(family[3]), ",\n",
-               " BoldItalicFont=", basename(family[4]), "]\n")
+        if (suffix == "ttc") {
+            paste0("\\setmainfont{", basename(path[1]), "}%\n",
+                   ## NOTE that this adds trailing slash to path
+                   "[Path=", dir, "/,\n",
+                   " UprightFeatures = {FontIndex=0},\n",
+                   " BoldFeatures = {FontIndex=1},\n",
+                   " ItalicFeatures = {FontIndex=2},\n",
+                   " BoldItalicFeatures = {FontIndex=3}]\n")
+        } else {
+            paste0("\\setmainfont{", basename(path[1]), "}%\n",
+                   ## NOTE that this adds trailing slash to path
+                   "[Path=", dir, "/,\n",
+                   " BoldFont=", basename(path[2]), ",\n",
+                   " ItalicFont=", basename(path[3]), ",\n",
+                   " BoldItalicFont=", basename(path[4]), "]\n")
+        }
     }
 }
 
@@ -48,18 +71,18 @@ preset <- function(family, face, size, lineheight, colour) {
     if (any(defaultFonts)) {
         family[defaultFonts] <- currentFamily(family)
     }
-    familyPaths <- lapply(family, 
-                          function(f) {
-                              systemfonts::match_fonts(f,
-                                                       c(FALSE, FALSE,
-                                                         TRUE, TRUE),
-                                                       c("normal", "bold",
-                                                         "normal", "bold"))$path
-                          })
+    fontSets <- lapply(family, 
+                       function(f) {
+                           systemfonts::match_fonts(f,
+                                                    c(FALSE, FALSE,
+                                                      TRUE, TRUE),
+                                                    c("normal", "bold",
+                                                      "normal", "bold"))
+                       })
     ## NOTE that this returns path with "/" separator even on Windows
-    dirs <- sapply(familyPaths, function(x) dirname(x[1]))
+    dirs <- sapply(fontSets, function(x) dirname(x$path[1]))
     local <- dirs == "."
-    fontfamily <- mapply(mainfont, familyPaths, dirs, local)
+    fontfamily <- mapply(mainfont, fontSets, dirs, local)
     
     if (is.null(face))
         stop("No font face specified")
