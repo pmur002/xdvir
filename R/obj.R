@@ -55,10 +55,20 @@ for (i in 0:255) {
     assign(paste0("obj_op_", i), function(...) op_ignore(...))
 }
 
+## Many functions should only do something if we are on the relevant page.
+## This includes all drawing operations like set and rule
+## BUT does not include positionining operations like
+## push/pop/down/right/w/x etc in case they carry across pages
+## ALSO does not include font definitions or settings for same reason
+do_op <- function(op_fun, op, state) {
+    if (TeXget("currentPage", state) == TeXget("whichPage", state))
+        op_fun(op, state)
+}
+
 ## 0..127
 ## set_char_<i>
 for (i in 0:127) {
-    assign(paste0("obj_op_", i), function(...) op_set_char(...))
+    assign(paste0("obj_op_", i), function(...) do_op(op_set_char, ...))
 }
 
 ## 128..131
@@ -66,28 +76,28 @@ for (i in 0:127) {
 ## set2
 ## set3
 ## set4
-obj_op_128 <- function(...) op_set(...)
-obj_op_129 <- function(...) op_set(...)
-obj_op_130 <- function(...) op_set(...)
-obj_op_131 <- function(...) op_set(...)
+obj_op_128 <- function(...) do_op(op_set, ...)
+obj_op_129 <- function(...) do_op(op_set, ...)
+obj_op_130 <- function(...) do_op(op_set, ...)
+obj_op_131 <- function(...) do_op(op_set, ...)
 
 ## 132
 ## set_rule
-obj_op_132 <- function(...) op_set_rule(...)
+obj_op_132 <- function(...) do_op(op_set_rule, ...)
 
 ## 133..136
 ## put1
 ## put2
 ## put3
 ## put4
-obj_op_133 <- function(...) op_put(...)
-obj_op_134 <- function(...) op_put(...)
-obj_op_135 <- function(...) op_put(...)
-obj_op_136 <- function(...) op_put(...)
+obj_op_133 <- function(...) do_op(op_put, ...)
+obj_op_134 <- function(...) do_op(op_put, ...)
+obj_op_135 <- function(...) do_op(op_put, ...)
+obj_op_136 <- function(...) do_op(op_put, ...)
 
 ## 137
 ## put_rule
-obj_op_137 <- function(...) op_put_rule(...)
+obj_op_137 <- function(...) do_op(op_put_rule, ...)
 
 ## 138
 ## nop
@@ -187,7 +197,10 @@ for (i in 235:238) {
 ## xxx3
 ## xxx4
 for (i in 239:242) {
-    assign(paste0("obj_op_", i), function(...) op_special(...))
+    ## NOTE that this could cause trouble (not performing a "special" op
+    ## if we are not on the right page) if, for example, colour is set
+    ## on one page and carried over to next page.
+    assign(paste0("obj_op_", i), function(...) do_op(op_special, ...))
 }
 
 ## 243..246
@@ -213,10 +226,10 @@ obj_op_248 <- function(...) op_post(...)
 obj_op_252 <- function(...) op_x_font_def(...)
 
 ## 253
-obj_op_253 <- function(...) op_x_glyph(...)
+obj_op_253 <- function(...) do_op(op_x_glyph, ...)
 
 ## 254
-obj_op_254 <- function(...) op_x_glyph_str(...)
+obj_op_254 <- function(...) do_op(op_x_glyph_str, ...)
 
 ## upTeX
 ## 255

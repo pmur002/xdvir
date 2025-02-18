@@ -19,6 +19,7 @@ latexGrob(tex,
           hjust="centre", vjust="centre",
           width=NA,
           dpi=NA,
+          page=1,
           packages=NULL,
           engine=getOption("xdvir.engine"),
           fontLib=getOption("xdvir.fontLib"),
@@ -50,6 +51,7 @@ grid.lualatex(\dots)
     specifying the width for typesetting.  \code{NA} means the natural width of
     \code{tex}.}
   \item{dpi}{Resolution (dots per inch) for rendering.}
+  \item{page}{Which page should be drawn.}
   \item{packages}{The LaTeX packages to be used.
     May be the name of a LaTeX package (character) or a
     \code{"LaTeXpackage"} object.}

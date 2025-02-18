@@ -188,6 +188,7 @@ op_put_rule <- function(op, state) setRule(op, TRUE, state)
 ## 139
 ## bop
 op_bop <- function(op, state) {
+    TeXset("currentPage", TeXget("currentPage", state) + 1, state)
 }
 
 ## 140

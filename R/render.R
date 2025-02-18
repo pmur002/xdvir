@@ -113,9 +113,11 @@ buildState <- function(packages, fontLib, engine, dpi) {
     state
 }
 
-buildObjList <- function(dvi, state) {
+buildObjList <- function(dvi, page, state) {
     ## Generate objs from DVI,
     ## which also establishes metrics of text and any other drawing
+    TeXset("currentPage", 0, state)
+    TeXset("whichPage", page, state)
     lapply(dvi, DVItoObj, state)
     TeXget("objList", state)
 }
@@ -414,7 +416,8 @@ dviGrob.list <- function(dvi,
                          rot=0,
                          default.units="npc",
                          hjust="centre", vjust="centre",
-                         dpi=NA, 
+                         dpi=NA,
+                         page=1,
                          packages=NULL,
                          engine=getOption("xdvir.engine"),
                          fontLib=getOption("xdvir.fontLib"),
@@ -437,6 +440,7 @@ dviGrob.list <- function(dvi,
     rot <- rep(rot, length.out=n)
     hjust <- rep(hjust, length.out=n)
     vjust <- rep(vjust, length.out=n)
+    pages <- rep(page, length.out=n)
     gpars <- repGPar(gp, n)
     ## Resolve args
     dvis <- lapply(dvi, resolveDVI)
@@ -455,7 +459,7 @@ dviGrob.list <- function(dvi,
                      packages, engines,
                      MoreArgs=list(fontLib=fontLib, dpi=dpi),
                      SIMPLIFY=FALSE)
-    objLists <- mapply(buildObjList, dvis, states,
+    objLists <- mapply(buildObjList, dvis, pages, states,
                        SIMPLIFY=FALSE)
     gTree(n=n, dvi=dvis, state=states, objList=objLists,
           x=x, y=y, margin=margin, rot=rot,
