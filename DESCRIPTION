@@ -1,12 +1,18 @@
 Package: xdvir
 Type: Package
-Title: Render DVI Files
+Title: Render LaTeX in R
 Version: 0.1-0
 Authors@R: person("Paul", "Murrell", email = "paul@stat.auckland.ac.nz",
+                  comment = c(ORCID = "0000-0002-3224-8858"), 
                   role = c("aut", "cre"))
 Maintainer: Paul Murrell <paul@stat.auckland.ac.nz>
-Description: Functions to author TeX documents, typeset TeX documents, 
-             read the resulting DVI files, and render them within R.
+Description: High-level functions to render LaTeX fragments in R plots, 
+             including as labels and data symbols in 'ggplot2' plots, plus
+             low-level functions to 
+             author LaTeX fragments (to produce LaTeX documents), 
+             typeset LaTeX documents (to produce DVI files), 
+             read DVI files (to produce "DVI" objects), 
+             and render "DVI" objects.
 Depends: R (>= 4.3.0)
 SystemRequirements: freetype2
 Imports: grDevices, grid, hexView (>= 0.3-4), tinytex, rlang, systemfonts (>= 1.1.0)

@@ -1,7 +1,7 @@
 \name{geom_latex}
 \alias{geom_latex}
 \alias{GeomLatex}
-\title{Latex labels}
+\title{Latex Data Symbols in ggplot2 Plots}
 \usage{
 geom_latex(mapping=NULL, data=NULL, stat="identity",
            position="identity", ...,
