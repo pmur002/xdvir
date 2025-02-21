@@ -49,7 +49,7 @@ typeset(tex,
 }
 \examples{
 \dontrun{
-% Requires TeX installation
+# Requires TeX installation
 tex <- author("this is a test")
 typeset(tex)
 }

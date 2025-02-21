@@ -122,11 +122,11 @@ library(lattice)
 <<gaussian>>
 ```
 
-```{r, label="lattice-setup", echo=FALSE, eval=FALSE}
-lattice.options(layout.widths=list(left.padding=list(x=0),
-                                   right.padding=list(x=0)),
-                layout.heights=list(bottom.padding=list(x=0),
-                                    top.padding=list(x=0)))
+```{r, label="lattice-init", echo=FALSE, eval=FALSE}
+oopt <- lattice.options(layout.widths=list(left.padding=list(x=0),
+                                           right.padding=list(x=0)),
+                        layout.heights=list(bottom.padding=list(x=0),
+                                            top.padding=list(x=0)))
 ```
 
 ```{r, label="lattice-plot", eval=FALSE}
@@ -140,9 +140,14 @@ xyplot(y ~ x, df, type="l",
        })
 ```
 
+```{r, label="lattice-final", echo=FALSE, eval=FALSE}
+lattice.options(oopt)
+```
+
 ```{r, echo=FALSE, fig.width=6, fig.height=3}
-<<lattice-setup>>
+<<lattice-init>>
 <<lattice-plot>>
+<<lattice-final>>
 ```
 
 If we want to add {grid} output to a {graphics} plot, we can use the
@@ -157,8 +162,8 @@ in the top-left corner.
 library(gridGraphics)
 ```
 
-```{r, label="graphics-setup", echo=FALSE, eval=FALSE}
-par(mar=c(4, 4, 1, 1))
+```{r, label="graphics-init", echo=FALSE, eval=FALSE}
+opar <- par(mar=c(4, 4, 1, 1))
 ```
 ```{r, label="graphics-plot", eval=FALSE}
 plot(y ~ x, df, type="l")
@@ -169,9 +174,13 @@ grid.latex(tex,
            y=unit(1, "npc") - unit(2, "mm"),
            hjust="left", vjust="top")
 ```
+```{r, label="graphics-final", echo=FALSE, eval=FALSE}
+par(opar)
+```
 ```{r, echo=FALSE, fig.width=6, fig.height=3, fig.keep="last"}
-<<graphics-setup>>
+<<graphics-init>>
 <<graphics-plot>>
+<<graphics-final>>
 ```
 
 We can add {grid} output to {ggplot2} plots [@pkg-ggplot2]
