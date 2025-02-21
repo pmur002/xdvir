@@ -97,7 +97,7 @@ grid.lualatex(\dots)
 }
 \examples{
 \dontrun{
-% Requires TeX installation
+# Requires TeX installation
 grid.latex("this is a test")
 }
 }

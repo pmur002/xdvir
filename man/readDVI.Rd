@@ -9,7 +9,6 @@
 \usage{
 readDVI(file)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{file}{A character value giving the name of a DVI file.}
 }

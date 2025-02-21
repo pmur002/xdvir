@@ -16,7 +16,6 @@
 getMark(name)
 addMark(name, devx, devy, vpx=NA, vpy=NA, vpPath=NULL)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{name}{The name of a mark.}
   \item{devx, devy}{The location of the mark on the device (in inches).}

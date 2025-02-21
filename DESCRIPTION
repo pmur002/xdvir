@@ -1,7 +1,7 @@
 Package: xdvir
 Type: Package
 Title: Render 'LaTeX' in Plots
-Version: 0.1-1
+Version: 0.1-2
 Authors@R: person("Paul", "Murrell", email = "paul@stat.auckland.ac.nz",
                   comment = c(ORCID = "0000-0002-3224-8858"), 
                   role = c("aut", "cre"))
