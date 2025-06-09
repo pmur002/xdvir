@@ -4,7 +4,8 @@ nullEngine <- TeXengine(name="null",
                         version=packageVersion("xdvir"),
                         command=NULL,
                         isEngine=function(dvi) FALSE,
-                        glyphIndex=function(raw) glyphIndex(raw),
+                        glyphIndex=function(raw, fontname)
+                            glyphIndex(raw, fontname),
                         fontFile=function(fontname)
                             gsub("[[]|[]].*", "", fontname))
 registerEngine(nullEngine)
@@ -30,7 +31,7 @@ registerEngine(nullEngine)
         registerEngine(XeTeXengine)
         options(xdvir.engine=XeTeXengine)
     }
-    ## Define and register LuaTeX engine
+    ## Define and register LuaTeX engine and LuaHBTeX engine
     initLuaTeX()
     if (luatexAvailable() && luaOTFloadToolSufficient()) {
         LuaTeXengine <- TeXengine(name="LuaTeX",
@@ -42,6 +43,15 @@ registerEngine(nullEngine)
                                   options="--output-format=dvi",
                                   preamble=lualatexPreamble)
         registerEngine(LuaTeXengine)
+        LuaHBTeXengine <- TeXengine(name="LuaHBTeX",
+                                    version=luatexVersion(),
+                                    command="lualatex",
+                                    isEngine=isLuaTeX,
+                                    glyphIndex=hbGlyphIndex,
+                                    fontFile=hbFontFile,
+                                    options="--output-format=dvi",
+                                    preamble=lualatexPreamble)
+        registerEngine(LuaHBTeXengine)
         options(xdvir.engine=LuaTeXengine)
         ## LuaTeX does NOT want tikz pgf driver path quoted
         tikzQuote <- FALSE

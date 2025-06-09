@@ -4,7 +4,7 @@
 op_ignore <- function(op, state) { }
 
 ## Glyph index from raw bytes
-glyphIndex <- function(raw) {
+glyphIndex <- function(raw, filename, fontLib) {
     nbytes <- length(raw)
     switch(nbytes,
            ## Single byte from set_char_i or set1
@@ -76,7 +76,7 @@ setChar <- function(raw, put=FALSE, state) {
     ## Lots of things depend on text direction
     dir <- TeXget("dir", state)
     engine <- TeXget("engine", state)
-    id <- engine$glyphIndex(raw)
+    id <- engine$glyphIndex(raw, font$file, fontLib)
     bbox <- TeXglyphBounds(id, font$file, font$size, fontLib, state)
     if (dir == 0) {
         width <- TeXglyphWidth(id, font$file, font$size, fontLib, state)
@@ -449,6 +449,7 @@ op_font_def <- function(op, state) {
         fonts[[fontnum]] <- list(file=fontfile,
                                  index=0,
                                  size=s*(mag/1000),
+                                 variations=attr(fontfile, "variations"),
                                  ## For pixel adjustments
                                  fontSpace=s %/% 6, 
                                  op=op)

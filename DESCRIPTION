@@ -1,7 +1,7 @@
 Package: xdvir
 Type: Package
 Title: Render 'LaTeX' in Plots
-Version: 0.1-2
+Version: 0.2-0
 Authors@R: person("Paul", "Murrell", email = "paul@stat.auckland.ac.nz",
                   comment = c(ORCID = "0000-0002-3224-8858"), 
                   role = c("aut", "cre"))
@@ -13,7 +13,7 @@ Description: High-level functions to render 'LaTeX' fragments in plots,
              typeset 'LaTeX' documents (to produce 'DVI' files), 
              read 'DVI' files (to produce "DVI" objects), 
              and render "DVI" objects.
-Depends: R (>= 4.3.0)
+Depends: R (>= 4.6.0)
 SystemRequirements: freetype2
 Imports: grDevices, grid, hexView (>= 0.3-4), tinytex, rlang, systemfonts (>= 1.1.0)
 Suggests: gridBezier, knitr, rmarkdown, lattice, gridGraphics, gggrid, ggplot2, cli

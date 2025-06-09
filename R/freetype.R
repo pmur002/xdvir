@@ -45,6 +45,11 @@ FTglyphBounds <- function(index, fontName) {
                    fontName)
 }
 
+FTglyphIndex <- function(code, fontName) {
+    .Call(C_glyphIndex, as.integer(code), as.character(fontName)[1])
+}
+
 FTfontLibrary <- FontLibrary(glyphWidth=FTglyphWidth,
                              glyphHeight=NULL,
-                             glyphBounds=FTglyphBounds)
+                             glyphBounds=FTglyphBounds,
+                             glyphIndex=FTglyphIndex)

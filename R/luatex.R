@@ -73,18 +73,22 @@ isLuaTeX <- function(dvi) {
     grepl(luatexVersion(), commentStr)
 }
 
-luaGlyphIndex <- function(raw) {
-    glyphIndex(raw)
+luaGlyphIndex <- function(raw, fontname, fontLib) {
+    glyphIndex(raw, fontname, fontLib)
 }
 
 luaFontFile <- function(fontname) {
     gsub("[[]|[]].*", "", fontname)
 }
 
-lualatexGrob <- function(tex, ...) {
+lualatexGrob <- function(tex, harfbuzz=FALSE, ...) {
     if (!luatexAvailable())
         stop("LuaTeX not available")
-    latexGrob(tex, engine=getEngine("luatex"), ...)
+    if (harfbuzz) {
+        latexGrob(tex, engine=getEngine("luahbtex"), ...)
+    } else {
+        latexGrob(tex, engine=getEngine("luatex"), ...)
+    }
 }
 
 grid.lualatex <- function(...) {

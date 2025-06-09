@@ -4,10 +4,12 @@
 
 FontLibrary <- function(glyphWidth,
                         glyphHeight,
-                        glyphBounds) {
+                        glyphBounds,
+                        glyphIndex) {
     fontLib <- list(glyphWidth=glyphWidth,
                     glyphHeight=glyphHeight,
-                    glyphBounds=glyphBounds)
+                    glyphBounds=glyphBounds,
+                    glyphIndex=glyphIndex)
     class(fontLib) <- "FontLibrary"
     fontLib
 }
@@ -96,6 +98,12 @@ nullGlyphBounds <- function(index, file) {
     bbox
 }
 
+nullGlyphIndex <- function(code, file) {
+    ## Just return the character code 
+    code
+}
+                           
 nullFontLib <- FontLibrary(glyphWidth=nullGlyphWidth,
                            glyphHeight=NULL,
-                           glyphBounds=nullGlyphBounds)
+                           glyphBounds=nullGlyphBounds,
+                           glyphIndex=nullGlyphIndex)

@@ -29,8 +29,8 @@ isXeTeX <- function(dvi) {
     grepl(xetexVersion(), commentStr)
 }
 
-xeGlyphIndex <- function(raw) {
-    glyphIndex(raw)
+xeGlyphIndex <- function(raw, fontname, fontLib) {
+    glyphIndex(raw, fontname, fontLib)
 }
 
 xeFontFile <- function(fontname) {
