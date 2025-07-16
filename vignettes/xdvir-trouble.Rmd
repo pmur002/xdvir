@@ -1,0 +1,49 @@
+---
+title: "Trouble-shooting the {xdvir} Package"
+author: "Paul Murrell"
+output: 
+  rmarkdown::html_vignette:
+    number_sections: true
+bibliography: xdvir-intro.bib
+vignette: >
+  %\VignetteIndexEntry{Trouble-shooting the {xdvir} Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(
+  comment = ''
+)
+```
+
+This document provides some solutions and workarounds to try when
+things go wrong.
+
+# Problems in the typesetting step
+
+There are many ways that the processing of LaTeX snippets 
+can fail.  
+
+The ['tinytex' documentation](https://yihui.org/tinytex/r/#debugging)
+includes some advice to help with debugging LaTeX errors.
+
+One way to explore the problem is to `author()` the LaTeX snippet,
+save the result into a `.tex` file and run a TeX engine
+outside of R.
+
+# Problems in the DVI reading step
+
+Problems may also occur if DVI output is produced that 'xdvir' 
+cannot read.
+
+For example, if DVI output is produced outside of R using 
+the `pdfTeX` engine or the `upTeX` engine, 'xdvir' will be unable to correctly 
+read that DVI output.
+
+A more subtle example of this problem can occur with the `luaTeX` engine
+when it slips into "base" mode sometimes to typeset mathematical
+expressions.  'xdvir' can only read "node" mode DVI output so 
+the rendered characters may be garbled or it may just produce errors.
+One option in this case is to explicitly try the `XeTeX` engine
+instead (`options(xdvir.engine="xetex")`).

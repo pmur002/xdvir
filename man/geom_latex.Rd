@@ -113,3 +113,14 @@ geom_latex(mapping=NULL, data=NULL, stat="identity",
     \item \code{vjust}
   }
 }
+\examples{
+\dontrun{
+# Requires TeX installation and 'ggplot2'
+require(ggplot2)
+mtcars$vsdot <- ifelse(mtcars$vs, "$\\vdots$", "$\\because$")
+ggplot(mtcars) +
+    geom_latex(aes(disp, mpg, label=vsdot, colour=vsdot)) +
+    theme(legend.position="none")
+}
+}
+\keyword{ dplot }

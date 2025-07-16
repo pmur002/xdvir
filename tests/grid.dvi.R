@@ -37,7 +37,7 @@ if (Sys.info()["sysname"] == "Darwin") {
 
 if (xdvir:::haveTeX()) {
 
-    str <- r"(This is a test: $\frac{x - \mu}{2}$)"
+    str <- r"(This is a test: $x - \mu$)"
     
     tex <- author(str)
     dvi <- typeset(tex, texFile=texFile)

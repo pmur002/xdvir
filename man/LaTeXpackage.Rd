@@ -27,11 +27,28 @@ registerPackage(package)
     and finalise after rendering.}
   \item{package}{A \code{"LaTeXpackage"} object.}
 }
+\details{
+  For simple cases, all that is required is a package name
+  and a preamble that just contains a \code{\\usepackage} command.
+  See the example below.
+
+  More complex cases may involve adding a \code{prefix} and
+  a \code{suffix} that, for example, begins and ends a 'LaTeX'
+  environment.
+
+  Advanced cases may involve writing functions \code{init},
+  \code{special}, and \code{final}, which are called to handle DVI
+  specials.  The predefined
+  support for 'TikZ' is a particularly complicated example.
+}
 \value{
   \code{LaTeXpackage()} returns a \code{"LaTeXpackage"} object.
 }
 \author{
   Paul Murrell
+}
+\examples{
+LaTeXpackage("times", "\\\\usepackage{times}")
 }
 \keyword{ dplot }
 

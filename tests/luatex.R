@@ -18,7 +18,7 @@ if (Sys.info()["sysname"] == "Darwin") {
 
 if (xdvir:::haveTeX()) {
 
-    str <- r"(This is a test: $\frac{x - \mu}{2}$)"
+    str <- r"(This is a test: $x - \mu$)"
 
     if (xdvir:::luatexAvailable() && xdvir:::luaOTFloadToolSufficient()) {
         grid.newpage()

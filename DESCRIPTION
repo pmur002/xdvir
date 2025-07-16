@@ -1,7 +1,7 @@
 Package: xdvir
 Type: Package
 Title: Render 'LaTeX' in Plots
-Version: 0.1-2
+Version: 0.1-3
 Authors@R: person("Paul", "Murrell", email = "paul@stat.auckland.ac.nz",
                   comment = c(ORCID = "0000-0002-3224-8858"), 
                   role = c("aut", "cre"))
@@ -18,4 +18,5 @@ SystemRequirements: freetype2
 Imports: grDevices, grid, hexView (>= 0.3-4), tinytex, rlang, systemfonts (>= 1.1.0)
 Suggests: gridBezier, knitr, rmarkdown, lattice, gridGraphics, gggrid, ggplot2, cli
 VignetteBuilder: knitr
+URL: https://stattech.wordpress.fos.auckland.ac.nz/2025/03/06/2025-01-latex-typesetting-in-r/
 License: GPL-3

@@ -61,3 +61,14 @@ An \code{element_latex} object that can be used in place of
   \code{"centre"}, \code{"center"}, or \code{"top"} for
   vertical justification.
 }
+\examples{
+\dontrun{
+# Requires TeX installation and 'ggplot2'
+require(ggplot2)
+ggplot(mtcars) +
+    geom_point(aes(disp, mpg)) +
+    ggtitle("\\textit{The} \\texttt{mtcars} data set") +
+    theme(plot.title=element_latex())
+}
+}
+\keyword{ dplot }

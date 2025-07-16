@@ -17,11 +17,18 @@ knitr::opts_chunk$set(
 )
 ```
 
-*The {xdvir} package provides functions for rendering LaTeX snippets in
+*The {xdvir} package provides functions for rendering LaTeX fragments in
 R plots.*
 
 ```{r}
 library(xdvir)
+```
+
+```{r echo=FALSE}
+## Math typesetting by LuaTeX can fall back into mode=base
+## (which we can't currently handle)
+## so use XeTeX engine for this vignette
+options("xdvir.engine"="xetex")
 ```
 
 # Rendering LaTeX in R
@@ -257,7 +264,7 @@ The main difference is the **markup** language that is supported.
 Where those packages are built on markdown, {xdvir} is built on LaTeX,
 with all of the joy and pain that that brings.
 
-# Trouble shooting
+# Limitations
 
 The {xdvir} package relies on the glyph rendering support that was 
 added to the R graphics engine in R version 4.3.0

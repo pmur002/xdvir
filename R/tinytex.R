@@ -28,3 +28,4 @@ texVersion <- function() {
 haveTeX <- function() {
     !is.null(texVersion())
 }
+

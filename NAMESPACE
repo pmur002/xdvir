@@ -32,6 +32,8 @@ importFrom("systemfonts",
 
 export("readDVI",
 
+       "TeXstatus",
+
        "TeXengine",
        
        "LaTeXpackage", "registerPackage",

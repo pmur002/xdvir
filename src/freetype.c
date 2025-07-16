@@ -22,7 +22,7 @@ SEXP glyphMetrics(SEXP font) {
     if (err == FT_Err_Unknown_File_Format) {
         error("Font read failed: Unknown font format");
     } else if (err) {
-        error("Font read failed");
+        error("Font read failed (%s)", CHAR(STRING_ELT(font, 0)));
     } 
 
     err = FT_Set_Char_Size(face, 0, 12*64, 96, 0);
