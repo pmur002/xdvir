@@ -2,7 +2,7 @@
 #include "freetype.h"
 
 SEXP glyphMetrics(SEXP font) {
-    FT_Library  library;
+    FT_Library  ft_library;
     FT_Face     face; 
     long        numGlyphs;
     int         i, glyphErr, err;
@@ -10,12 +10,12 @@ SEXP glyphMetrics(SEXP font) {
     SEXP unitsPerEm, glyphInfo, metrics, result;
     PROTECT(result = allocVector(VECSXP, 2));
 
-    err = FT_Init_FreeType(&library);
+    err = FT_Init_FreeType(&ft_library);
     if (err) {
         error("FreeType initialisation failed");
-    } 
+    }
 
-    err = FT_New_Face(library,
+    err = FT_New_Face(ft_library,
                       CHAR(STRING_ELT(font, 0)),
                       0,
                       &face);
@@ -72,7 +72,7 @@ SEXP glyphMetrics(SEXP font) {
         error("Face clean up failed");
     }
 
-    err = FT_Done_FreeType(library);
+    err = FT_Done_FreeType(ft_library);
     if (err) {
         error("FreeType shut down failed");
     }
@@ -80,3 +80,53 @@ SEXP glyphMetrics(SEXP font) {
     UNPROTECT(1);
     return result;
 }
+
+SEXP glyphIndex(SEXP code, SEXP font) {
+    FT_Library ft_library;
+    FT_Face face; 
+    int index, err;
+    SEXP result = R_NilValue;
+
+    PROTECT(result = allocVector(INTSXP, 1));
+
+    err = FT_Init_FreeType(&ft_library);
+    if (err) {
+        error("FreeType initialisation failed");
+    } 
+
+    err = FT_New_Face(ft_library,
+                      CHAR(STRING_ELT(font, 0)),
+                      0,
+                      &face);
+    if (err == FT_Err_Unknown_File_Format) {
+        error("Font read failed: Unknown font format");
+    } else if (err) {
+        error("Font read failed");
+    } 
+
+    err = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
+    if (err) {
+        error("Failed to select UNICODE charmap");
+    } 
+
+    index = FT_Get_Char_Index(face, INTEGER(code)[0]);
+    if (!index) {
+        error("Undefined character code");
+    } 
+    INTEGER(result)[0] = index;
+
+    err = FT_Done_Face(face);
+    if (err) {
+        error("Face clean up failed");
+    }
+
+    err = FT_Done_FreeType(ft_library);
+    if (err) {
+        error("FreeType shut down failed");
+    }
+
+    UNPROTECT(1);
+
+    return result;
+}
+

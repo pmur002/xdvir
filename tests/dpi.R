@@ -126,9 +126,14 @@ testBounds <- function(index, file) {
     attr(bounds, "unitsPerEm") <- 1
     bounds
 }
+testIndex <- function(code, file) {
+    ## Just placholder
+    code
+}
 testLib <- xdvir:::FontLibrary(glyphWidth=testWidth,
                                glyphHeight=NULL,
-                               glyphBounds=testBounds)
+                               glyphBounds=testBounds,
+                               glyphIndex=testIndex)
 
 ## Generate dvitype model answer
 type <- function(dpi, rules=TRUE, ...) {

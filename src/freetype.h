@@ -6,3 +6,5 @@
 #include FT_FREETYPE_H
 
 SEXP glyphMetrics(SEXP font);
+
+SEXP glyphIndex(SEXP code, SEXP font);

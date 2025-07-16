@@ -5,6 +5,7 @@
 
 static const R_CallMethodDef callMethods[] = {
     {"glyphMetrics", (DL_FUNC) &glyphMetrics, 1},
+    {"glyphIndex", (DL_FUNC) &glyphIndex, 2},
     { NULL, NULL, 0 }
 };
 

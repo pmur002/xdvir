@@ -32,7 +32,7 @@ grid.latex(\dots)
 xelatexGrob(tex, \dots)
 grid.xelatex(\dots)
 
-lualatexGrob(tex, \dots)
+lualatexGrob(tex, harfbuzz=FALSE, \dots)
 grid.lualatex(\dots)
 
 }
@@ -64,6 +64,8 @@ grid.lualatex(\dots)
   \item{gp}{Graphical parameter settings.}
   \item{vp}{A viewport or \code{NULL}.}
   \item{texFile}{Name of a file to use for LaTeX code.}
+  \item{harfbuzz}{Logical indicating whether to use the
+    \code{"luahbtex"} engine (instead of the \code{"luatex"} engine).}
   \item{\dots}{
     Arguments passed to \code{\link{dviGrob}}.
   }
