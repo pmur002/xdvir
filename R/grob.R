@@ -17,8 +17,14 @@ objToGrob.XDVIRglyphObj <- function(obj, hjust, vjust,
     fontMap <- unique(obj$fontindex)
     fontList <- lapply(TeXget("fonts", state)[fontMap],
                        function(x) {
-                           glyphFont(x$file, x$index, "", 0, "",
-                                     variations=x$variations)
+                           ## Match the argument list of glyphFont
+                           ## for earlier versions of R
+                           if (getRversion() >= "4.6.0") {
+                               glyphFont(x$file, x$index, "", 0, "",
+                                         variations=x$variations)
+                           } else {
+                               glyphFont(x$file, x$index, "", 0, "")
+                           }
                        })
     info <- glyphInfo(obj$index, gx, gy,
                       match(obj$fontindex, fontMap), ## font

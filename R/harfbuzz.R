@@ -19,7 +19,7 @@ hbGlyphIndex <- function(raw, fontname, fontLib) {
             ## UNLESS first byte is 0x12, then ...
             ## Three bytes is assumed to be non-UNICODE char from set3 op
             ## Second two bytes are glyph index
-            sum(as.integer(raw[2:3])*16^c(4, 2, 0))
+            sum(as.integer(raw[2:3])*16^c(2, 0))
         } else {
             code <- sum(as.integer(raw)*16^c(4, 2, 0))
             fontLib$glyphIndex(code, fontname)
@@ -31,12 +31,18 @@ hbGlyphIndex <- function(raw, fontname, fontLib) {
     }
 }
 
+## This is overridden by .onLoad() if R version is high enough
+fontVariation <- function(axes) {
+    warning("Variable fonts not supported in this version of R (requires >= 4.6.0)")
+    NULL
+}
+
 hbFontFile <- function(fontname) {
     filename <- gsub("[[]|[]].*", "", fontname)
     ## Font variations encoded after file name
     features <- gsub(".+]", "", fontname)
     if (nchar(features)) {
-        if (grepl("[+]axis", features)) {
+        if (grepl("[+]?axis", features)) {
             axes <- strsplit(strsplit(gsub("[}].*", "",
                                            gsub(".+[{]", "", features)),
                                       ",")[[1]],
@@ -44,7 +50,7 @@ hbFontFile <- function(fontname) {
             names <- sapply(axes, function(x) x[1])
             values <- as.numeric(sapply(axes, function(x) x[2]))
             names(values) <- names
-            attr(filename, "variations") <- glyphFontVariation(values)
+            attr(filename, "variations") <- fontVariation(values)
         }
     }
     filename
