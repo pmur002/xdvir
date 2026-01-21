@@ -17,7 +17,7 @@ jobs:
           r-version: ${{ matrix.r-version }}
           tools: base
       - name: Install tinytex
-        uses: s-u/R-actions/tinytex@v1
+        uses: s-u/R-actions/tinytex@v2
       - uses: s-u/R-actions/pkg-check@v2
         with:
           debian-deps: libfreetype-dev
