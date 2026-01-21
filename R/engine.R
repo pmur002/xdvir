@@ -7,6 +7,7 @@ TeXengine <- function(name,
                       command,
                       isEngine,
                       fontFile,
+                      ## Glyph integer index from integer raw bytes
                       glyphIndex,
                       options=NULL,
                       preamble="",

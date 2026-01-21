@@ -5,6 +5,7 @@
 FontLibrary <- function(glyphWidth,
                         glyphHeight,
                         glyphBounds,
+                        ## Glyph integer index from UNICODE
                         glyphIndex) {
     fontLib <- list(glyphWidth=glyphWidth,
                     glyphHeight=glyphHeight,
