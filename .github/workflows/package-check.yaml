@@ -20,7 +20,7 @@ jobs:
         uses: s-u/R-actions/tinytex@v2
       - uses: s-u/R-actions/pkg-check@v2
         with:
-          debian-deps: libfreetype-dev
+          debian-deps: [ libfreetype-dev, pandoc-citeproc ]
           macos-deps: freetype
           # freetype part of Tomas' Rtools on Windows
           check-flags: --as-cran

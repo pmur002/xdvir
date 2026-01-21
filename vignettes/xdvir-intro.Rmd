@@ -25,10 +25,17 @@ library(xdvir)
 ```
 
 ```{r echo=FALSE}
-## Math typesetting by LuaTeX can fall back into mode=base
-## (which we can't currently handle)
-## so use XeTeX engine for this vignette
-options("xdvir.engine"="xetex")
+if (getOption("xdvir.engine")$name == "null") {
+    ## TeX not available
+    haveTeX <- FALSE
+    warning("TeX not available.  Example code will not be run")
+} else {
+    haveTeX <- TRUE
+    ## Math typesetting by LuaTeX can fall back into mode=base
+    ## (which we can't currently handle)
+    ## so use XeTeX engine for this vignette
+    options("xdvir.engine"="xetex")
+}
 ```
 
 # Rendering LaTeX in R
@@ -66,7 +73,8 @@ gg <- ggplot(df) +
 ```
 
 ```{r, echo=FALSE, fig.width=6, fig.height=3, message=FALSE}
-gg +
+if (haveTeX) {
+    gg +
     grid_panel(latexGrob(tex, x=0, y=1, hjust="left", vjust="top")) +
     xlim(-4, 4) +
     geom_area(aes(x, y), colour=NA, fill="grey90") +
@@ -79,6 +87,9 @@ gg +
           axis.title=element_blank(),
           axis.text.y=element_blank(),
           plot.margin=unit(rep(4, 4), "mm")) 
+} else {
+    grid.text("TeX not available")
+}
 ```
 
 The {xdvir} package allows us to use LaTeX as the **markup** language,
@@ -103,8 +114,12 @@ escape each backslash with a double backslash.
 <<tex>>
 ```
 
-```{r fig.width=3, fig.height=1}
+```{r fig.width=3, fig.height=1, eval=haveTeX}
 grid.latex(tex)
+```
+
+```{r fig.width=3, fig.height=1, echo=FALSE, eval=!haveTeX}
+grid.text("TeX not available")
 ```
 
 # LaTeX annotations in plots
@@ -152,9 +167,13 @@ lattice.options(oopt)
 ```
 
 ```{r, echo=FALSE, fig.width=6, fig.height=3}
+if (haveTeX) {
 <<lattice-init>>
 <<lattice-plot>>
 <<lattice-final>>
+} else {
+    grid.text("TeX not available")
+}
 ```
 
 If we want to add {grid} output to a {graphics} plot, we can use the
@@ -185,9 +204,13 @@ grid.latex(tex,
 par(opar)
 ```
 ```{r, echo=FALSE, fig.width=6, fig.height=3, fig.keep="last"}
+if (haveTeX) {
 <<graphics-init>>
 <<graphics-plot>>
 <<graphics-final>>
+} else {
+    grid.text("TeX not available")
+}
 ```
 
 We can add {grid} output to {ggplot2} plots [@pkg-ggplot2]
@@ -209,12 +232,16 @@ library(gggrid)
 <<ggbase>>
 ```
 
-```{r, fig.width=6, fig.height=3}
+```{r, fig.width=6, fig.height=3, eval=haveTeX}
 gg +
     grid_panel(latexGrob(tex,
                          x=unit(2, "mm"), 
                          y=unit(1, "npc") - unit(2, "mm"), 
                          hjust="left", vjust="top"))
+```
+
+```{r, fig.width=6, fig.height=3, echo=FALSE, eval=!haveTeX}
+grid.text("TeX not available")
 ```
 
 Another way to do this in {ggplot2} is with 
@@ -228,10 +255,14 @@ plots.  This allows, for example, the title of a plot to contain
 LaTeX code, as shown in the image below.  For this to work, the relevant theme
 element must be set using `element_latex()`, as shown in the code below.
 
-```{r, fig.width=6, fig.height=3, message=FALSE}
+```{r, fig.width=6, fig.height=3, message=FALSE, eval=haveTeX}
 gg +
     labs(title=paste("The Normal Distribution:", tex)) +
     theme(plot.title=element_latex())
+```
+
+```{r, fig.width=6, fig.height=3, message=FALSE, echo=FALSE, eval=!haveTeX}
+grid.text("TeX not available")
 ```
 
 Although the need is probably less, for completeness, there is also
@@ -245,7 +276,7 @@ means <- aggregate(samples$x, list(sample=samples$sample), mean)
 means$label <- paste0("$\\bar x_", means$sample, "$")
 ```
 
-```{r, fig.width=6, fig.height=3, message=FALSE}
+```{r, fig.width=6, fig.height=3, message=FALSE, eval=haveTeX}
 ggplot(samples) +
     geom_vline(xintercept=0, linetype="solid", colour=1, linewidth=.5) +
     geom_point(aes(x, sample), size=4, alpha=.5) +
@@ -253,6 +284,10 @@ ggplot(samples) +
     geom_latex(aes(x, sample, label=label), data=means, 
                size=6, vjust=-.4, colour=2) +
     scale_y_continuous(expand=expansion(.25))
+```
+
+```{r, fig.width=6, fig.height=3, message=FALSE, echo=FALSE, eval=!haveTeX}
+grid.text("TeX not available")
 ```
 
 # Related packages
