@@ -7,11 +7,15 @@
   Define a LaTeXPackage for the LaTeX fontspec package.
 }
 \usage{
-fontspecPackage(font=NULL, name=font)
+fontspecPackage(font=NULL, name=font, renderer=NULL, axes=NULL)
 }
 \arguments{
   \item{font}{The name of a font to use as the main font.  See details.}
   \item{name}{The name of the resulting package.}
+  \item{renderer}{The name of the fontspec renderer to use.
+    \code{NULL} uses the default.}
+  \item{axes}{A named vector of variable font axis values, as accepted
+    by \code{grDevices::glyphFont()}.}
 }
 \details{
   This function creates a \code{"LaTeXpackage"} object
@@ -20,6 +24,9 @@ fontspecPackage(font=NULL, name=font)
   The \code{font} argument provides some convenience for setting the main
   font to be used.  The \code{font} can be the common name of
   a system font or a complete path to the font file.
+
+  For variable fonts, use \code{renderer="harfbuzz"} (and
+  the \code{"luahbtex"} TeX engine).
 
   For more complex situations, fontspec commands can be added to
   the LaTeX code that is sent to functions like

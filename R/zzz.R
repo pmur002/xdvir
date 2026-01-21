@@ -71,9 +71,9 @@ registerEngine(nullEngine)
 
     ## Check for font variation support
     if (getRversion() >= "4.6.0") {
-        fontVariation <<- base::get("glyphFontVariation",
-                                    envir=asNamespace("grDevices"),
-                                    mode="function")
+        xdvirGlyphFontVariation <<- base::get("glyphFontVariation",
+                                              envir=asNamespace("grDevices"),
+                                              mode="function")
     }
     
     ## For ggplot2 integration

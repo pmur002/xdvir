@@ -32,7 +32,7 @@ hbGlyphIndex <- function(raw, fontname, fontLib) {
 }
 
 ## This is overridden by .onLoad() if R version is high enough
-fontVariation <- function(axes) {
+xdvirGlyphFontVariation <- function(axes) {
     warning("Variable fonts not supported in this version of R (requires >= 4.6.0)")
     NULL
 }
@@ -50,7 +50,7 @@ hbFontFile <- function(fontname) {
             names <- sapply(axes, function(x) x[1])
             values <- as.numeric(sapply(axes, function(x) x[2]))
             names(values) <- names
-            attr(filename, "variations") <- fontVariation(values)
+            attr(filename, "variations") <- xdvirGlyphFontVariation(values)
         }
     }
     filename

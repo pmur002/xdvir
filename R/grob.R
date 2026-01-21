@@ -3,6 +3,11 @@ objToGrob <- function(obj, ...) {
     UseMethod("objToGrob")
 }
 
+## Shell to avoid function argument errors from earlier versions of R
+xdvirGlyphFont <- function(...) {
+    glyphFont(...)
+}
+
 objToGrob.XDVIRglyphObj <- function(obj, hjust, vjust,
                                     width, height, hAnchor, vAnchor,
                                     dpi, ..., state) {
@@ -20,10 +25,10 @@ objToGrob.XDVIRglyphObj <- function(obj, hjust, vjust,
                            ## Match the argument list of glyphFont
                            ## for earlier versions of R
                            if (getRversion() >= "4.6.0") {
-                               glyphFont(x$file, x$index, "", 0, "",
-                                         variations=x$variations)
+                               xdvirGlyphFont(x$file, x$index, "", 0, "",
+                                              variations=x$variations)
                            } else {
-                               glyphFont(x$file, x$index, "", 0, "")
+                               xdvirGlyphFont(x$file, x$index, "", 0, "")
                            }
                        })
     info <- glyphInfo(obj$index, gx, gy,

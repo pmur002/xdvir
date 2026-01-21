@@ -5,7 +5,7 @@ fontspecPreamble <- function(font=NULL, renderer=NULL, axes=NULL) {
     if (!is.null(renderer) && tolower(renderer) == "harfbuzz")
         defaults <- c(defaults, "Renderer=Harfbuzz")
     if (!is.null(axes)) {
-        variations <- fontVariation(axes)
+        variations <- xdvirGlyphFontVariation(axes)
         if (is.null(variations)) {
             warning("Ignoring unsupported font axes")
         } else {
